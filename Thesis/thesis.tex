@@ -1,0 +1,92 @@
+\documentclass[english]{./cls/ifrthesis} % Use [english] for English version and [ngerman] for German version
+
+% the preamble is intended to be used to add additional packages and define commands
+\input{preamble.tex}
+
+% Thesis metadata (override defaults if needed)
+\ifrtitle{Your Thesis Title Here}
+\ifrauthor{Your Name Here}
+\ifrtype{M} % Use 'B' for Bachelor's thesis, 'M' for Master's thesis
+%\ifryear{2048} % Uncomment to override default year (current year)
+\ifrsupervisor{Supervisor 1}
+\ifrsupervisor{Supervisor 2}
+\ifrsupervisor{Supervisor 3}
+\ifrexaminer{Examiner}
+
+% Default graphics path
+\graphicspath{{./src/pics/}}
+
+% Default mainmatter path
+\newcommand{\chapterinput}[1]{\input{./src/parts/mainmatter/#1}}
+
+% Default frontmatter path
+\newcommand{\pathfrontmatter}[1]{./src/parts/frontmatter/#1}
+
+% Additional bibliography file
+\addbibresource{src/bib/references.bib}
+
+\begin{document}
+
+%=============================================================================
+% Frontmatter
+%=============================================================================
+\frontmatter
+
+% Title
+\maketitle%
+\cleardoublepage%
+
+% Task Description
+\phantomsection
+\addcontentsline{toc}{chapter}{\iflanguage{ngerman}{Aufgabenstellung}{Task Description}}
+\includepdf{\pathfrontmatter{task_description.pdf}}
+\cleardoublepage
+
+% Declaration
+\makedeclaration%
+\cleardoublepage%
+
+%Abstract
+\input{.\src\parts\frontmatter\abstract.tex}
+\cleardoublepage%
+
+% Acknowledgements
+\input{.\src\parts\frontmatter\acknowledgements.tex}
+\cleardoublepage%
+
+% Table of contents
+\thispagestyle{empty}
+\tableofcontents
+\cleardoublepage%
+
+% List of figures and tables
+\makelistoffigures%
+\cleardoublepage%
+\makelistoftables%
+
+% Nomenclature
+\printnomenclature
+\cleardoublepage
+
+%=============================================================================
+% Mainmatter
+%=============================================================================
+\mainmatter%
+
+\chapterinput{.\src\parts\mainmatter\01_chapter.tex}
+\chapterinput{.\src\parts\mainmatter\02_chapter.tex}
+\chapterinput{.\src\parts\mainmatter\03_chapter.tex}
+\chapterinput{.\src\parts\mainmatter\04_chapter.tex}
+
+%=============================================================================
+% Backmatter
+%=============================================================================
+
+% Bibliography
+\printbibliography%
+
+% Appendix
+\appendix
+\input{./src/parts/appendix/appendix.tex}
+test
+\end{document}
