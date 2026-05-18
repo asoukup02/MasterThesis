@@ -1,0 +1,64 @@
+# =========================
+# LaTeX intermediate files
+# =========================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+
+# =========================
+# Bibliography (biber/bibtex)
+# =========================
+*.bib.bak
+*.bbl-SAVE-ERROR
+
+# =========================
+# Index / nomenclature
+# =========================
+*.idx
+*.ilg
+*.ind
+*.nlo
+*.nls
+*.nlg
+
+# =========================
+# Glossaries / acronyms
+# =========================
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+
+# =========================
+# Latexmk
+# =========================
+*.dvi
+*.xdv
+
+# =========================
+# Editor / OS files
+# =========================
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# =========================
+# Output files (optional)
+# =========================
+# Uncomment if you DON'T want PDFs in git
+# *.pdf
