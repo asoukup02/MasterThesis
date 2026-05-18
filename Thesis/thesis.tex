@@ -2,16 +2,17 @@
 
 % the preamble is intended to be used to add additional packages and define commands
 \input{preamble.tex}
+\usepackage{nomencl}
 
 % Thesis metadata (override defaults if needed)
-\ifrtitle{Your Thesis Title Here}
-\ifrauthor{Your Name Here}
+\ifrtitle{Model- and Data-Based Approaches to \\ Wind
+	Compensation for Airship Drones}
+\ifrauthor{Alexander Niclas Soukup}
 \ifrtype{M} % Use 'B' for Bachelor's thesis, 'M' for Master's thesis
 %\ifryear{2048} % Uncomment to override default year (current year)
-\ifrsupervisor{Supervisor 1}
-\ifrsupervisor{Supervisor 2}
-\ifrsupervisor{Supervisor 3}
-\ifrexaminer{Examiner}
+\ifrsupervisor{Sebastian Gieray, M. Sc.}
+
+\ifrexaminer{Walter Fichter, Univ.-Prof. Dr.-Ing. }
 
 % Default graphics path
 \graphicspath{{./src/pics/}}
@@ -37,21 +38,21 @@
 \cleardoublepage%
 
 % Task Description
-\phantomsection
-\addcontentsline{toc}{chapter}{\iflanguage{ngerman}{Aufgabenstellung}{Task Description}}
-\includepdf{\pathfrontmatter{task_description.pdf}}
-\cleardoublepage
+%\phantomsection
+%\addcontentsline{toc}{chapter}{\iflanguage{ngerman}{Aufgabenstellung}{Task Description}}
+%\includepdf{\pathfrontmatter{task_description.pdf}}
+%\cleardoublepage
 
 % Declaration
 \makedeclaration%
 \cleardoublepage%
 
 %Abstract
-\input{.\src\parts\frontmatter\abstract.tex}
+\input{./src/parts/frontmatter/abstract}
 \cleardoublepage%
 
 % Acknowledgements
-\input{.\src\parts\frontmatter\acknowledgements.tex}
+\input{./src/parts/frontmatter/acknowledgements}
 \cleardoublepage%
 
 % Table of contents
@@ -65,28 +66,30 @@
 \makelistoftables%
 
 % Nomenclature
+
 \printnomenclature
 \cleardoublepage
-
+%\input{src/parts/frontmatter/nomenclature.tex}
 %=============================================================================
 % Mainmatter
 %=============================================================================
 \mainmatter%
 
-\chapterinput{.\src\parts\mainmatter\01_chapter.tex}
-\chapterinput{.\src\parts\mainmatter\02_chapter.tex}
-\chapterinput{.\src\parts\mainmatter\03_chapter.tex}
-\chapterinput{.\src\parts\mainmatter\04_chapter.tex}
+\input{./src/parts/mainmatter/01_chapter.tex}
+\input{./src/parts/mainmatter/02_chapter.tex}
+\input{./src/parts/mainmatter/03_chapter.tex}
+\input{./src/parts/mainmatter/04_chapter.tex}
+\input{./src/parts/mainmatter/05_chapter.tex}
 
 %=============================================================================
 % Backmatter
 %=============================================================================
 
 % Bibliography
-\printbibliography%
+\printbibliography
 
 % Appendix
 \appendix
 \input{./src/parts/appendix/appendix.tex}
-test
+
 \end{document}

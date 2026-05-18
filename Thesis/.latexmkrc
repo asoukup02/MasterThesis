@@ -48,23 +48,23 @@ sub run_makeindex_nlo {
 }
 
 # Bibliography processing with biber support
-add_cus_dep('aux', 'bbl', 0, 'run_biber');
+# add_cus_dep('aux', 'bbl', 0, 'run_biber');
 
-sub run_biber {
-    my $base = $_[0];
-    my $quiet = $silent ? '--quiet' : '';
+# sub run_biber {
+#     my $base = $_[0];
+#     my $quiet = $silent ? '--quiet' : '';
     
-    if (-e "$base.bcf") {
-        # biber is used
-        if ($silent) {
-            system("biber", $quiet, $base);
-        } else {
-            system("biber", $base);
-        }
-        return 0;  # Success
-    }
-    return 1;  # No biber run needed
-}
+#     if (-e "$base.bcf") {
+#         # biber is used
+#         if ($silent) {
+#             system("biber", $quiet, $base);
+#         } else {
+#             system("biber", $base);
+#         }
+#         return 0;  # Success
+#     }
+#     return 1;  # No biber run needed
+# }
 
 # Index processing
 add_cus_dep('idx', 'ind', 0, 'run_makeindex');

@@ -1,0 +1,89 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{Fichter2009}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=3c594a31889adfaf044efc3f7a988d87}{%
+           family={Fichter},
+           familyi={F\bibinitperiod},
+           given={Walter},
+           giveni={W\bibinitperiod}}}%
+        {{hash=10b0eba363ce5a80bcb45e0388d4be57}{%
+           family={Grimm},
+           familyi={G\bibinitperiod},
+           given={Werner},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Shaker Verlag}%
+      }
+      \strng{namehash}{647886408a026d3d08d530a9456964f3}
+      \strng{fullhash}{647886408a026d3d08d530a9456964f3}
+      \strng{fullhashraw}{647886408a026d3d08d530a9456964f3}
+      \strng{bibnamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorbibnamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authornamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorfullhash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorfullhashraw}{647886408a026d3d08d530a9456964f3}
+      \field{extraname}{1}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Flugmechanik}
+      \field{year}{2009}
+    \endentry
+    \entry{Johnson1994}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=3c594a31889adfaf044efc3f7a988d87}{%
+           family={Fichter},
+           familyi={F\bibinitperiod},
+           given={Walter},
+           giveni={W\bibinitperiod}}}%
+        {{hash=10b0eba363ce5a80bcb45e0388d4be57}{%
+           family={Grimm},
+           familyi={G\bibinitperiod},
+           given={Werner},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Shaker Verlag}%
+      }
+      \strng{namehash}{647886408a026d3d08d530a9456964f3}
+      \strng{fullhash}{647886408a026d3d08d530a9456964f3}
+      \strng{fullhashraw}{647886408a026d3d08d530a9456964f3}
+      \strng{bibnamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorbibnamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authornamehash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorfullhash}{647886408a026d3d08d530a9456964f3}
+      \strng{authorfullhashraw}{647886408a026d3d08d530a9456964f3}
+      \field{extraname}{2}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Flugmechanik}
+      \field{year}{2009}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

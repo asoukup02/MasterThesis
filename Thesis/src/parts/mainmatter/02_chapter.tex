@@ -1,22 +1,6 @@
-\chapter{Literature Review}
+\chapter{Fundamentals}
 
 \section{How to use the nomenclature}
-
-The nomenclature entries can be added from anywhere in the document and must be assigned to one of the four categories:
-\begin{enumerate}[label=\emph{\Alph*}]
-    \item Abbreviations,
-    \item Latin Letters,
-    \item Greek Letters,
-    \item Indices
-\end{enumerate}
-
-\subsection*{Entry Format}
-Each nomenclature entry follows this syntax:
-\begin{verbatim}
-\nomenclature[Category]{Symbol}{Description}
-\end{verbatim}
-
-Where \texttt{Category} is one of: \texttt{A} (Abbreviations), \texttt{B} (Latin letters), \texttt{C} (Greek letters), or \texttt{D} (Indices).
 
 \subsection*{Examples}
 
@@ -86,16 +70,6 @@ For larger bibliographies, use reference management tools to automatically add e
 \end{itemize}
 
 
-Always check automatically generated entries for consistency and completeness. Pay special attention to:
-\begin{itemize}
-    \item Proper capitalization (protect with braces, e.g., \texttt{{NASA}})
-    \item Special characters and accents (use proper \LaTeX\ encoding)
-    \item Complete page numbers and DOIs when available
-\end{itemize}
-
-Once you have entries in your bibliography file, you can cite them using various commands. This template uses \texttt{biblatex} with the \texttt{numeric} style, which provides flexible citation options:
-
-
 \begin{table}[H]
     \centering
     \caption{Common \texttt{biblatex} citation commands}
@@ -115,10 +89,3 @@ Once you have entries in your bibliography file, you can cite them using various
     \end{tabular}
 \end{table}
 
-\section{Important Notes}
-\begin{itemize}
-    \item Nomenclature entries will automatically appear in the appropriate subsection (Abbreviations, Latin letters, etc.) based on their category.
-    \item For this document, the bibliography items are sorted in the order they are cited in the text.
-    \item A single run of \texttt{pdflatex} is generally neither sufficient to correctly update nomenclature and bibliography lists nor add new citations in the text.
-    Use the \texttt{latexmk} tool (as with the \texttt{full-build} recipe provided in this repository) whenever you add or modify entries to ensure they are properly generated and included in the document.
-\end{itemize}
