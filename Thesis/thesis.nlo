@@ -1,4 +1,6 @@
-\nomenclatureentry{AKOS@[{KOS}]\begingroup Koordinatensystem\nomeqref {2.0}|nompageref}{3}
-\nomenclatureentry{B$\boldsymbol{r}$@[{$\boldsymbol{r}$}]\begingroup Vektor vom Lasthaken zum Schwerpunkt\nomeqref {2.0}|nompageref}{3}
-\nomenclatureentry{C$\Omega$@[{$\Omega$}]\begingroup Drehgeschwindigkeit (\si{\radian\per\second})\nomeqref {2.0}|nompageref}{3}
-\nomenclatureentry{D$_g(\cdot)$@[{$_g(\cdot)$}]\begingroup Geodätisches Koordinatensystem\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{B$\boldsymbol{I}$@[{$\boldsymbol{I}$}]\begingroup Inertia Matrix with respect to the COG\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{C$\omega$@[{$\omega$}]\begingroup Angular velocity (\si{\radian\per\second})\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{D$_B(\cdot)$@[{$_B(\cdot)$}]\begingroup Quantity in body-fixed coordinate system\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{AKF@[{KF}]\begingroup Kalman Filter\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.0}|nompageref}{3}
+\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.0}|nompageref}{3}

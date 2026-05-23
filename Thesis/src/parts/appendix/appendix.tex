@@ -4,12 +4,42 @@
 Write your appendix content here.
 
 % -----------------------------------------------------------------------------------------
-\section{Heading in the Appendix}%
+\section{Parameters of the airship squid}%
 \label{sec:appenA_01}
 
-\blindtext%
+\begin{table}[htbp]
+	\centering
+	\caption{Example Airship Parameters and Specifications}
+	\label{tab:airship_specs}
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{|l|c|c|l|}
+		\hline
+		\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} & \textbf{Unit} \\
+		\hline
+		Overall length & $L$ & 75 & m \\
+		Maximum diameter & $D$ & 18 & m \\
+		Envelope volume & $V$ & 10\,000 & m$^3$ \\
+		Total mass & $m$ & 8\,500 & kg \\
+		Payload mass & $m_p$ & 1\,500 & kg \\
+		Helium mass & $m_{He}$ & 1\,700 & kg \\
+		Cruise speed & $v_c$ & 90 & km/h \\
+		Maximum speed & $v_{\max}$ & 120 & km/h \\
+		Maximum altitude & $h_{\max}$ & 3\,000 & m \\
+		Endurance & $t_e$ & 24 & h \\
+		Propulsion power & $P$ & 2 $\times$ 150 & kW \\
+		Number of engines & $N_e$ & 2 & -- \\
+		Buoyant force & $F_b$ & 98\,000 & N \\
+		Drag coefficient & $C_D$ & 0.045 & -- \\
+		Reference area & $A$ & 255 & m$^2$ \\
+		Moment of inertia (roll) & $I_{xx}$ & $1.2 \times 10^5$ & kg\,m$^2$ \\
+		Moment of inertia (pitch) & $I_{yy}$ & $8.5 \times 10^5$ & kg\,m$^2$ \\
+		Moment of inertia (yaw) & $I_{zz}$ & $8.9 \times 10^5$ & kg\,m$^2$ \\
+		Center of buoyancy offset & $z_B$ & 0.8 & m \\
+		\hline
+	\end{tabular}
+\end{table}
 
-% -----------------------------------------------------------------------------------------
+ -----------------------------------------------------------------------------------------
 \chapter{Second Appendix}%
 \label{chap:appenB}
 

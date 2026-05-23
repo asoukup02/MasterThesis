@@ -1,91 +1,39 @@
 \chapter{Fundamentals}
+\label{chap:2.Fundamentals}
 
-\section{How to use the nomenclature}
+\section{Airship Model}
+\nomenclature[B]{$\boldsymbol{I}$}{Inertia Matrix with respect to the COG}
+\nomenclature[C]{$\omega$}{Angular velocity (\si{\radian\per\second})}
+\nomenclature[D]{$_B(\cdot)$}{Quantity in body-fixed coordinate system}
 
-\subsection*{Examples}
-
-\begin{enumerate}
-    \item \textbf{Abbreviations (Category A)}:
-    \begin{verbatim}
-\nomenclature[A]{KOS}{Koordinatensystem}
-    \end{verbatim}
-    \nomenclature[A]{KOS}{Koordinatensystem}
-    This creates an entry for "KOS" with the description "Koordinatensystem".
-    
-    \item \textbf{Latin letters (Category B)}:
-    \begin{verbatim}
-\nomenclature[B]{$\boldsymbol{r}$}{Vektor vom Lasthaken zum Schwerpunkt}
-    \end{verbatim}
-    \nomenclature[B]{$\boldsymbol{r}$}{Vektor vom Lasthaken zum Schwerpunkt}
-    
-    \item \textbf{Greek letters (Category C)}:
-    \begin{verbatim}
-\nomenclature[C]{$\Omega$}{Drehgeschwindigkeit (\si{\radian\per\second})}
-    \end{verbatim}
-    \nomenclature[C]{$\Omega$}{Drehgeschwindigkeit (\si{\radian\per\second})}
-    This adds the Greek letter Omega with its description.
-    Some authors like to add the quantity's unit in the nomenclature as well.
-    Here, this is done in parentheses as part of the description. 
-    
-    \item \textbf{Indices (Category D)}:
-    \begin{verbatim}
-\nomenclature[D]{$_g(\cdot)$}{Geodätisches Koordinatensystem}
-    \end{verbatim}
-    \nomenclature[D]{$_g(\cdot)$}{Geodätisches Koordinatensystem}
-    This defines the subscript 'g' used in equations throughout the document.
-\end{enumerate}
-
-% ----------------------------------------------------------------------------------------------
-\section{How to cite from the bibliography file}
-
-Your references are stored in a bibliography file (with extension \texttt{.bib}). In this document template, the bibliography file is located at \texttt{src/bib/references.bib}. Open this file to see how bibliography entries are structured.
-
-A typical bibliography entry looks like this:
-
-\begin{verbatim}    
-@BOOK{Johnson1994,
-  title = {Helicopter theory},
-  publisher = {Dover Publications},
-  year = {1994},
-  author = {Johnson, Wayne},
-  address = {Mineola, NY}
-}
-\end{verbatim}
-
-The entry starts with the document type (\texttt{@article}, \texttt{@book}, \texttt{@inproceedings}, etc.) followed by a citation key (\texttt{Johnson1994}) that you'll use to cite this source in your document.
+\subsection{Gravitational and Buoyancy Forces}
+\subsection{Aerodynamical Forces}
+\subsubsection{Added Mass}
+\subsection{Propulsion Forces}
 
 
-There are two main approaches to building your bibliography:
 
-\subsubsection*{Manual Entry}
-For small bibliographies, you can create entries by hand. This gives you complete control but requires attention to detail. Follow the formats shown in your \texttt{references.bib} file.
+\section{Kalman Filter}
+\nomenclature[A]{KF}{Kalman Filter}
 
-\subsubsection*{Automatic Entry (Recommended)}
-For larger bibliographies, use reference management tools to automatically add entries:
+\subsection{Extended Kalman Filter}
+\nomenclature[A]{EKF}{Extended Kalman Filter}
 
-\begin{itemize}
-    \item \textbf{Reference managers}: Tools like \href{https://www.zotero.org/}{Zotero}, \href{https://www.mendeley.com/}{Mendeley}, or \href{https://endnote.com/}{EndNote} can export collections as BibTeX files.
-    \item \textbf{DOI to BibTeX}: Use websites like \url{https://doi2bib.org} to convert DOIs to BibTeX entries.
-    \item \textbf{CrossRef}: Visit \url{https://www.crossref.org} to look up and export citations.
-\end{itemize}
+\subsection{Unscented Kalman Filter}
+\nomenclature[A]{UKF}{Unscented Kalman Filter}
 
 
-\begin{table}[H]
-    \centering
-    \caption{Common \texttt{biblatex} citation commands}
-    \label{tbl:citation-commands}
-    \begin{tabular}{lll}
-        \toprule
-        \textbf{Command} & \textbf{Example Usage} & \textbf{Result} \\
-        \midrule
-        \texttt{\textbackslash cite\{key\}} & \texttt{\textbackslash cite\{Fichter2009\}} & \cite{Fichter2009} \\
-        \texttt{\textbackslash textcite\{key\}} & \texttt{\textbackslash textcite\{Fichter2009\}} & Textual: \textcite{Fichter2009} \\
-        \texttt{\textbackslash citeauthor\{key\}} & \texttt{\textbackslash citeauthor\{Fichter2009\}} & Only authors: \citeauthor{Fichter2009} \\
-        \texttt{\textbackslash citeyear\{key\}} & \texttt{\textbackslash citeyear\{Fichter2009\}} & Only year: \citeyear{Fichter2009} \\
-        \texttt{\textbackslash cite[42]\{key\}} & \texttt{\textbackslash cite[42]\{Fichter2009\}} & With page number: \cite[42]{Fichter2009} \\
-        \texttt{\textbackslash cite[see][]\{key\}} & \texttt{\textbackslash cite[see][42]\{Fichter2009\}} & With pre/post notes: \cite[see][42]{Fichter2009} \\
-        \texttt{\textbackslash cite\{key1,key2\}} & \texttt{\textbackslash cite\{Fichter2009,Johnson1994\}} & Multiple: \cite{Fichter2009,Johnson1994} \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+\section{Wind Model}
 
+
+To make use of these dynamics an accurate wind model is desired.
+Although the Van Karman Model describes the turbulence spectrum more accurately in most cases this work implements the Dryden Turbulence Model due to its easier implementation.
+  
+
+\subsection{Dryden Turbulence Model}
+The Dryden wind model can be understood as a random walk with memory.
+\todo{Add comparision plot Random walkk and Dryden with appropriate parameter values}. 
+
+In the 1970s the US Army developed methods to specify parameters for the Wind model.
+
+\section{Disturbance Feedforward}
