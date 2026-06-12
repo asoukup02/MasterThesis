@@ -14,7 +14,7 @@ This chapter serves as an overview of existing methods and ...
 
 \section{Aim of this work}
 \label{sec:1.1.Aim}
-The Aim of this work is to implement an algorithm for wind estimation and compensation for an unmanned airship.
+The Aim of this work is to implement an algorithm for wind estimation and compensation for an unmanned airship. The algorithm should be able to reliable estimate wind speeds in conditions relating to real flight scenarios. Those include: Dynamic wind conditions with Wind gusts of max 30 km/h. Trajectories like forward and sideward flight. Rotation on the spot and forward flight while turning. The compensation should effectively minimize the influence of wind on the aircraft in a direct as possible way.
 
 \section{State of the art / Related work}
 \label{sec:1.2.Related}
@@ -24,5 +24,15 @@ The Aim of this work is to implement an algorithm for wind estimation and compen
 The airship was designed and built by roboloon and consists of a elastic hull, which is usually filled with Helium. For maneuvering the airships has one stern propeller at the back, four fins and four impellers integrated in the fins totalling 9 control surfaces making the airship an overactuated system.
 
 A full table showing the specifications of the airship can be found in \ref{tab:airship_specs}
+
+All further work was carried out and evaluated with respect to the Airship squid.
+
+The airship is controlled by a PID controller ...
+The airship is equipped with an IMU, GPS and a 1D pitot tube measuring the airspeed in the body-fixes x axis. This pitot tube yields the restriction of only measuring airspeeds abve 1.5m/s, below this threshold no measurement is available.
+
+
+\section{Simulation Environment / Systematic}
+All algorithms are first implemented in simulation. This simulation poses a model of the airship as derived in Chapter \todo{ref} and an implementation of the PID controller. Additionally uncertainties for the forces are considered.
+After successful validation in the simulation a real world flight test is carried out.
 
 

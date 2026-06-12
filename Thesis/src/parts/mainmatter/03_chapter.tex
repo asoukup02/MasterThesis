@@ -1,8 +1,73 @@
 \chapter{model-based wind estimation and compensation}%
 \label{chap:developed-work}
 
+There exist several estimation methods in control theory. Beginning from simple linear models like the Luenberger Observer etc...
+The idea is to combine the knowledge about the nonlinear airships dynamics, which have been developed in \ref{sec:2.2.AirshipModel} and the wind model into use a state estimation method. Therefore the Kalman Filter proves to be the perfect solution optimally combining dynamics and measurements. \todo{why KF}
+
+
+
+\section{Model}
+First a complete model is required to calculate the state transition function from it. Therefore we augment the six state airship model including any states that have known dynamics and are measured (position + attitude) and the wind states.
+
+State space realization of the wind model. The parameters of the dryden wind model depend on the flight states, so we can easily express them depending on the state.
+Only the computation of W20 and wind direction is not state dependent, so we have to embody estimators for these.
+\todo{estimators (wenn notwendig) nennen, Verweis auf ergebnisse}
+a) konstante schätzwerte erwiesen sich hierfür als ausreichend. Der einfluss von abweichenden angenommenen und tatsächlichen parametern erwies sich als klein
+b) Die Performance der Wind messung hängt stark von den richtigen parameterwerten ab. Daher wurden schätzmethoden eingerichtet um die Parameter zu schätzen.
+
+\subsection{Discretization}
+exact discretization of the wind dynamics, approx of model dynamics
 
 \section{Kalman Filter}
+To get an Kalman Filter running we need a system in the following form
+\begin{itemize}
+	\item discrete state transition function
+	\item discrete measurement function
+	\item Process noise
+	\item Measurement noise
+\end{itemize}
+\todo{write down eq, with f, h, Q, R}
+
+We consider the case of additive process noise, which becomes clear later as we derive the equations.
+
+\subsection{discrete state transition function}
+
+\subsection{discrete measurement function}
+The measurement function directly follows from the sensor equipment on board of the airship
+
 \subsection{Process Noise and Measurement Noise}
-\subsection{Discretization}
+
+we have $Q = [Q_model, Q_wind]$
+uncertainty through unmodeled forces
+uncertainty coming from wind -> discretization of covariance
+
+measurement noise from sensor specifications
+Pitot tube only measurements if $u > 1.5 m/s$. To account for this we implement a time varying measurement noise, setting $R_{pitot tube} \rightarrow \infty$ if airspeed in x-direction is < 1.5.
+To understand why this works lets look at the computation of the kalman gain. R -> infinity simply means that we fully trust our dynamics and basically do not use the measurement.
 \subsubsection{RUKU vs Euler}
+
+\section{Implementation of UKF}
+\section{Implementation of EKF}
+\subsection{Analytical vs Numerical Jacobian}
+
+
+
+\section{Compensation}
+To compensate for the wind influence on the airship a disturbance feedforward controller is implemented. The goal is to extend the controller to
+
+\begin{equation}
+	u = u_{PID} + u_{comp}
+\end{equation}
+
+where $u_{comp}$ compensates for the forces created by the prevailing wind $\Delta F_w$, i.e. fulfilling 
+
+\begin{equation}
+	\Delta F_w = \Delta F_{prop}(u)
+\end{equation}
+
+Looking at the dynamical model of the airship one sees that the wind velocity, which directly influences the airspeed via 
+\begin{equation}
+	V_a = V_b - V_w
+\end{equation}
+
+mainly influences the aerodynamical forces acting on the airship. \todo{EOM}

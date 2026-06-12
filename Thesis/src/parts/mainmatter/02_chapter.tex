@@ -1,15 +1,135 @@
 \chapter{Fundamentals}
 \label{chap:2.Fundamentals}
 
+
+\section{Coordinate Systems}
+\label{sec:2.1.CoordinateSystems}
+
+% Nomenclature
+\nomenclature[D]{$_B(\cdot)$}{Quantity in body-fixed coordinate system}
+\nomenclature[D]{$_E(\cdot)$}{Quantity in Earth coordinate system}
+\nomenclature[A]{CS}{Coordinate System}
+%
+
+For this work two coordinate systems are considered. Firstly the body-fixed coordinate system, which axes align with the body axes according to the North-East-Down (NED) convention. The origin of the body-fixed CS coincides with the Center of Gravity of the Airship.
+
+Secondly the earth coordinate system. For simplicity a flat earth model is assumed. In this coordinate system \todo{why flat earth?}.
+The origin refers to an arbitrary point on the earths' surface and is chosen to be at the inital position of the airship. The Earth CS is inertial, which means \todo{what?}
+\todo{add graphics}
+
+
+
 \section{Airship Model}
+\label{sec:2.2.AirshipModel}
+
+% Nomenclature
+\nomenclature[A]{COG}{Center of Gravity}
+\nomenclature[A]{COV}{Center of Volume}
 \nomenclature[B]{$\boldsymbol{I}$}{Inertia Matrix with respect to the COG}
 \nomenclature[C]{$\omega$}{Angular velocity (\si{\radian\per\second})}
-\nomenclature[D]{$_B(\cdot)$}{Quantity in body-fixed coordinate system}
+\nomenclature[D]{$(\cdot)_B$}{Quantity describing the body}
+%
+
+The airship is modeled using a 6DOF Newton Euler approach. Therefore we assume the airship to be a rigid body with constant mass and model the translational and rotational dynamics accordingly. We want to express the dynamics in body-coordinates, which adds some complexity to the derivatives, as we need to consider rotations, but comes in handy for the computation of acting forces and moments.
+Also important for the implementation of the Kalman Filter, as we have measurements of that state.
+
+%% Translational Dynamics
+The translational dynamics in body-coordinates are given by
+
+\begin{equation}
+	m \, {}_B\mathbf{a}_B = {}_B\mathbf{F}_\text{ext}
+	\label{eq:Euler}
+\end{equation}
+
+where ${}_B\mathbf{a}_B$ describes the acceleration of the airship in body-fixed coordinates and ${}_B\mathbf{F}_\text{ext}$ represents the sum of forces acting on the COG of the airship, described in body coordinates.
+
+To relate the acceleration of the airship ${}_B\mathbf{a}_B$ to its velocity ${}_B\mathbf{v}_B$ we need to consider the rotational velocity of the body-fixed CS w.r.t. the earth CS. Therefore we apply Eulers Transport Theorem to express the translational dynamics as follows
+
+\begin{equation}
+	{}_B\mathbf{a}_B = {}_B \left( \frac{d}{dt}\mathbf{v}_B \right) = {}_{B}\dot{\mathbf{v}}_B + \left({}_{B}\boldsymbol{\omega}_{EB} \times {}_{B}\mathbf{v}_B \right)
+\end{equation} 
+
+whereas ${}_{B}\boldsymbol{\omega}_{EB}$ describes the rotational velocity of the body-fixed CS w.r.t. the Earth CS. As the Earth CS is inertial this simply reduces to the rotational velocity of the airship along its three axes.
+
+\begin{equation}
+	{}_{B}\boldsymbol{\omega}_{EB} = {}_{B}\boldsymbol{\omega}_{B} = \begin{pmatrix}
+		p \\
+		q \\
+		r
+	\end{pmatrix}
+\end{equation} 
+
+Combining these equations in \ref{eq:Euler} yields the following dynamics for the translational motion of the airship in body-fixed coordinates
+
+\begin{equation}
+	m \, {}_{B}\dot{\mathbf{v}}_B = - m \, \left({}_{B}\boldsymbol{\omega}_{B} \times {}_{B}\mathbf{v}_B \right) + {}_B\mathbf{F}_\text{ext}
+	\label{eq:TranslationalDynamics}
+\end{equation}
+%
+
+
+% Rotational Dynamics
+The rotational dynamics
+\todo{Add rotational Dynamics}
+
+\begin{equation}
+	todo
+	\label{eq:RotationalDynamics}
+\end{equation}
+
+%
+
+We can combine the translational dynamics \ref{eq:TranslationalDynamics} and the rotational dynamics \ref{eq:RotationalDynamics} into one equation
+
+\begin{equation}
+	M \, V = matrix
+	\label{eq:Dynamics}
+\end{equation}
+
+where $M = todo$ and $V = todo$. 
+To complete the model we are left to model the acting Forces and Moments. By doing so we add the desired complexity to our assumed rigid body with constant mass, resulting in a way more complex body like an airship is one. The quality of the airship model depends heavily on the precise modeling of the acting forces. Any unmodeled Forces and Moments will lead to an error in the model. As it is impossible to capture all Forces and Moments we will later in our design have to consider these uncertainties.
+
+The Forces and Moments acting on the airship can be classified into four categories: Gravitational, Buoyancy, Aerodynamical and Propulsion. 
+\begin{equation}
+	{}_B\mathbf{F}_\text{ext} = F_G + F_B + F_{\text{aero}} + F_{\text{prop}}
+\end{equation}
+Their individual contribution to the total force and moment is derived in the following. 
 
 \subsection{Gravitational and Buoyancy Forces}
 \subsection{Aerodynamical Forces}
+As stated in \todo{CITE}The aerodynamical forces can be further divided upon. As the aim is to achieve an as exact as possible modeling of the airship.
+\subsubsection{Drag}
 \subsubsection{Added Mass}
+\subsubsection{Viscous Effects}
+\subsubsection{Fins}
+
 \subsection{Propulsion Forces}
+To be able to compute the Propulsion Components we need to incorporate a Motor Model.
+
+
+
+\section{Wind Model}
+
+
+To make use of these dynamics an accurate wind model is desired.
+Although the Van Karman Model describes the turbulence spectrum more accurately in most cases this work implements the Dryden Turbulence Model due to its easier implementation. As it results in a linear model. Van Karman is not realizable.
+  
+
+\subsection{Dryden Turbulence Model}
+The Dryden wind model can be understood as a random walk with memory.
+\todo{Add comparision plot Random walk and Dryden with appropriate parameter values}. 
+Inputs of the Dryden wind model is white noise.
+State transition functions
+
+\subsubsection{Parameters}
+The Dryden Model is specified by the following parameters, W20, wind direction and L and sigmas.
+In the 1970s the US Army developed methods to specify parameters for the Wind model. Therefore we can directly relate the L and sigmas to the current flight state according to following equations:
+
+
+as W20 and wind direction are fully determined by the wind environment these cannot be easily related to the current flight status. 
+
+
+
 
 
 
@@ -22,18 +142,5 @@
 \subsection{Unscented Kalman Filter}
 \nomenclature[A]{UKF}{Unscented Kalman Filter}
 
-
-\section{Wind Model}
-
-
-To make use of these dynamics an accurate wind model is desired.
-Although the Van Karman Model describes the turbulence spectrum more accurately in most cases this work implements the Dryden Turbulence Model due to its easier implementation.
-  
-
-\subsection{Dryden Turbulence Model}
-The Dryden wind model can be understood as a random walk with memory.
-\todo{Add comparision plot Random walkk and Dryden with appropriate parameter values}. 
-
-In the 1970s the US Army developed methods to specify parameters for the Wind model.
 
 \section{Disturbance Feedforward}

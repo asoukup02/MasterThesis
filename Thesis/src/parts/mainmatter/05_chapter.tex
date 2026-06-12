@@ -1,4 +1,25 @@
 \chapter{Evaluation and results}
 
-further work:
-- 
+First the Performance of the Wind estimation algorithm is assessed in simulation. Later the combination of wind estimation and compensation is compared to the flight envelope without compensation.
+To evaluate the performance of the Estimation and compensation following flight scenarios are considered
+
+\begin{itemize}
+	\item Forward Flight
+	\begin{itemize}
+		\item constant velocity
+		\item acceleration
+	\end{itemize}
+	\item Sideway Flight
+		\begin{itemize}
+		\item constant velocity
+		\item acceleration
+	\end{itemize}
+	\item Pure rotation areound the yaw axis
+	\item turn while flying forward (Vorgabe von Vorwärtsgeschwindigkeit und Drehgeschwindigkeit)
+\end{itemize}
+
+\section{Sensitivity to wind parameters}
+The wind parameters W20 and wind direction cannot be measured or computed directly from the states and thus need to be estimated. In the following the sensitivity to the correct parameter is assessed.
+\todo{Table: real windspeed vs. assumed windspeed RMSE comparision, one plot maybe}
+
+\section{Flight Test}
