@@ -18,8 +18,167 @@ To evaluate the performance of the Estimation and compensation following flight 
 	\item turn while flying forward (Vorgabe von Vorwärtsgeschwindigkeit und Drehgeschwindigkeit)
 \end{itemize}
 
-\section{Sensitivity to wind parameters}
+\section{Wind estimation}
+Following the wind estimation performance is analyzed.
+First of all we need to find a W20 parameter. We choose W20 = 5, which is justified in the section \todo{ref}.
+
+Result: Good wind estimation....
+
+\subsection{Sensitivity to wind parameters}
 The wind parameters W20 and wind direction cannot be measured or computed directly from the states and thus need to be estimated. In the following the sensitivity to the correct parameter is assessed.
-\todo{Table: real windspeed vs. assumed windspeed RMSE comparision, one plot maybe}
+Therefore multiple tests are carried out. 
+
+First a constant parameter value for W20 was specified, creating the actual wind turbulences in the simulation. The wind estimation performance was assessed for varying estimated W20, reaching from W20 = 0 up to W20 = 30 km/h. For each estimated W20 parameter value 27 wind scenarios are run. In each wind scenario the constant wind, as well as the random seed creating the turbulences, were varied resulting in unique wind conditions for each test.
+For each test the RMSE between the estimated wind and actual wind are computed individually and the average RMSE along all three axis is computed.
+Then the results are averaged among all 27 wind scenarios.
+The results are shown in Table \ref{fig:W20_Barchart} and lead to the following conclusions. 
+
+\begin{figure}[h!]
+	
+	\centering
+	
+	\definecolor{barblue}{RGB}{55,138,221}
+	\definecolor{barmatch}{RGB}{216,90,48}
+	
+	\pgfplotsset{
+		rmse bar/.style={
+			ybar,
+			bar width=14pt,
+			width=\textwidth,
+			height=5cm,
+			enlarge x limits=0.1,
+			xlabel={$W20_{\text{est}}$},
+			ylabel={RMSE Total},
+			ymin=0,
+			ymax=1.6,
+			xtick={0,1,2,3,4,5,6,7},
+			xticklabels={0, 1.6, 3.3, 5, 6.6, 8.3, 10, 15},
+			xticklabel style={font=\small},
+			yticklabel style={font=\small},
+			xlabel style={font=\small},
+			ylabel style={font=\small},
+			ymajorgrids=true,
+			bar shift=0pt,
+			grid style={gray!20}
+		}
+	}
+	
+	% ----- W20_est = 0  (match at index 0) -----
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[rmse bar, title={$W20_{\text{act}}=0$}]
+				% all bars blue
+				\addplot[fill=barblue] coordinates {
+					(0,0.8889)(1,0.2964)(2,0.2599)(3,0.2193)(4,0.2487)(5,0.2388)(6,0.2338)(7,0.2227)
+				};
+				% overdraw match bar in orange
+				\addplot[fill=barmatch] coordinates { (0,0.8889) };
+			\end{axis}
+		\end{tikzpicture}
+	\end{subfigure}
+	\hfill
+	% ----- W20_est = 1.6  (match at index 1) -----
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[rmse bar, title={$W20_{\text{act}}=1.6$}]
+				\addplot[fill=barblue] coordinates {
+					(0,0.9617)(1,0.3323)(2,0.2663)(3,0.2357)(4,0.2585)(5,0.2519)(6,0.2479)(7,0.2434)
+				};
+				\addplot[fill=barmatch] coordinates { (1,0.3323) };
+			\end{axis}
+		\end{tikzpicture}
+	\end{subfigure}
+	
+	\vspace{1em}
+	
+	% ----- W20_est = 5  (match at index 3) -----
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[rmse bar, title={$W20_{\text{act}}=5$}]
+				\addplot[fill=barblue] coordinates {
+					(0,1.2059)(1,0.5220)(2,0.4277)(3,0.3801)(4,0.3966)(5,0.3868)(6,0.3716)(7,0.3662)
+				};
+				\addplot[fill=barmatch] coordinates { (3,0.3801) };
+			\end{axis}
+		\end{tikzpicture}
+	\end{subfigure}
+	\hfill
+	% ----- W20_est = 8.3  (match at index 5) -----
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[rmse bar, title={$W20_{\text{act}}=8.3$}]
+				\addplot[fill=barblue] coordinates {
+					(0,1.4843)(1,0.8910)(2,0.7633)(3,0.7158)(4,0.7111)(5,0.6595)(6,0.6362)(7,0.6059)
+				};
+				\addplot[fill=barmatch] coordinates { (5,0.6595) };
+			\end{axis}
+		\end{tikzpicture}
+	\end{subfigure}
+	
+	\caption{Comparison of Total RMSE Across All Estimated $W20$ Wind Speeds. The orange bar highlights the true configuration scenario where $W20_{\text{est}} = W20_{\text{act}}$.}
+	\label{fig:W20_Barchart}
+\end{figure}
+
+a) Even for constant wind $W20_{\text{act}} = 0$, an estimate of $W20_{\text{est}} = 0$ leads to bad results. This can be explained when looking at the computation of the Wind Process noise, for $W20_{\text{est}} = 0$, this results in qwind = 0 \todo{proof}, thus not allowing the wind estimate to change at all. So the initial guess will be kept forever? \todo{really? or just for constant wind = 0} deviation, due to the nonperfect modelling and uncertainties in place. (For perfect modelling this deviation would be zero)
+b) matching W20 do not always imply best performance. Reason herefore are errors in modelling and bigger W20 more flexibility to adapt.
+So why not chosing W20 = 15 for all?
+Now look at plots showing differences and oscillations.
+
+
+
+The results indicate that a despite the real W20 parameter an estimated W20 = 10 yields good results for all real wind conditions created by varying W20. This can be explained as follows: a bigger W20 estimated increases the Process noise, thus giving the wind states more freedom to react to fast changing wind gusts. This comes at a cost which is a more noisy estimation of the wind. W20 estimated = 10 seems to offer a good tradeoff although bigger values may lead to an even lower RMSE. And bigger W20 leads to bigger qwind, this may have bad side-effects.
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{src/pics/W20_comparision.pdf}
+	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
+	\label{fig:my_figure}
+\end{figure}
+
+
+%\begin{table}[ht]
+%	\centering
+%	\begin{tabular}{ccclllll}
+%		\toprule
+%		$W_{20,\text{est}}$ & $W_{20,\text{act}}$ & Case &
+%		$\overline{\text{RMSE}}_{e_1}$ & $\overline{\text{RMSE}}_{e_2}$ &
+%		$\overline{\text{RMSE}}_{e_3}$ & $\overline{\text{RMSE}}_{\text{total}}$ \\
+%		\midrule
+%		\multirow{2}{*}{0.0}   & 0.0  & match & 1.6667 & 0.6667 & 0.3333 & 0.8889 \\
+%		& 15.0 & best  & 0.3844 & 0.1603 & 0.1233 & 0.2227 \\
+%		\addlinespace
+%		\multirow{2}{*}{1.6}   & 1.6  & match & 0.5006 & 0.2634 & 0.2329 & 0.3323 \\
+%		& 15.0 & best  & 0.3918 & 0.1885 & 0.1501 & 0.2434 \\
+%		\addlinespace
+%		\multirow{2}{*}{5.0}   & 5.0  & match & 0.4597 & 0.3414 & 0.3393 & 0.3801 \\
+%		& 15.0 & best  & 0.4599 & 0.3292 & 0.3094 & 0.3662 \\
+%		\addlinespace
+%		\multirow{2}{*}{8.3}   & 8.3  & match & 0.7350 & 0.6243 & 0.6192 & 0.6595 \\
+%		& 15.0 & best  & 0.6801 & 0.5593 & 0.5784 & 0.6059 \\
+%		\bottomrule
+%		
+%	\end{tabular}
+%		\caption{Mean RMSE of wind estimation error signals per $(W_{20,\text{est}},\, W_{20,\text{act}})$ pair.
+%		For each $W_{20,\text{est}}$ the matching case ($W_{20,\text{act}} = W_{20,\text{est}}$)
+%		and the case yielding the lowest overall RMSE are shown.}
+%	\label{tab:rmse_w20}
+%\end{table}
+
+% W20 comparision
+
+
+\section{Wind compensation}
+The wind compensation is heavily dependant on the quality of the wind estimation.
+
+\subsection{Problems with Observability}
+Due to the lack of sensory equipment to measure airspeed the wind estimation depends heavily on the effect of the aerodynamic forces on the airship to estimate the wind velocities. Because only the aerodynamic Forces are directly dependent on the airspeed and thus on the wind velocity. The Compensation uses the current wind estimate to compute the estimation and thus requires a good estimation of wind. Exactly there lies the problem, if the compensation fully compensates for the effect of wind on the airship, the wind estimation quality automatically decreases, leading to a poor estimation and so on. 
+To break up this cycle we need to guarantee that the information about the effect of the wind is not fully lost. To achieve this a gain, manipulating the output of the compensation is introduced. This gain in range 0 to 1 determines how aggressively the wind compensation works and balances the wind compensation with the wind estimation.   
+
+
 
 \section{Flight Test}

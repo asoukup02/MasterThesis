@@ -47,27 +47,75 @@ To understand why this works lets look at the computation of the kalman gain. R 
 \subsubsection{RUKU vs Euler}
 
 \section{Implementation of UKF}
+The UKF obeys 3 Parameters, which mainly influence the spread of the sigma points.
+Parameters are set to beta = 2, kappa = 0 \todo{papers}. The optimal value for alpha is determined by an optimization run.
 \section{Implementation of EKF}
 \subsection{Analytical vs Numerical Jacobian}
+\subsection{Robustify EKF}
+The EKF is not as robust as the UKF due to several reasons \todo{...}. Robustness is a important desired property of the wind estimation algorithm for the specific use case in this thesis, which is to use it for an wind compensation algorithm. Thus to further improve the robustness an Joseph Form computation of the updated covariance is implemented.
 
 
 
 \section{Compensation}
-To compensate for the wind influence on the airship a disturbance feedforward controller is implemented. The goal is to extend the controller to
+Two approaches are implemented and compared to compensate for the effect of wind. A nonlinear Disturbance Feedforward and NDI.
+The basic idea of either approach is to extend the current PID control with an compensation term as
 
 \begin{equation}
 	u = u_{PID} + u_{comp}
 \end{equation}
 
-where $u_{comp}$ compensates for the forces created by the prevailing wind $\Delta F_w$, i.e. fulfilling 
+to achieve a partial or full compensation of the wind forces or total forces with $u_{comp}$ and a setpoint tracking behaviour via $u_{PID}$ for the remaining dynamics.
 
-\begin{equation}
-	\Delta F_w = \Delta F_{prop}(u)
-\end{equation}
+To achieve the fastest possible compensation we compute the compensation directly at an Force level. Adding them up with the desired forces from the PID yields the total desired forces. The allocator turns these desired forces into an control command for the individual motors.
 
-Looking at the dynamical model of the airship one sees that the wind velocity, which directly influences the airspeed via 
+\subsection{Disturbance Feedforward}
+The Disturbance Feedforward compensates for the wind induced forces and moments. This means $u_{comp}$ compensates for the additional forces and Moments created by the prevailing wind.
+Looking at the dynamics one can see that wind affects our airship only via the aerodynamical forces, as they depend on the airspeed Va which is
+
 \begin{equation}
 	V_a = V_b - V_w
 \end{equation}
 
-mainly influences the aerodynamical forces acting on the airship. \todo{EOM}
+\todo{add dynamics, what is Faero and Fprop?}
+Fprop describes the propulsion force that is achieved by a command u. Faero is the aerodynamical force. In general Faero and Fprop describe nonlinear functions mapping u and Va to Forces.
+
+\todo{combine Forces and Moments into one vector and name it appropriate.}
+
+The Disturbance Feedforward task is to find $u_{comp}$ s.t.
+\begin{equation}
+	F_{\text{aero}}(V_A) + F_{\text{prop}}(u + u_c)
+	=
+	F_{\text{aero}}(V_B) + F_{\text{prop}}(u)
+\end{equation}
+
+To further understand what this means lets look how this unfolds assuming a linear system.
+
+\begin{align}
+	F(V_A) + F_{\text{prop}}(u + u_c)
+	&= F(V_B) - F(V_w) + F_{\text{prop}}(u) + F_{\text{prop}}(u_c) \\
+	&= F(V_B) + F_{\text{prop}}(u), \\
+	\Rightarrow\quad
+	F_{\text{prop}}(u_c)
+	&= F(V_w)
+\end{align}
+
+in this case F(vw) simply describes the additional forces induced by wind. 
+For nonlinear systems its more complicated.
+
+
+\subsection{NDI}
+As second approach a Nonlinear Dynamic Inversion (NDI) controller is implemented. The idea behind the NDI is to fully compensate the Forces acting on the Airship, basically inverting the dynamics. 
+
+\begin{equation}
+	todo
+\end{equation}
+
+Tuning of these approaches works differently. For normal PID tuning disturbances were considered also, which makes the PID hard to tune.
+
+For Compensation the PID was tuned on the undisturbed model (no wind), easier tuning. The results of the compensation were also tested for the PID parameters found before.
+Problem: tuned without wind doesnt represent the truth as the effect of the wind cannot be fully compensated due to the uncertainties in place and the convergence rate of the KF.
+
+For NDi the model was tuned on the unforced model (so total forces were set to zero)
+
+Given perfect measurements and wind estimate the NDI achieves perfect compensation of all acting forces.
+
