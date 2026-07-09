@@ -25,6 +25,7 @@ First of all we need to find a W20 parameter. We choose W20 = 5, which is justif
 Result: Good wind estimation....
 
 \subsection{Sensitivity to wind parameters}
+
 The wind parameters W20 and wind direction cannot be measured or computed directly from the states and thus need to be estimated. In the following the sensitivity to the correct parameter is assessed.
 Therefore multiple tests are carried out. 
 
@@ -172,9 +173,17 @@ The results indicate that a despite the real W20 parameter an estimated W20 = 10
 % W20 comparision
 
 
+\subsection{Effect of Airspeed Sensor}
+The Airship is equipped with an 1-D airspeed sensor. Its interesting to know how the wind estimation changes if no airspeed sensor is in place, to quantify the importance of the AS.
+
 \section{Wind compensation}
 The wind compensation is heavily dependant on the quality of the wind estimation.
 
+Setting:
+
+Results
+
+While theoretically the compensation should allow for a more aggressive PID as the disturbance should compensate the wind disturbance this does not hold up in the results presented. Reason therefore is errors in wind estimation, convergence rates of the KF, maybe even delay of one time step, general uncertainty in the model (uncertain forces etc)
 \subsection{Problems with Observability}
 Due to the lack of sensory equipment to measure airspeed the wind estimation depends heavily on the effect of the aerodynamic forces on the airship to estimate the wind velocities. Because only the aerodynamic Forces are directly dependent on the airspeed and thus on the wind velocity. The Compensation uses the current wind estimate to compute the estimation and thus requires a good estimation of wind. Exactly there lies the problem, if the compensation fully compensates for the effect of wind on the airship, the wind estimation quality automatically decreases, leading to a poor estimation and so on. 
 To break up this cycle we need to guarantee that the information about the effect of the wind is not fully lost. To achieve this a gain, manipulating the output of the compensation is introduced. This gain in range 0 to 1 determines how aggressively the wind compensation works and balances the wind compensation with the wind estimation.   
