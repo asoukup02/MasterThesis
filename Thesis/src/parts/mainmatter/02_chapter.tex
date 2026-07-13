@@ -1,6 +1,6 @@
 \chapter{Fundamentals}
 \label{chap:2.Fundamentals}
-
+This chapter ...
 
 \section{Coordinate Systems}
 \label{sec:2.1.CoordinateSystems}
@@ -10,58 +10,100 @@
 \nomenclature[D]{$_E(\cdot)$}{Quantity in Earth coordinate system}
 \nomenclature[A]{CS}{Coordinate System}
 \nomenclature[A]{NED}{North-East-Down convention}
+\nomenclature[A]{COG}{Center of Gravity}
 
 %
 
-For this work two coordinate systems are considered. Firstly the body-fixed coordinate system, which axes align with the body axes according to the North-East-Down (NED) convention. The origin of the body-fixed CS coincides with the Center of Gravity of the Airship.
+To describe the motion and dynamics of the airship, as well as the wind velocity acting on the vehicle, two coordinate systems (CS) are considered throughout this work: the body-fixed coordinate system and the earth-fixed coordinate system. Their definitions and the corresponding coordinate transformations are introduced in the following \cite{Fichter2009Flugmechanik}.
 
-Secondly the earth coordinate system. For simplicity a flat earth model is assumed. In this coordinate system \todo{why flat earth?}.
-The origin refers to an arbitrary point on the earths' surface and is chosen to be at the inital position of the airship. The Earth CS is inertial, which means \todo{what?}
-\todo{add graphics}
 
-\todo{add transformation matrix}
+\subsection{Body-Fixed Coordinate System}
+
+The body-fixed coordinate system $B$ is attached to the airship and therefore translates and rotates together with the vehicle.
+Its origin is located at the Center of Gravity (COG) of the airship, and the coordinate axes are aligned with the body axes according to the North-East-Down (NED) convention.
+Consequently, the $x_B$-axis points towards the nose of the airship, the $y_B$-axis points towards the right side, and the $z_B$-axis points downwards.
+
+The body-fixed coordinate system is used to describe quantities directly related to the vehicle dynamics, such as translational and rotational velocities, aerodynamic forces, propulsion forces, and moments. Since the equations of motion are formulated in the body-fixed frame, this coordinate system represents the primary reference frame for the dynamic model. A quantity expressed in the body-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_B(\cdot)$.
+
+
+\subsection{Earth-Fixed Coordinate System}
+
+The earth-fixed coordinate system $E$ is introduced as an inertial reference frame for describing the position and orientation of the airship, as well as the wind velocity. For simplicity, a flat-earth assumption is made, which neglects the curvature and rotation of the Earth. This assumption is justified by the relatively short flight distances considered in this work.
+
+The origin of the earth-fixed coordinate system is chosen as an arbitrary point on the Earth's surface. The axes are aligned according to the NED convention, where the north and east axes span the horizontal plane and the down axis points towards the Earth's center. Since the earth-fixed coordinate system is assumed to be inertial, it is considered non-accelerating and non-rotating. A quantity expressed in the earth-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_E(\cdot)$.
+
+The transformation from the earth-fixed coordinate system to the body-fixed coordinate system is described by the rotation matrix \cite{Fossen2021Handbook}
+
+\begin{equation}
+	\bm{R}_{BE}
+	=
+	\begin{bmatrix}
+		c_{\psi}c_{\theta}
+		&
+		s_{\psi}c_{\theta}
+		&
+		-s_{\theta}
+		\\
+		c_{\psi}s_{\theta}s_{\phi}-s_{\psi}c_{\phi}
+		&
+		s_{\psi}s_{\theta}s_{\phi}+c_{\psi}c_{\phi}
+		&
+		c_{\theta}s_{\phi}
+		\\
+		c_{\psi}s_{\theta}c_{\phi}+s_{\psi}s_{\phi}
+		&
+		s_{\psi}s_{\theta}c_{\phi}-c_{\psi}s_{\phi}
+		&
+		c_{\theta}c_{\phi}
+	\end{bmatrix},
+\end{equation}
+
+which maps vectors expressed in the earth-fixed coordinate system into the body-fixed coordinate system, where $s_{(\cdot)}$ and $c_{(\cdot)}$, denote $\sin(\cdot)$ and $\cos(\cdot)$.
+
+The inverse transformation is given by the transpose of the rotation matrix
+
+\begin{equation}
+	\bm{R}_{EB}
+	=
+	\left( \bm{R}_{BE} \right)^T.
+\end{equation}
+
+\begin{figure}[h]
+	\centering
+	% TODO: Add coordinate system illustration
+	\caption{Definition of the earth-fixed and body-fixed coordinate systems.}
+	\label{fig:coordinate_systems}
+\end{figure}
 
 
 
 \section{Airship Model}
 \label{sec:2.2.AirshipModel}
 % Nomenclature
-\nomenclature[A]{COG}{Center of Gravity}
 \nomenclature[A]{COV}{Center of Volume}
-\nomenclature[B]{$\\bm{I}$}{Inertia Matrix with respect to the COG}
+\nomenclature[B]{$\bm{I}$}{Inertia Matrix with respect to the COG}
 \nomenclature[C]{$\omega$}{Angular velocity (\si{\radian\per\second})}
 \nomenclature[D]{$(\cdot)_B$}{Quantity describing the body}
 %
 
-The airship is modeled using a six degree-of-freedom (6DOF) Newton Euler approach. Therefore we assume the airship to be a rigid body with constant mass and model the translational and rotational dynamics accordingly. We express the equations of motion in body-coordinates, allowing for a constant inertia matrix.
-Unless stated otherwise, all quantities are expressed in the body-fixed coordinate frame, and all forces and moments are assumed to act at the center of gravity (COG). The corresponding frame identifier $(\cdot)$ and point-of-application identifier $(\cdot)^\text{COG}$ are omitted throughout the remainder of this section for improved readability.
+The airship is modeled using a six degree-of-freedom (6DOF) Newton Euler approach \cite{Fossen2021Handbook}. Therefore we assume the airship to be a rigid body with constant mass and model the translational and rotational dynamics accordingly. We express the equations of motion in body-coordinates, allowing for a constant inertia matrix.
+Unless stated otherwise, all quantities are expressed in the body-fixed coordinate frame, and all forces and moments are assumed to act at the center of gravity (COG). The corresponding frame identifier ${}_B(\cdot)$ and point-of-application identifier $(\cdot)^\mathrm{COG}$ are omitted throughout the remainder of this section for improved readability.
 
 %% Translational Dynamics
 The three-dimensional \textbf{translational dynamics} in body-coordinates are given by the linear momentum theorem as
 
-\begin{equation}
-	\begin{bmatrix}
-		m & 0 & 0 \\
-		0 & m & 0 \\
-		0 & 0 & m
-	\end{bmatrix}
-	 \, \bm{a}_B 
-	 = 
-	 \bm{F}_\text{ext},
-	\label{eq:Impulssatz}
-\end{equation}
 
 \begin{equation}
 	m\bm{I}_{3\times3} \, \bm{a}_B 
 	= 
-	\bm{F}_\text{ext},
+	\bm{F}_\mathrm{ext},
 	\label{eq:Impulssatz}
 \end{equation}
 
+where $m$ denotes the mass of the airship, $\bm{I}_{3\times3} \in\mathbb{R}^{3\times3}$ denotes the identity matrix, $\bm{a}_B \in \mathbb{R}^3$ describes the acceleration of the body (airship) in body-fixed coordinates and $\bm{F}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external force acting at the center of gravity (COG), expressed in body-fixed coordinates. 
+%The subscript $(\cdot)_B$ emphasizes the quantity of the body w.r.t the earth frame.
 
-where $m$ denotes the mass of the airship, $\bm{I}_{3\times3} \in\mathbb{R}^{3\times3}$ denotes the identity matrix, $\bm{a}_B \in \mathbb{R}^3$ describes the acceleration of the airship in body-fixed coordinates and $\bm{F}_\text{ext} \in \mathbb{R}^3$ represents the resultant external force acting at the center of gravity (COG), expressed in body-fixed coordinates.
-
-To relate the body-fixed acceleration $\bm{a}_B$ to the body-fixed velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying Euler's transport theorem yields
+To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying Euler's transport theorem yields
 
 \begin{equation}
 	\bm{a}_B 
@@ -70,44 +112,34 @@ To relate the body-fixed acceleration $\bm{a}_B$ to the body-fixed velocity $\bm
 	= 
 	\dot{\bm{v}}_B + \left(\bm{\omega}_{EB} \times \bm{v}_B \right) 
 	= 
-	\dot{\bm{v}}_B + \bm{a}_\text{cor},
+	\dot{\bm{v}}_B + \bm{a}_\mathrm{cor},
 	\label{eq:TransportTheorem}
 \end{equation} 
 
-where $\bm{a}_{\text{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the Earth CS. As the Earth CS is inertial this reduces to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
+where $\bm{a}_{\mathrm{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the Earth CS. As the Earth CS is inertial this reduces to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
 %\begin{equation}
-%	\bm{\omega}_{EB} = \bm{\omega}_{B} = \begin{pmatrix}
+%	\bm{\omega}_{EB} = \bm{\omega}_{B} = \begin{bmatrix}
 %		p \\
 %		q \\
 %		r
-%	\end{pmatrix}
+%	\end{bmatrix}
 %	\label{eq:Angular_Velocity}
 %\end{equation} 
-Inserting equation \eqref{eq:TransportTheorem} in \eqref{eq:Impulssatz} and defining the Coriolis force as 
+Inserting equation~\eqref{eq:TransportTheorem} in equation~\eqref{eq:Impulssatz} and defining the Coriolis force as 
 
 \begin{equation}
-	\bm{F}_\text{cor}
+	\bm{F}_\mathrm{cor}
 	= 
-	\begin{bmatrix}
-		m & 0 & 0 \\
-		0 & m & 0 \\
-		0 & 0 & m
-	\end{bmatrix}
-	\, \bm{a}_\text{cor}
+	m\bm{I}_{3\times3}	\, \bm{a}_\mathrm{cor},
 	\label{eq:CoriolisForce}
 \end{equation}
 
 yields the dynamics for the translational motion of the airship in body-fixed coordinates
 
 \begin{equation}
-	\begin{bmatrix}
-		m & 0 & 0 \\
-		0 & m & 0 \\
-		0 & 0 & m
-	\end{bmatrix} 
-	\, \dot{\bm{v}}_B 
+	m\bm{I}_{3\times3} \, \dot{\bm{v}}_B 
 	= 
-	\bm{F}_\text{ext} - \bm{F}_\text{cor}.
+	\bm{F}_\mathrm{ext} - \bm{F}_\mathrm{cor}.
 	\label{eq:TranslationalDynamics}
 \end{equation}
 %
@@ -119,11 +151,11 @@ The three-dimensional \textbf{rotational dynamics} in body-fixed coordinates are
 \begin{equation}
 	 \left( \frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right) \right)	
 	= 
-	\bm{M}_\text{ext},
+	\bm{M}_\mathrm{ext},
 	\label{eq:Drallsatz}
 \end{equation}
 
-where $\bm{I}_B \in \mathbb{R}^{3 \times 3}$ denotes the inertia matrix of the airship expressed in body-fixed coordinates and $\bm{M}_\text{ext} \in \mathbb{R}^3$ represents the resultant external moment acting about the center of gravity (COG), expressed in body-fixed coordinates.
+where $\bm{I}_B \in \mathbb{R}^{3 \times 3}$ denotes the inertia matrix of the airship expressed in body-fixed coordinates and $\bm{M}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external moment acting about the center of gravity (COG), expressed in body-fixed coordinates.
 
 To relate the change of angular momentum to the angular acceleration of the airship, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be considered. Applying Euler's transport theorem to the angular momentum vector yields
 
@@ -139,30 +171,30 @@ where the second term represents the gyroscopic acceleration caused by the rotat
 Defining the gyroscopic moment as
 
 \begin{equation}
-	\bm{M}_\text{gyro}
+	\bm{M}_\mathrm{gyro}
 	=
 	\left( \bm{\omega}_B \times \bm{I}_B \, \bm{\omega}_B \right)
 	\label{eq:GyroscopicMoment}
 \end{equation}
 
-and rearranging equation \eqref{eq:Drallsatz} yields the rotational dynamics of the airship in body-fixed coordinates
+and rearranging equation~\eqref{eq:Drallsatz} yields the rotational dynamics of the airship in body-fixed coordinates
 
 \begin{equation}
 	\bm{I}_B \, \dot{\bm{\omega}}_B
 	=
-	\bm{M}_\text{ext} - \bm{M}_\text{gyro}.
+	\bm{M}_\mathrm{ext} - \bm{M}_\mathrm{gyro}.
 	\label{eq:RotationalDynamics}
 \end{equation}
 
 
-We can combine the translational dynamics \eqref{eq:TranslationalDynamics} and the rotational dynamics \eqref{eq:RotationalDynamics} into one equation obtaining the Newton Euler Equations for the airship.
+We can combine the translational dynamics~\eqref{eq:TranslationalDynamics} and the rotational dynamics~\eqref{eq:RotationalDynamics} into one equation obtaining the Newton Euler Equations for the airship.
 
 \begin{equation}
 	\bm{M}\dot{\bm{\nu}}
 	=
-	\bm{\mathcal{F}}_\text{ext}
+	\bm{\mathcal{F}}_\mathrm{ext}
 	-
-	\bm{\mathcal{F}}_\text{cor}
+	\bm{\mathcal{F}}_\mathrm{cor}
 	\label{eq:EOMShort}
 \end{equation}
 
@@ -171,17 +203,17 @@ with the generalized velocity vector $\bm{\nu}$ and mass matrix $\bm{M}$ defined
 \begin{equation}
 	\bm{\nu}
 	=
-	\begin{pmatrix}
+	\begin{bmatrix}
 		\bm{v}_B\\ \bm{\omega}_B
-	\end{pmatrix}
+	\end{bmatrix}
 	\in\mathbb{R}^6,
 	\qquad
 	\bm{M}
 	=
-	\begin{pmatrix}
+	\begin{bmatrix}
 		m\bm{I}_{3\times3} & \bm{0}_{3\times3}\\
 		\bm{0}_{3\times3} & \bm{I}_B
-	\end{pmatrix}
+	\end{bmatrix}
 	\in\mathbb{R}^{6\times6}.
 	\label{eq:VelocityAndMassMatrix}
 \end{equation}
@@ -189,17 +221,17 @@ with the generalized velocity vector $\bm{\nu}$ and mass matrix $\bm{M}$ defined
 The generalized external and Coriolis force vectors are defined as
 
 \begin{equation}
-	\bm{\mathcal{F}}_\text{ext}
+	\bm{\mathcal{F}}_\mathrm{ext}
 	=
-	\begin{pmatrix}
-		\bm{F}_\text{ext}\\ \bm{M}_\text{ext}
-	\end{pmatrix} \in\mathbb{R}^{6},
+	\begin{bmatrix}
+		\bm{F}_\mathrm{ext}\\ \bm{M}_\mathrm{ext}
+	\end{bmatrix} \in\mathbb{R}^{6},
 	\qquad
-	\bm{\mathcal{F}}_\text{cor}
+	\bm{\mathcal{F}}_\mathrm{cor}
 	=
-	\begin{pmatrix}
-		\bm{F}_\text{cor}\\ \bm{M}_\text{cor}
-	\end{pmatrix} \in \mathbb{R}^{6}.
+	\begin{bmatrix}
+		\bm{F}_\mathrm{cor}\\ \bm{M}_\mathrm{cor}
+	\end{bmatrix} \in \mathbb{R}^{6}.
 	\label{eq:ExternalForces}
 \end{equation}
 
@@ -211,7 +243,7 @@ These uncertainties are not explicitly modeled within the presented equations of
 The external forces and moments acting on the airship are divided into four main categories: gravitational, buoyancy, aerodynamic, and propulsion.
 
 \begin{equation}
-	\bm{\mathcal{F}}_\text{ext} = \bm{\mathcal{F}}_\text{g} + \bm{\mathcal{F}}_\text{b} + \bm{\mathcal{F}}_\text{aero} + \bm{\mathcal{F}}_\text{prop},
+	\bm{\mathcal{F}}_\mathrm{ext} = \bm{\mathcal{F}}_\mathrm{grav} + \bm{\mathcal{F}}_\mathrm{buoy} + \bm{\mathcal{F}}_\mathrm{aero} + \bm{\mathcal{F}}_\mathrm{prop},
 \end{equation}
 
 resulting in the final EOM
@@ -219,8 +251,8 @@ resulting in the final EOM
 \begin{equation}
 	\bm{M}\dot{\bm{\nu}}
 	=
-	\bm{\mathcal{F}}_\text{g} + \bm{\mathcal{F}}_\text{b} + \bm{\mathcal{F}}_\text{aero} + \bm{\mathcal{F}}_\text{prop}
-	- \bm{\mathcal{F}}_\text{cor}.
+	\bm{\mathcal{F}}_\mathrm{grav} + \bm{\mathcal{F}}_\mathrm{buoy} + \bm{\mathcal{F}}_\mathrm{aero} + \bm{\mathcal{F}}_\mathrm{prop}
+	- \bm{\mathcal{F}}_\mathrm{cor}.
 	\label{eq:EOM}
 \end{equation}
 
@@ -230,99 +262,388 @@ The generalized external forces are derived in the following.
 The gravitational force computes to
 
 \begin{equation}
-	\bm{F}_\text{g} 
+	\bm{F}_\mathrm{grav} 
 	= 
 	m \bm{g} 
 	= 
-	m \bm{R}_\text{BE} \, {}_E\bm{g}
+	m \bm{R}_{BE} \, {}_E\bm{g}
 	\qquad
 	\text{with}
 	\qquad
 	{}_E\bm{g} 
 	= 
-	\begin{pmatrix}
+	\begin{bmatrix}
 		0 \\ 0 \\ g
-	\end{pmatrix},
+	\end{bmatrix},
 \end{equation}
 
-where ${}_E\bm{g}$ represents the constant gravity vector in the inertial earth reference frame following the NED convention and $\bm{R}_\text{BE}$ denotes the transformation matrix from earth CS to body CS.
+where ${}_E\bm{g}$ represents the constant gravity vector in the inertial earth reference frame following the NED convention and $\bm{R}_{BE}$ denotes the transformation matrix from earth CS to body CS.
 
-As the gravitational force acts at the center of gravity, no gravitational moment is induced, thus
+As the gravitational force acts at the center of gravity, no gravitational moment about the COG is induced, thus
 
 \begin{equation}
-	\bm{\mathcal{F}}_\text{g} 
+	\bm{\mathcal{F}}_\mathrm{grav} 
 	= 
-	\begin{pmatrix}
-		\bm{F}_\text{g} \\ \bm{0}_{3 \times 1}
-	\end{pmatrix}.
+	\begin{bmatrix}
+		\bm{F}_\mathrm{grav} \\ \bm{0}_{3 \times 1}
+	\end{bmatrix}.
 \end{equation}
 
-The buoyancy depends on the density of the surrounding air $\rho_{\text{air}}$ and the lifting gas contained within the hull $\rho_{\text{gas}}$ as well as the volume of the airship $V$. Assuming a homogeneous distribution, the resulting buoyancy force acts at the center of volume (COV) and is given by
+The buoyancy depends on the density of the surrounding air $\rho_{\mathrm{air}}$ and the lifting gas contained within the hull $\rho_{\mathrm{gas}}$ as well as the volume of the airship $V$. Assuming a homogeneous distribution, the resulting buoyancy force acts at the center of volume (COV) and is given by
 
 \begin{equation}
-	\bm{F}_\text{b}^\text{ COV} = -V \bm{g} (\rho_{\text{air}} - \rho_{\text{gas}}).
+	\bm{F}_\mathrm{buoy}^\mathrm{\, COV} = -V \bm{g} (\rho_{\mathrm{air}} - \rho_{\mathrm{gas}}).
 \end{equation}
 
-In case of the airship \textit{Squid}, the volume is chosen such that $\bm{F}\text{g} + \bm{F}\text{b} > 0$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
+In case of the airship \textit{Squid}, the volume is chosen such that $\bm{F}_\mathrm{grav} + \bm{F}_\mathrm{buoy} > \bm{0}$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
 To express the buoyancy contribution with respect to the center of gravity, the moment induced by the offset between the COV and COG is considered:
 
 \begin{equation}
-	\bm{M}_\text{b} = \bm{r}_\text{COV} \times \bm{F}_\text{b}^\text{ COV},
+	\bm{M}_\mathrm{buoy} = \bm{r}_\mathrm{COV} \times \bm{F}_\mathrm{buoy}^\mathrm{\, COV},
 \end{equation}
 
-where $\bm{r}_\text{COV} \in \mathbb{R}^3$ denotes the vector from the COG to COV. Due to the design of
-the airship, $\bm{r}_\text{COV}$ only contains a component along the $z_B$-direction.
+where $\bm{r}_\mathrm{COV} \in \mathbb{R}^3$ denotes the vector from the COG to COV. Due to the design of
+the airship, $\bm{r}_\mathrm{COV}$ only contains a component along the $z_B$-direction.
 Consequently, the generalized buoyant force expressed at the COG is given by
 
 \begin{equation}
-	\bm{\mathcal{F}}_\text{b}
+	\bm{\mathcal{F}}_\mathrm{buoy}
 	=
-	\begin{pmatrix}
-		\bm{F}_\text{b} \\ 	\bm{M}_\text{b}
-	\end{pmatrix}
+	\begin{bmatrix}
+		\bm{F}_\mathrm{buoy} \\ 	\bm{M}_\mathrm{buoy}
+	\end{bmatrix}
 	\qquad
 	\text{with}
 	\qquad
-	\bm{F}_\text{b}
+	\bm{F}_\mathrm{buoy}
 	=
-	\bm{F}_\text{b}^{\text{ COV}}.
+	\bm{F}_\mathrm{buoy}^{\mathrm{\, COV}}.
 \end{equation}
 
-\subsection{Aerodynamic}
+\subsection{Aerodynamics}
 The aerodynamic forces and moments play a central role in the airship dynamics, as they directly depend on the aerodynamic velocity. The aerodynamic velocity is defined as 
+
 \begin{equation}
-	Inhalt...
+	\bm{v}_A
+	=
+	\bm{v}_B - \bm{v}_W
 \end{equation} 
 
-i.e., the relative velocity between the airship and the surrounding air. As a result, they contain information about the current wind, which influences the vehicle dynamics through the resulting aerodynamic loads. An accurate aerodynamic model is therefore essential and forms the basis for the wind estimation approach presented in this work.
+and denotes the relative velocity between the airship and the surrounding air (often called \textit{airspeed}), where $\bm{v}_W \in \mathbb{R}^3$ corresponds to the wind velocity expressed in body-fixed coordinates. As a result, the aerodynamical forces and moments contain information about the current wind conditions.
+An accurate aerodynamic model is therefore essential and forms the basis for the wind estimation approach presented in this work.
 
 As described in \cite{Li2007AirshipDynamics}, the aerodynamic forces and moments can be classified into several contributions, including drag, added mass, viscous effects, and fin forces. Since these contributions account for the majority of the aerodynamic effects, they are considered in the present model. 
 
 \begin{equation}
-	\bm{\mathcal{F}}_\text{aero} 
+	\bm{\mathcal{F}}_\mathrm{aero} 
 	=
-	\bm{\mathcal{F}}_\text{drag} + \bm{\mathcal{F}}_\text{am} + \bm{\mathcal{F}}_\text{visc} + \bm{\mathcal{F}}_\text{fins}
+	\bm{\mathcal{F}}_\mathrm{drag} + \bm{\mathcal{F}}_\mathrm{am} + \bm{\mathcal{F}}_\mathrm{visc} + \bm{\mathcal{F}}_\mathrm{fins}
 \end{equation}
 
 A detailed derivation of the individual contributions is omitted here; instead, the resulting expressions are summarized for completeness. An extensive derivation of the aerodynamic forces and moments can be found in \cite{Li2007AirshipDynamics}.
 The aerodynamic forces act at the center of volume. Therefore, the offset between the COV and the COG results in an induced moment, which is considered in the aerodynamic moment contribution.
-\todo{airspeed}
 
-\subsubsection{Drag}
+
+\subsubsection{Aerodynamic Drag}
+The aerodynamic drag force opposes the relative motion between the airship and the surrounding air and therefore acts in the opposite direction of the aerodynamic velocity. In this work, the drag force is modeled independently along each body-fixed axis using a quadratic drag formulation based on the conventional drag equation \cite{Anderson2017Fundamentals}. The resulting aerodynamic drag force is given by
+
+
+\begin{equation}
+	\bm{F}_\mathrm{drag}^\mathrm{\, COV}
+	=
+	-\frac{1}{2}\rho_\mathrm{air}
+	\operatorname{sgn}(\bm{v}_A)
+	\odot
+	\bm{v}_A^2
+	\odot
+	\begin{bmatrix}
+		c_\mathrm{D,ax} \\
+		c_\mathrm{D,lat} \\
+		c_\mathrm{D,lat}
+	\end{bmatrix},
+\end{equation}
+
+where $\odot$ represents the element-wise (Hadamard) product, and $\operatorname{sgn}(\cdot)$ is applied element-wise. The parameters $c_\mathrm{D,ax}$ and $c_\mathrm{D,lat}$ are the axial and lateral drag coefficients, respectively. Since the airship is assumed to be rotationally symmetric about its longitudinal axis, the same drag coefficient is used for the lateral and vertical directions.
+
+Since the aerodynamic drag force acts at the COV, it must be transformed to the COG to obtain the corresponding generalized aerodynamic force as
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{drag}
+	=
+	\begin{bmatrix}
+		\bm{F}_\mathrm{drag} \\ 	\bm{M}_\mathrm{drag}
+	\end{bmatrix}
+	\qquad
+	\text{with}
+	\qquad
+	\bm{M}_\mathrm{drag}
+	=
+	\bm{r}_\mathrm{COV}
+	\times
+	\bm{F}_\mathrm{drag}^\mathrm{\, COV},
+	\qquad
+	\bm{F}_\mathrm{drag}
+	=
+	\bm{F}_\mathrm{drag}^{\mathrm{\, COV}}.
+\end{equation}
+
 
 \subsubsection{Added Mass}
-\subsubsection{Viscous Effects}
-\subsubsection{Fins}
+For an airship, the added mass can be interpreted as the effective mass of the surrounding air that is accelerated together with the vehicle \cite{Newman1977Hydrodynamics}.
+The associated added-mass forces and moments arise from the inertia of this accelerated air and contribute to the equations of motion in two ways: through a constant added-mass matrix and through a velocity-dependent coupling term:
+
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{am}^\mathrm{\, COV}
+	=
+	-\begin{bmatrix} 
+		\bm{M}_{11} & \bm{M}_{12} \\ \bm{M}_{21} & \bm{M}_{22}
+	\end{bmatrix}
+	\begin{bmatrix}
+		\dot{\bm{v}}_B \\ \dot{\bm{\omega}}_B
+	\end{bmatrix}
+	-
+	\begin{bmatrix}
+		\bm{\omega}_B \times \left( \bm{M}_{11} \bm{v}_A + \bm{M}_{12} \bm{\omega}_B \right) 
+		\\
+		\bm{v}_A \times \left( \bm{M}_{11} \bm{v}_A + \bm{M}_{12} \bm{\omega}_B \right) 
+		+ 
+		\bm{\omega}_B \times \left( \bm{M}_{21} \bm{v}_A + \bm{M}_{22} \bm{\omega}_B \right)
+	\end{bmatrix}
+\end{equation}
+
+For steady translation $\left( \bm{\omega}_B = \bm{0} \right)$, the coupling term reduces to the classical \emph{Munk moment}, $-\bm{v}_A~\times~\left( \bm{M}_{11} \bm{v}_A \right)$, which is a destabilizing moment characteristic of elongated bodies.
+
+The entries of the added-mass matrix are computed using the analytical expressions given by \cite{Li2007AirshipDynamics} and are listed in Appendix~ \todo{add ref and write M in appendix}.
+
+
+Since the generalized added-mass force acts at the COV, it is transformed to the COG as
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{am}
+	=
+	\begin{bmatrix}
+		\bm{F}_\mathrm{am} \\ 
+		\bm{M}_\mathrm{am}^\mathrm{\, COV} + \bm{r}_\mathrm{COV} \times \bm{F}_\mathrm{am} 
+	\end{bmatrix}
+	\qquad
+	\text{with}
+	\qquad
+	\bm{F}_\mathrm{am}
+	=
+	\bm{F}_\mathrm{am}^{\mathrm{\, COV}}.	
+\end{equation}
+
+\subsubsection{Viscous Aerodynamic Effects}
+In contrast to the added-mass forces, which are associated with the acceleration of the surrounding air, the viscous forces and moments originate from the interaction between the airship surface and the surrounding airflow. These effects arise from viscous shear stresses and pressure differences and are described in detail by \cite{Anderson2017Fundamentals}.
+
+The magnitude of the viscous force and moment acting normal to the hull centerline are given by
+
+\begin{equation}
+	F_\mathrm{N, visc}^\mathrm{\, COV}
+	=
+	q_0 \left( -C_\mathrm{F, hif} \sin2\gamma + C_\mathrm{F, hvf} \sin^2\gamma \right)
+\end{equation} 
+
+\begin{equation}
+	M_\mathrm{N, visc}^\mathrm{\, COV}
+	=
+	q_0 \left( -C_\mathrm{M, hif} \sin2\gamma + C_\mathrm{M, hvf} \sin^2\gamma \right),
+\end{equation} 
+
+where $q_0$ describes the dynamic pressure associated by the local aerodynamic velocity $\bm{v}_{A, 0}$ and $\gamma$ denotes the angle between the hull centerline and $\bm{v}_{A, 0}$:
+
+\begin{equation}
+	q_0 
+	= 
+	\frac{1}{2}\rho_\mathrm{air} \left\| \bm{v}_{A, 0} \right\|^2_2
+	\qquad
+	\text{and}
+	\qquad
+	\gamma 
+	= 
+	\operatorname{atan2}\! \left( \sqrt{v_{A, 0}^2 + w_{A, 0}^2} / u_{A, 0} \right).
+\end{equation}
+
+Here $\bm{v}_{A, 0} = \left[u_{A, 0}, \, v_{A, 0}, \, w_{A, 0}\right]^T$ denotes the aerodynamic velocity at $\varepsilon_0$, which marks the point along the hull, measured from the nose, beyond which correction for real flow behavior is necessary.
+The coefficient $C_\mathrm{\cdot, hif}$ accounts for the additional drag caused by the pressure difference between the front and rear of the hull after flow separation, whereas $C_\mathrm{\cdot, hvf}$ represents the crossflow drag caused by the separated flow, modeled using a cylinder-drag analogy.
+
+The viscous force and moment are then decomposed into their body-axis components. Since both act normal to the hull centerline $F_{\mathrm{visc}, x}^\mathrm{\, COV} = M_{\mathrm{visc}, x}^\mathrm{\, COV} = 0$ and
+
+\begin{equation}
+	F_{\mathrm{visc}, y}^\mathrm{\, COV}
+	=
+	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
+	\qquad
+	F_{\mathrm{visc}, z} ^\mathrm{\, COV}
+	= 
+	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}
+\end{equation}
+
+and the corresponding body-axis moment components are
+
+\begin{equation}
+	M_{\mathrm{visc}, y}^\mathrm{\, COV}
+	=
+	M_\mathrm{N, visc}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
+	\qquad
+	M_{\mathrm{visc}, z} ^\mathrm{\, COV}
+	= 
+	-M_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}.
+\end{equation}
+
+Again, we have to transform the force and moment to the COG.
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{visc}
+	=
+	\begin{bmatrix}
+		\bm{F}_\mathrm{visc} \\ 
+		\bm{M}_\mathrm{visc}^\mathrm{\, COV} + \bm{r}_\mathrm{COV} \times \bm{F}_\mathrm{visc} 
+	\end{bmatrix}
+	\qquad
+	\text{with}
+	\qquad
+	\bm{F}_\mathrm{visc}
+	=
+	\bm{F}_\mathrm{visc}^{\mathrm{\, COV}}.	
+\end{equation}
+
+
+\subsubsection{Fin Forces}
+The fin forces are computed using a lumped approach, in which each of the four fins is treated as a single lifting surface. The contribution of each fin depends on the local aerodynamic velocity and the corresponding angle of attack. The total fin force and moment are then obtained by summing the individual fin contributions.
+
+For each fin $i=1,\dots,4$, located at position $\bm{r}_{\mathrm{fin}, i}$ relative to the COV, the local aerodynamic velocity follows from the rigid-body velocity field
+
+\begin{equation}
+	\bm{v}_{A, \mathrm{fin}, i} 
+	= 
+	\bm{v}_A 
+	+ 
+	\bm{\omega}_B \times \bm{r}_{\mathrm{fin}, i},
+\end{equation}
+
+from which the local dynamic pressure is obtained as
+
+\begin{equation}
+	q_{0, \mathrm{fin}, i} 
+	= 
+	\frac{1}{2}\rho_\text{air}\left\|\bm{v}_{A, \mathrm{fin}, i}\right\|_2^2.
+\end{equation}
+
+The geometric angle of attack of each fin is computed from the local velocity component perpendicular to the fin surface $v_{\perp, \mathrm{fin}, i}$ and the local velocity component along the hull centerline $u_{\mkern1mu \mathrm{fin}, i}$
+
+\begin{equation}
+	\alpha_{\mathrm{fin}, i} 
+	= 
+	\operatorname{atan2}\! \left( \frac{v_{\perp, \mathrm{fin}, i}}{u_{\mkern1mu \mathrm{fin}, i}} \right),
+\end{equation}
+
+and is saturated at the stall angle $\alpha_\text{stall}$.
+
+The resulting normal force on each fin computes to
+
+\begin{equation}
+	F_{N, \mathrm{fin}, i} 
+	= 
+	-q_{0, \mathrm{fin}, i} \, C_\mathrm{F, fnf}\, \alpha_{\mathrm{fin}, i},
+\end{equation}
+
+where $C_\mathrm{F,fnf}$ is the empirical fin normal-force coefficient that is assumed to capture all aerodynamic effects of the fins, including geometric and interference effects, in a single fitted parameter.
+
+The total fin force and moment about the COV are obtained by summing the individual fin contributions,
+
+\begin{equation}
+	\bm{F}_\mathrm{fins}^\mathrm{\, COV} 
+	= 
+	\sum_{i=1}^{4} \bm{F}_{\mathrm{fin}, i}, 
+	\qquad
+	\bm{M}_\mathrm{fins}^\mathrm{\, COV} 
+	= 
+	\sum_{i=1}^{4} \bm{r}_{\mathrm{fin}, i} \times \bm{F}_{\mathrm{fin}, i},
+\end{equation}
+
+where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{N,Fi}$ into its body-fixed components according to the orientation of the respective fin.
+
+As with the previous contributions, the resulting force and moment are transformed to the COG to obtain the generalized fin forces
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{fins}
+	=
+	\begin{bmatrix}
+		\bm{F}_\mathrm{fins}^\mathrm{\, COV} \\
+		\bm{M}_\mathrm{fins}^\mathrm{\, COV} + \bm{r}_\mathrm{COV} \times \bm{F}_\mathrm{fins}^\mathrm{\, COV}
+	\end{bmatrix}
+	\qquad
+	\text{with}
+	\qquad
+	\bm{F}_\mathrm{fins}
+	=
+	\bm{F}_\mathrm{fins}^{\mathrm{\, COV}}.	
+\end{equation}
 
 \subsection{Propulsion}
-To be able to compute the Propulsion Components we need to incorporate a Motor Model.
+The propulsion forces and moments resulting from the command input $\bm{u} \in \mathbb{R}^9$ are computed in two steps. 
+First, the thrust generated by each individual motor $F_{\mathrm{motor}, i}$ is determined from the corresponding motor command $u_i$ using a nonlinear motor model. Due to the different characteristics of the impellers and the stern propeller, separate parameter sets are used for the two actuator types.
+The resulting motor thrust is therefore given by
 
 
+\begin{equation}
+	F_{\mathrm{motor},i}
+	=
+	\begin{cases}
+		\alpha_{\mathrm{imp}}
+		\left(	k_{\mathrm{imp}} \, u_i^2
+		+
+		(1-k_{\mathrm{imp}})u_i \right),
+		& i = 1,\dots,8
+		\\[1.5ex]
+		\alpha_{\mathrm{stern}} \operatorname{sgn}(u_i)
+		\left( k_{\mathrm{stern}} \, u_i^2
+		+
+		(1-k_{\mathrm{stern}})u_i \right),
+		& i = 9
+	\end{cases}
+\end{equation}
+
+The individual motor thrusts are then combined into the resulting
+generalized force vector by considering the orientation and position of each
+motor. This transformation is described by the motor effectiveness matrix
+$\bm{B}_\mathrm{eff}^{\,\mathrm{COG}} \in \mathbb{R}^{6 \times 9}$, which
+maps the individual motor thrusts to the generalized force vector acting at the COG. The matrix
+incorporates the orientation of each motor as well as the moment contributions
+resulting from their respective positions relative to the COG.
+
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{prop}
+	=
+	\bm{B}_\mathrm{eff}^{\,\mathrm{COG}}
+	\bm{F}_\mathrm{motor},
+\end{equation}
+
+with
+
+\begin{equation}
+	\bm{B}_{\mathrm{eff}}^{\,\mathrm{COG}}
+	=
+	\begin{bmatrix}
+		\bm{d}_1 &
+		\cdots &
+		\bm{d}_9
+		\\
+		\bm{r}_1 \times \bm{d}_1 &
+		\cdots &
+		\bm{r}_9 \times \bm{d}_9
+	\end{bmatrix},
+\end{equation}
+
+where $\bm{r}_i \in \mathbb{R}^3$ denotes the position vector of the $i$-th motor relative to the COG, and $\bm{d}_i \in \mathbb{R}^3$ denotes the corresponding unit thrust direction vector.
 
 \section{Wind Model}
-
-
+To be able to augment our system model with a wind states we need a wind model.
 To make use of these dynamics an accurate wind model is desired.
+
 Although the Van Karman Model describes the turbulence spectrum more accurately in most cases this work implements the Dryden Turbulence Model due to its easier implementation. As it results in a linear model. Van Karman is not realizable.
   
 
@@ -366,6 +687,6 @@ There exist several methods to extend the KF framework to nonlinear systems. 2 o
 
 
 \section{Disturbance Feedforward}
-Disturbance Feedforward describes a method to compensate the influence of a known disturbance on the system.
+Disturbance Feedforward describes a method to compensate the influence of a known disturbance on the system \cite{Lunze2013Regelungstechnik2}.
 Linear Case
 Nonlinear Case

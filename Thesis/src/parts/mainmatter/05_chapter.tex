@@ -141,6 +141,8 @@ The results indicate that a despite the real W20 parameter an estimated W20 = 10
 	\label{fig:my_figure}
 \end{figure}
 
+What happens with the wind estimation if W20est too big?
+-> if theres deviation in the measurements and the expected behaviour computed by the kalman filter, the error will more likely be attributed to the wind as its more uncertain.
 
 %\begin{table}[ht]
 %	\centering
@@ -182,6 +184,7 @@ The wind compensation is heavily dependant on the quality of the wind estimation
 Setting:
 
 Results
+We are looking for one controller which yields the best results for all scenarios. Although we may find better settings for single scenarios we do not want to need to switch.
 
 While theoretically the compensation should allow for a more aggressive PID as the disturbance should compensate the wind disturbance this does not hold up in the results presented. Reason therefore is errors in wind estimation, convergence rates of the KF, maybe even delay of one time step, general uncertainty in the model (uncertain forces etc)
 \subsection{Problems with Observability}

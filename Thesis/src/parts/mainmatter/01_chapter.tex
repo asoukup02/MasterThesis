@@ -11,19 +11,46 @@ This chapter serves as an overview of existing methods and ...
 % ---------------------------------------------------------------------------------------------------
 
 \section{Problem setting}
+- Why wind is a challenge for airships
+- Why onboard wind estimation is necessary
+- Why compensation improves control performance
+
+Airships are characterized by their large volume, low flight speed and high aerodynamic drag, making them considerably more susceptible to atmospheric disturbances than conventional fixed-wing aircraft. Even moderate wind speeds may become comparable to the vehicle velocity, causing significant deviations from the desired trajectory and degrading the overall control performance. This sensitivity represents one of the major challenges for autonomous airship operation, particularly during low-speed maneuvers such as hovering, station keeping, inspection tasks and precision landing.
+
+Since the aerodynamic forces and moments acting on an airship depend on the relative velocity between the vehicle and the surrounding air, the ambient wind directly influences the vehicle dynamics. However, wind cannot usually be measured accurately using onboard sensors alone. Installing dedicated wind measurement systems increases the system complexity, weight and cost and is often impractical for small autonomous airships. Consequently, the wind must be estimated from the available onboard measurements together with a mathematical model of the vehicle dynamics.
+
+Reliable wind estimation enables more than merely observing the surrounding atmosphere. By incorporating the estimated wind into the flight controller, the aerodynamic disturbances can be compensated before they lead to significant tracking errors. Such a model-based compensation has the potential to improve trajectory tracking, reduce control effort and increase the robustness of autonomous flight under varying environmental conditions.
+
+Achieving accurate wind estimation and effective disturbance compensation, however, is challenging. The vehicle dynamics are highly nonlinear and are governed by the interaction of gravitational, buoyancy, propulsion and aerodynamic forces, while the aerodynamic effects themselves depend on the unknown wind. Consequently, both the estimator and the controller must account for the nonlinear system dynamics and the coupling between vehicle motion and the surrounding airflow.
 
 \section{Aim of this work}
 \label{sec:Aim}
-The Aim of this work is to implement an algorithm for wind estimation and compensation for an unmanned airship. The algorithm should be able to reliable estimate wind speeds in conditions relating to real flight scenarios. Those include: Dynamic wind conditions with Wind gusts of max 30 km/h. Trajectories like forward and sideward flight. Rotation on the spot and forward flight while turning. The compensation should effectively minimize the influence of wind on the aircraft in a direct as possible way.
+- Objectives
+- Scope
+- Evaluation scenarios
+
+The aim of this work is to develop and implement a model-based algorithm for wind estimation and wind compensation for an unmanned airship. The proposed approach shall reliably estimate the ambient wind using only the available onboard measurements and the nonlinear dynamic model of the vehicle, without requiring dedicated wind sensors.
+
+The wind estimation algorithm is designed to operate under conditions representative of realistic flight scenarios. These include dynamic wind conditions with gusts of up to 30 km/h, as well as different flight maneuvers such as forward and sideward flight, rotation about the vertical axis, and coordinated turning during forward flight. The estimated wind shall remain accurate and robust despite the nonlinear vehicle dynamics and changing operating conditions.
+
+Based on the estimated wind, a model-based compensation strategy is implemented to directly counteract the aerodynamic disturbances acting on the airship. By incorporating the estimated wind into the control system, the influence of wind on the vehicle motion is reduced as directly as possible, thereby improving trajectory tracking performance and the overall robustness of the flight controller.
+
+To evaluate the proposed approach, the complete estimation and compensation framework is implemented in a MATLAB/Simulink simulation environment using a comprehensive nonlinear airship model. The performance of the estimator and the effectiveness of the compensation strategy are assessed under various wind conditions and flight maneuvers representative of realistic operating scenarios.
 
 \section{State of the art / Related work}
 \label{sec:RelatedWork}
+- Airship dynamics
+- Wind estimation
+- Wind compensation / disturbance observers
+- Positioning of your contribution
 
 \section{Airship squid}
 This work is performed on the airship squid, which is further specified in this section.
 The airship was designed and built by roboloon and consists of a elastic hull, which is usually filled with Helium. For maneuvering the airships has one stern propeller at the back, four fins and four impellers integrated in the fins totalling 9 control surfaces making the airship an overactuated system.
 
-A full table showing the specifications of the airship can be found in \ref{tab:airship_specs}
+A full table showing the specifications of the airship can be found in Table~ \ref{tab:airship_specs}
+
+\todo{Picture of airship}
 
 
 \subsection{Hardware}
@@ -33,14 +60,12 @@ The airship is equipped with an IMU, GPS and a 1D pitot tube measuring the airsp
 The airship is controlled by a PID controller ...
 The PID is tuned to allow for robust behavior in all flight envelopes.
 
+All algorithms are first implemented in simulation. This simulation poses a model of the airship as derived in Chapter \todo{ref} and an implementation of the PID controller. Additionally uncertainties for the forces are considered.
+After successful validation in the simulation a real world flight test is carried out.
+
 Allocator
 
 
-
-
-
-\section{Simulation Environment / Systematic}
-All algorithms are first implemented in simulation. This simulation poses a model of the airship as derived in Chapter \todo{ref} and an implementation of the PID controller. Additionally uncertainties for the forces are considered.
-After successful validation in the simulation a real world flight test is carried out.
+\section{Thesis Structure}
 
 
