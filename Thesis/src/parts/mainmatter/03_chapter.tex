@@ -6,18 +6,48 @@ The idea is to combine the knowledge about the nonlinear airships dynamics, whic
 
 
 
+
+
 \section{Model}
 First a complete model is required to calculate the state transition function from it. Therefore we augment the six state airship model including any states that have known dynamics and are measured (position + attitude) and the wind states.
 
 Introduce state vector (12 states) and show that all gen forces can be expressed depending on those states.
+
+From the dynamics we get:
+\begin{equation}
+	\bm{M}\dot{\bm{\nu}}
+	=
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) + \bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) + \bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{V_A}) + \bm{\mathcal{F}}_\mathrm{prop}(\bm{u})
+	- \bm{\mathcal{F}}_\mathrm{cor}(\bm{x}).
+\end{equation}
 
 State space realization of the wind model. The parameters of the dryden wind model depend on the flight states, so we can easily express them depending on the state.
 Only the computation of W20 and wind direction is not state dependent, this is evaluated in \todo{ref}
 
 
 
+
+
+\subsection{Wind model}
+
+As stated in \todo{cite} the wind is described by a constant wind vector with turbulences, described by linear shaping filters. 
+As the state space realization of the constant wind is simply zero, we do not have to consider it in our state space implementation. The state space realization of the dryden model is given by:
+
+where eta describes white noise.
+
+
+
+As the dryden wind parameters depend exclusively on the altitude h and W20 in a nonlinear fashion, we can write the turbulence model as a nonlinear function depending on the states. W20 is chosen as a constant value, see \todo{cite}
+
+
+
+
 \subsection{Discretization}
 exact discretization of the wind dynamics, approx of model dynamics
+
+
+
+
 
 \section{Kalman Filter}
 To get an Kalman Filter running we need a system in the following form
@@ -31,10 +61,22 @@ To get an Kalman Filter running we need a system in the following form
 
 We consider the case of additive process noise, which becomes clear later as we derive the equations.
 
+
+
+
+
 \subsection{discrete state transition function}
+
+
+
+
 
 \subsection{discrete measurement function}
 The measurement function directly follows from the sensor equipment on board of the airship
+
+
+
+
 
 \subsection{Process Noise and Measurement Noise}
 
@@ -45,7 +87,16 @@ uncertainty coming from wind -> discretization of covariance
 measurement noise from sensor specifications
 Pitot tube only measurements if $u > 2 m/s$. To account for this we implement a time varying measurement noise, setting $R_{pitot tube} \rightarrow \infty$ if airspeed in x-direction is < 2.
 To understand why this works lets look at the computation of the kalman gain. R -> infinity simply means that we fully trust our dynamics and basically do not use the measurement.
+
+
+
+
+
 \subsubsection{RUKU vs Euler}
+
+
+
+
 
 \section{Implementation of UKF}
 The UKF obeys 3 Parameters, which mainly influence the spread of the sigma points.
@@ -57,40 +108,46 @@ The EKF is not as robust as the UKF due to several reasons \todo{...}. Robustnes
 
 
 
+
+
 \section{Compensation}
-\nomenclature[A]{DFF}{Disturbance Feedforward}
-\nomenclature[A]{NDI}{Nonlinear Dynamic Inversion}
 
 While wind is modeled as an additional system state in the Kalman Filter implementation, it can also be considered as an external disturbance acting on the airship. Therefore, the wind estimation provided by the Kalman Filter can be utilized to compensate for the effect of wind disturbances.
 Two compensation approaches are implemented and evaluated: a nonlinear Disturbance Feedforward (DFF) controller and a Nonlinear Dynamic Inversion (NDI) controller. Both approaches can be interpreted as an augmentation to the existing PID controller, adding an additional compensation term
+
 \begin{equation}
 	\bm{u} = \bm{u}_{\text{PID}} + \bm{u}_{\text{comp}},
 	\label{eq:compensation_u}
 \end{equation}
 
-
 where $\bm{u}_{\text{PID}}$ is mainly responsible for setpoint tracking and stabilization, while $\bm{u}_{\text{comp}}$ uses model knowledge of the airship to counteract the wind-induced disturbances in case of DFF, or compensates for all acting forces and moments in case of the NDI.
 
-To minimize the delay between wind disturbance estimation and compensation, the estimated disturbance is compensated directly at the force and moment level.Based on the estimated wind and the current airship state measurement, the required 
+To minimize the delay between wind disturbance estimation and compensation, the estimated disturbance is compensated directly at the force and moment level. Based on the estimated wind and the current airship state measurement, the required 
 compensation force and moment vector 
-\[
-\bm{\mathcal{F}}_{\text{comp}} 
-= 
-\begin{pmatrix} \bm{F}_{\text{comp}} \\ \bm{M}_{\text{comp}} \end{pmatrix} \in \mathbb{R}^6
-\]
-is calculated.
-The computation of $\bm{\mathcal{F}}_{\text{comp}}$ depends on the compensation approach and is derived in the sections~\ref{sec:Disturbance_Feedforward} and \ref{sec:NDI}.
 
-The total desired force and moment vector is obtained by combining the force and moment vector generated by the PID controller, $\bm{\mathcal{F}}_{\text{PID}}$, with the compensation vector, $\bm{\mathcal{F}}_{\text{comp}}$:
 \begin{equation}
-	\bm{\mathcal{F}} = \bm{\mathcal{F}}_{\text{PID}} + \bm{\mathcal{F}}_{\text{comp}}.
+	\bm{\mathcal{F}}_{\text{comp}} 
+	= 
+	\begin{bmatrix} 
+		\bm{F}_{\text{comp}} \\ 
+		\bm{M}_{\text{comp}} 
+	\end{bmatrix} \in \mathbb{R}^6
 \end{equation}
 
-This force and moment vector is subsequently converted into individual motor commands by the control allocation algorithm. Performing the compensation directly at the force and moment level enables computationally efficient execution, as the mapping from forces and moments to motor commands $\bm{u}$ is performed only once per time step. At the same time, the underlying concept introduced in Eq.~\eqref{eq:compensation_u} is preserved, allowing disturbances to be compensated with a delay of only one control cycle.
+is calculated.
+The computation of $\bm{\mathcal{F}}_{\text{comp}}$ depends on the compensation approach and is derived in the sections~\ref{sec:DFF} and \ref{sec:NDI}.
+
+The total desired force and moment vector is obtained by combining the force and moment vector generated by the PID controller, $\bm{\mathcal{F}}_{\text{PID}}$, with the compensation vector, $\bm{\mathcal{F}}_{\text{comp}}$:
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{des} = \bm{\mathcal{F}}_{\text{PID}} + \bm{\mathcal{F}}_{\text{comp}}.
+\end{equation}
+
+This force and moment vector is subsequently converted into individual motor commands by the control allocation algorithm. Performing the compensation directly at the force and moment level enables computationally efficient execution, as the mapping from forces and moments to motor commands $\bm{u}$ is performed only once per time step. At the same time, the underlying concept introduced in Eq.~\eqref{eq:compensation_u} is preserved, allowing disturbances to be compensated with a delay of only one control cycle. 
+
+$\bm{\mathcal{F}}_\mathrm{des}$ denotes the desired force and moment generated by the propulsion system. However, due to the individual actuator limits of the motors, the achieved force and moment, $\bm{\mathcal{F}}_\mathrm{prop}$, may differ from the desired value.
 
 The resulting control structure, including the compensation strategy, is illustrated in Figure~\ref{fig:control_structure_with_compensation}.
-
-
 
 \vspace{0.5cm}
 \begin{figure}[htbp]
@@ -183,14 +240,14 @@ The resulting control structure, including the compensation strategy, is illustr
 		(pid)
 		--
 		node[midway,above]
-		{$\bm{\mathcal{F}}_{\text{PID}}$}
+		{$\bm{\mathcal{F}}_{\mathrm{PID}}$}
 		(sum);
 		
 		\draw[->,line]
 		(sum)
 		--
 		node[midway,above]
-		{$\bm{\mathcal{F}}$}
+		{$\bm{\mathcal{F}}_\mathrm{des}$}
 		(alloc);
 		
 		\draw[->,line]
@@ -208,7 +265,7 @@ The resulting control structure, including the compensation strategy, is illustr
 		(comp.north)
 		--
 		node[midway,right]
-		{$\bm{\mathcal{F}}_{\text{comp}}$}
+		{$\bm{\mathcal{F}}_{\mathrm{comp}}$}
 		(sum.south);
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,7 +276,7 @@ The resulting control structure, including the compensation strategy, is illustr
 		(kf)
 		--
 		node[midway,above]
-		{$\bm{v}_{\text{wind}}$}
+		{$\bm{v}_{\mathrm{wind}}$}
 		(comp);
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -274,64 +331,233 @@ The resulting control structure, including the compensation strategy, is illustr
 	
 \end{figure}
 
+The original PID controller, without compensation, was designed with a strong emphasis on robustness against modeling uncertainties and wind disturbances. Since the compensation approaches explicitly account for a significant portion of wind-induced disturbances, the PID controller gains can be retuned to prioritize tracking performance. In Section~\ref{sec:5.2WindCompensation}, the effects of the proposed compensation methods on the control performance are evaluated. To investigate the influence of the controller tuning, multiple sets of PID gains are considered in combination with the different compensation approaches.
 
-The original PID controller, without compensation, was designed with a strong emphasis on robustness against modeling uncertainties and wind disturbances. Since the compensation approaches explicitly account for a significant portion of these disturbances, the controller can theoretically be retuned to place greater emphasis on tracking performance. This results in a more aggressively tuned PID controller. In section \todo{ref} the effects are evaluated.
+In the following sections, the two compensation approaches are presented in detail, and the corresponding compensation vector $\bm{\mathcal{F}}_{\text{comp}}$ is derived. It is assumed that the airship operates under nominal flight conditions, such that the desired force and moment generated by the control system can be realized by the propulsion system without actuator saturation. Therefore
 
-In the following sections, the two compensation approaches are described in detail, and the derivation of the compensation vector $\bm{\mathcal{F}}_{\text{comp}}$ is presented.
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{prop} 
+	= 
+	\bm{\mathcal{F}}_\mathrm{des} 
+	= 
+	\bm{\mathcal{F}}_{\text{PID}} 
+	+ 
+	\bm{\mathcal{F}}_{\text{comp}}.
+	\label{eq:FpropCompensation}
+\end{equation}
+
+In addition, we assume that exact state measurements from the Sensor Fusion of the airship are available.
+
+
+
 
 
 \subsection{Disturbance Feedforward}
-\label{sec:Disturbance_Feedforward}
-The Disturbance Feedforward compensates for the wind induced forces and moments only. This means $\bm{\mathcal{F}}_{comp}$ compensates for the additional forces and Moments created by the prevailing wind.
-Looking at the dynamics one can see that wind affects our airship only via the aerodynamical forces, as they depend on the airspeed Va which is
+\label{sec:DFF}
 
+The Disturbance Feedforward approach compensates only for the additional forces and moments induced by wind disturbances. Therefore, the compensation vector $\bm{\mathcal{F}}_{\mathrm{comp}}$ is designed to counteract the change in aerodynamic forces and moments caused by the prevailing wind.
+To determine the wind-induced contribution, the equations of motion introduced in Section~\ref{sec:2.2AirshipModel} are considered:
+
+% EOM
 \begin{equation}
-	V_a = V_b - V_w
-\end{equation}
-
-\todo{add dynamics, what is Faero and Fprop?}
-Fprop describes the propulsion force that is achieved by a command u. Faero is the aerodynamical force. In general Faero and Fprop describe nonlinear functions mapping u and Va to Forces. Fprop can be directly expressed by $\mathcal{F}$
-
-we basically have everything expressed in forces.
-
-
-The Disturbance Feedforward task is to find $u_{comp}$ s.t.
-\begin{equation}
-	F_{\text{aero}}(V_A) + F_{\text{prop}}(u + u_c)
+	\bm{M}\dot{\bm{\nu}}
 	=
-	F_{\text{aero}}(V_B) + F_{\text{prop}}(u)
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v_A}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{prop}(\bm{u})
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x}).
+	\label{eq:EOMDFF}
 \end{equation}
 
-To further understand what this means lets look how this unfolds assuming a linear system.
+The wind affects the system dynamics only through the aerodynamic generalized forces, as these depend on the aerodynamic velocity
 
-\begin{align}
-	F(V_A) + F_{\text{prop}}(u + u_c)
-	&= F(V_B) - F(V_w) + F_{\text{prop}}(u) + F_{\text{prop}}(u_c) \\
-	&= F(V_B) + F_{\text{prop}}(u), \\
-	\Rightarrow\quad
-	F_{\text{prop}}(u_c)
-	&= F(V_w)
-\end{align}
+% wind triangle
+\begin{equation}
+	\bm{v}_A
+	=
+	\bm{v}_B - \bm{v}_W.
+\end{equation} 
 
-in this case F(vw) simply describes the additional forces induced by wind. 
-For nonlinear systems its more complicated.
+Consequently, the wind-induced forces and moments can be determined as the difference between the generalized aerodynamic forces in the presence of wind and the corresponding forces in still air. In the latter case, the aerodynamic velocity is equal to the body velocity, i.e., $\bm{v}_A = \bm{v}_B$:
+
+% wind induced forces
+\begin{equation}
+	\Delta \bm{\mathcal{F}}_\mathrm{wind} 
+	= 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
+	- 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B).
+	\label{eq:DeltaF_wind} 
+\end{equation}
+
+Substituting Eqs.~\eqref{eq:DeltaF_wind} and \eqref{eq:FpropCompensation} into the equations of motion~\eqref{eq:EOMDFF} yields
+
+% EOM
+\begin{equation}
+	\bm{M}\dot{\bm{\nu}}
+	=
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B) 
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+	+ 
+	\Delta \bm{\mathcal{F}}_\mathrm{wind} 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{PID} 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{comp}.
+\end{equation}
+
+By considering $\Delta \bm{\mathcal{F}}_\mathrm{wind}$ as the disturbance and 
+$\bm{\mathcal{F}}_\mathrm{comp}$ as the compensation input, the system can be interpreted in the nonlinear input-affine form introduced in Eq.~\eqref{eq:nonlinearInputAffineSS}. Since the compensation is directly applied at the generalized force level, the input matrices $\bm{g}(\bm{x})$ and $\bm{g}_d(\bm{x})$ reduce to identity mappings. The ideal compensation is therefore given by
+
+% optimal compensation
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{comp} = -\Delta \bm{\mathcal{F}}_\mathrm{wind}.
+\end{equation}
+
+This results in the compensated dynamics
+
+% EOM
+\begin{equation}
+	\bm{M}\dot{\bm{\nu}}
+	=
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B) 
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+	+
+	\bm{\mathcal{F}}_\mathrm{PID},
+\end{equation}
+
+which, assuming perfect knowledge of the model and exact estimation of the wind, are independent of the wind-induced forces and moments. 
+
+In practice, exact disturbance compensation cannot be achieved due to two main sources of error. The first results from the fact that only an estimate of the wind velocity, $\hat{\bm{v}}_W$, is available from the Kalman filter. Consequently, the wind-induced forces and moments must be computed using the estimated aerodynamic velocity
+
+\begin{equation}
+	\hat{\bm{v}}_A = \bm{v}_B - \hat{\bm{v}}_W.
+	\label{eq:vAhat}
+\end{equation}
+
+The second source of error originates from the aerodynamic model $\bm{\mathcal{F}}_\mathrm{aero}$ itself, which is an approximation of the true aerodynamic forces and moments and does not take all physical effects into account. These two error sources directly affect the computation of $\Delta \bm{\mathcal{F}}_\mathrm{wind}$. Therefore, the implemented compensation is given by
+
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{comp} 
+	= 
+	-\Delta \widehat{\bm{\mathcal{F}}}_\mathrm{wind}
+	=
+	-\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \hat{\bm{v}}_A)
+	+
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B), 
+\end{equation}
+
+rather than the ideal compensation $-\Delta \bm{\mathcal{F}}_\mathrm{wind}$ derived above.
 
 
-Tuning: The PID controller is retuned on the undisturbed model, as the compensation should eliminate those, allowing for a faster PID control. 
-In \todo{ref} the performance of the retuned PID controller is examined and compared to the control structure with only the PID.
-It shows that the retuned PID is far too aggressive and not able to achieve good performance for all flight envelopes, although performing better on some. The reason for this is that although theoretically the Compensation should compensate for the wind, it is not able to fully cancel it due to uncertainties in the wind estimation and state measurements. Hence a robust controller is desired anyways. A combination of the robust PID with the compensation is beneficial. 
+
 
 
 \subsection{Nonlinear Dynamic Inversion}
 \label{sec:NDI}
-As second approach a Nonlinear Dynamic Inversion (NDI) controller is implemented. The idea behind the NDI is to fully compensate the Forces acting on the Airship, basically inverting the dynamics. 
 
+In contrast to the Disturbance Feedforward approach, which compensates only for the wind-induced forces and moments, the Nonlinear Dynamic Inversion approach compensates for the complete nonlinear system dynamics. Rather than isolating the disturbance contribution, NDI simultaneously cancels gravitational, buoyant, aerodynamic, and Coriolis forces to approximately transform the nonlinear system into an linear input-output behavior.
+
+Starting again from the equations of motion introduced in Section~\ref{sec:2.2AirshipModel},
+
+% EOM
 \begin{equation}
-	todo
+	\bm{M}\dot{\bm{\nu}}
+	=
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{prop}(\bm{u})
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x}),
+	\label{eq:EOMNDI}
 \end{equation}
 
+and replacing the generalized propulsion force by the sum of the PID and compensation terms yields
 
-For NDi the model was tuned on the unforced model (so total forces were set to zero). This allows for an pretty fast PID. But again under real conditions this does not provide good results. As there is too much uncertainty in it.
+% EOM with control split
+\begin{equation}
+	\bm{M}\dot{\bm{\nu}}
+	=
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+	+ 
+	\bm{\mathcal{F}}_\mathrm{PID} 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{comp}.
+	\label{eq:EOMNDIsplit}
+\end{equation}
 
-Given perfect measurements and wind estimate the NDI achieves perfect compensation of all acting forces.
+This has the same nonlinear input-affine structure as Eq.~\eqref{eq:stateSpaceNDI}, with $\bm{g}(\bm{x})$ again reducing to an identity mapping. 
+In contrast to the Disturbance Feedforward approach, the disturbance does not need to be isolated explicitly, but is treated as part of the nonlinear dynamics $\bm{f}(\bm{x}, \bm{d})$. The resulting ideal NDI compensation is therefore given by
 
+% NDI compensation law
+\begin{equation}
+	\bm{\mathcal{F}}_\mathrm{comp} 
+	= 
+	-\Big(
+	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+	+ 
+	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
+	- 
+	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+	\Big).
+	\label{eq:NDIcompensation}
+\end{equation}
+
+Substituting Eq.~\eqref{eq:NDIcompensation} into Eq.~\eqref{eq:EOMNDIsplit} exactly cancels the nonlinear dynamics term, leaving
+
+% compensated dynamics
+\begin{equation}
+	\bm{M}\dot{\bm{\nu}} = \bm{\mathcal{F}}_\mathrm{PID}.
+	\label{eq:EOMNDIcompensated}
+\end{equation}
+
+Under the assumption of perfect cancellation, Eq.~\eqref{eq:EOMNDIcompensated} represents an exact feedback linearization of the airship dynamics, resulting in a linear closed-loop system. Consequently, the PID controller no longer needs to compensate for the underlying nonlinear dynamics or wind-induced disturbances.
+
+As with the Disturbance Feedforward approach, perfect cancellation cannot be achieved in practice due to wind estimation errors and inaccuracies in the underlying models. First, evaluating $\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A)$ requires the aerodynamic velocity $\bm{v}_A$, whereas only an estimate $\hat{\bm{v}}_A$ is available obtained according to Eq.~\eqref{eq:vAhat}. Second, the models of the gravitational, buoyant, aerodynamic, and Coriolis forces are themselves approximations and do not capture all physical effects acting on the airship. 
+%Combining these two error sources, the compensation actually applied is
+%% realized NDI compensation
+%\begin{equation}
+%	\hat{\bm{\mathcal{F}}}_\mathrm{comp} 
+%	= 
+%	-\Big[
+%	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+%	+ 
+%	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+%	+ 
+%	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \hat{\bm{v}}_A) 
+%	- 
+%	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+%	\Big],
+%	\label{eq:NDIcompensationRealized}
+%\end{equation}
+%
+%rather than the ideal compensation given in Eq.~\eqref{eq:NDIcompensation}.
+
+In contrast to the Disturbance Feedforward approach, which compensates only the wind-induced aerodynamic contribution, NDI relies on accurate models of the complete nonlinear dynamics. Consequently, NDI is considerably more sensitive to modeling errors and generally requires greater control authority, as the complete nonlinear force vector is cancelled at each time step rather than only the wind-induced component.

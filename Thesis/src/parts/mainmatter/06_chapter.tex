@@ -10,3 +10,7 @@ Angular rates of the wind are described by transition functions of order 2 (for 
 It remains to investigate whether the gain in performance can justify the increased complexity.
 
 The Wind estimation proved to be particulary reliable. This information can be used for advanced control and trajectory planning algorithms like MPC to increase the performance compared to the current PID setup.
+
+Increase performance for hovering
+
+Split up estimation in turbulence and mean wind to correctly use the mean wind CS for the Dryden turbulence.
