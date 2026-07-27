@@ -8,7 +8,8 @@
 }
 
 % Fundamentals %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modeling
+
+% Modeling %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mechanical Principles
 @book{Fossen2021Handbook,
 	author = {Fossen, Thor},
@@ -56,24 +57,17 @@
 	url = {https://doi.org/10.7551/mitpress/4443.001.0001},
 }
 
-%% Kalman Filter
-
-@ARTICLE{Julier2004UKF,
-	author={Julier, S.J. and Uhlmann, J.K.},
-	journal={Proceedings of the IEEE}, 
-	title={Unscented filtering and nonlinear estimation}, 
-	year={2004},
-	volume={92},
-	number={3},
-	pages={401-422},
-	keywords={Filtering;Nonlinear systems;Target tracking;Control systems;Particle tracking;Kalman filters;Vehicles;Navigation;Chemical processes;Nonlinear control systems},
-	doi={10.1109/JPROC.2003.823141}
+@techreport{Munk1924Aerodynamic,
+	author      = {Munk, Max M.},
+	title       = {The Aerodynamic Forces on Airship Hulls},
+	institution = {National Advisory Committee for Aeronautics},
+	number      = {NACA Report No. 184},
+	year        = {1924}
 }
 
 
 
-%% Wind
-
+%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @book{Etkin1995Dynamics,
 	title={Dynamics of Flight: Stability and Control},
 	author={Etkin, B. and Reid, L.D.},
@@ -104,7 +98,7 @@
 	doi       = {10.2514/8.2491}
 }
 
-@techreport{Milhdbk1797,
+@techreport{MILHDBK1797,
 	title = {Flying Qualities of Piloted Aircraft},
 	institution = {U.S. Department of Defense},
 	number = {MIL-HDBK-1797},
@@ -130,8 +124,55 @@
 	month       = {March}
 }
 
+% Kalman Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Störgrößenaufschaltung
+@inproceedings{Kalman1960KF,
+	title={A new approach to linear filtering and prediction problems" transaction of the asme~journal of basic},
+	author={Rudolf E. K{\'a}lm{\'a}n},
+	year={1960},
+	url={https://api.semanticscholar.org/CorpusID:259115248}
+}
+
+@book{Maybeck1979KF,
+	abstract = {Stochastic Models: Estimation and Control: v. 1},
+	author = {Maybeck, Peter S.},
+	address = {New York},
+	booktitle = {Stochastic models, estimation and control. Volume 1},
+	isbn = {1-282-29028-2},
+	keywords = {System analysis ; Control theory ; Estimation theory},
+	language = {eng},
+	publisher = {Academic Press},
+	series = {Mathematics in science and engineering ; v. 141},
+	title = {Stochastic models, estimation and control. / Peter S. Maybeck. Volume 1 /},
+	year = {1979},
+}
+
+@book{Särkkä2013KF, 
+	place={Cambridge}, 
+	series={Institute of Mathematical Statistics Textbooks}, 
+	title={Bayesian Filtering and Smoothing}, 
+	publisher={Cambridge University Press},
+	author={Särkkä, Simo}, 
+	year={2013}, 
+	collection={Institute of Mathematical Statistics Textbooks}
+	}
+
+
+% UKF
+@ARTICLE{Julier2004UKF,
+	author={Julier, S.J. and Uhlmann, J.K.},
+	journal={Proceedings of the IEEE}, 
+	title={Unscented filtering and nonlinear estimation}, 
+	year={2004},
+	volume={92},
+	number={3},
+	pages={401-422},
+	keywords={Filtering;Nonlinear systems;Target tracking;Control systems;Particle tracking;Kalman filters;Vehicles;Navigation;Chemical processes;Nonlinear control systems},
+	doi={10.1109/JPROC.2003.823141}
+}
+
+
+%% Compensation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @book{Lunze2012Regelungstechnik1,
 	author    = {Jan Lunze},
 	title     = {Regelungstechnik 1: Systemtheoretische Grundlagen, Analyse und Entwurf einschleifiger Regelungen},
@@ -194,4 +235,19 @@
 	author={Jean-Jacques E. Slotine and Weiping Li},
 	year={1991},
 	url={https://api.semanticscholar.org/CorpusID:106519536}
+}
+
+
+
+% Results and Evaluation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@article{Chai2014RMSE,
+	author  = {Chai, Tianfeng and Draxler, Roland R.},
+	title   = {Root mean square error ({RMSE}) or mean absolute error ({MAE})? -- Arguments against avoiding {RMSE} in the literature},
+	journal = {Geoscientific Model Development},
+	volume  = {7},
+	number  = {3},
+	pages   = {1247--1250},
+	year    = {2014},
+	doi     = {10.5194/gmd-7-1247-2014}
 }
