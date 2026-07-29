@@ -1,14 +1,18 @@
 \chapter{model-based wind estimation and compensation}%
 \label{chap:developed-work}
 
-There exist several estimation methods in control theory. Beginning from simple linear models like the Luenberger Observer etc...
-The idea is to combine the knowledge about the nonlinear airships dynamics, which have been developed in Section~\ref{sec:2.2.AirshipModel} and the wind model into use a state estimation method. Therefore the Kalman Filter proves to be the perfect solution optimally combining dynamics and measurements. \todo{why KF}
+This chapter describes the implementation of the proposed model-based wind estimation and compensation framework. First, the Dryden turbulence model is incorporated into the nonlinear airship model and the resulting augmented system is discretized to obtain a discrete-time state-space representation suitable for recursive state estimation. Subsequently, the implementation of the Unscented Kalman Filter (UKF) and the Extended Kalman Filter (EKF) is presented. Finally, the estimated wind states are used to realize the disturbance compensation methods described at the end of this chapter.
 
 
 
 
 
 \section{Model}
+
+The airship model derived in Section~\ref
+Given: 6 state model from intro
+extend to 12 state to use the measurements of the position and attitude for the kalman filter framework
+extend to 17 states given the realization of the wind in 5 states
 First a complete model is required to calculate the state transition function from it. Therefore we augment the six state airship model including any states that have known dynamics and are measured (position + attitude) and the wind states.
 
 Introduce state vector (12 states) and show that all gen forces can be expressed depending on those states.
@@ -41,6 +45,9 @@ As the dryden wind parameters depend exclusively on the altitude h and W20 in a 
 
 We obtain a stochastical state space model instead of a deterministic one.
 
+
+
+combined dynamics
 
 \subsection{Discretization}
 exact discretization of the wind dynamics, approx of model dynamics
@@ -83,6 +90,9 @@ The measurement function directly follows from the sensor equipment on board of 
 we have $Q = [Q_model, Q_wind]$
 uncertainty through unmodeled forces
 uncertainty coming from wind -> discretization of covariance
+
+It should be noted that modeling the process noise covariance as a function of the state, e.g., through the dependence of the force uncertainty on the force magnitude, does not violate the assumption $\mathbb{E}[(\bm{x}_k - \bar{\bm{x}}_k)\bm{q}_k^T] = 0$ introduced above. This assumption only requires the process noise to be conditionally zero-mean given the state, $\mathbb{E}[\bm{q}_k \mid \bm{x}_k] = 0$, which permits its covariance $\bm{Q}_k$ to depend on the state while the cross-covariance with the state remains zero. In practice, however, $\bm{Q}_k$ cannot be evaluated at the true, unknown state and is instead evaluated at the current state estimate, $\bm{Q}_k = \bm{Q}(\hat{\bm{x}}_{k|k-1})$. This introduces a coupling between the state estimate and the assumed process noise level, which is a common approximation in state-dependent noise modeling \cite{Simon2006OptimalStateEstimation}.
+
 
 measurement noise from sensor specifications
 Pitot tube only measurements if $u > 2 m/s$. To account for this we implement a time varying measurement noise, setting $R_{pitot tube} \rightarrow \infty$ if airspeed in x-direction is < 2.

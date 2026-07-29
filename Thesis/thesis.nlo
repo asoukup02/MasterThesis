@@ -9,10 +9,9 @@
 \nomenclatureentry{D$(\cdot)_B$@[{$(\cdot)_B$}]\begingroup Quantity describing the body\nomeqref {2.2}|nompageref}{6}
 \nomenclatureentry{AKF@[{KF}]\begingroup Kalman Filter\nomeqref {2.49}|nompageref}{17}
 \nomenclatureentry{AMMSE@[{MMSE}]\begingroup Minimum Mean Square Error\nomeqref {2.49}|nompageref}{17}
-\nomenclatureentry{AKF@[{KF}]\begingroup Kalman Filter\nomeqref {2.60}|nompageref}{19}
-\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.71}|nompageref}{21}
-\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.71}|nompageref}{21}
-\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.71}|nompageref}{21}
-\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.71}|nompageref}{21}
-\nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.71}|nompageref}{21}
-\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{33}
+\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.72}|nompageref}{21}
+\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.86}|nompageref}{23}
+\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{37}
