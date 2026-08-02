@@ -50,6 +50,7 @@ yields a good basis for wind compensation where good disturbance estimation is o
 
 
 \subsection{Sensitivity to wind parameters}
+\label{sec:5.1.1W20}
 
 As stated in introduction wind the parameter reference wind velocity W20 cannot be determined depending on states directly, it has to be estimated beforehand. We cannot know the true W20 value of the environment, but we have to give it to the wind model incorporated into the model. So we need to find an estimate for W20 that works with all wind scenarios we encounter and want to achieve good performance for (up to 30kmh) 
 
@@ -211,6 +212,8 @@ What happens with the wind estimation if W20est too big?
 	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
 	\label{fig:my_figure}
 \end{figure}
+
+One can nicely see the transient pahse as described in \ref{sec:3.1.7Initialization}. the init doesnt matter for long term
 
 \begin{figure}[htbp]
 	\centering

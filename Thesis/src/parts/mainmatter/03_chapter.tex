@@ -1,98 +1,385 @@
 \chapter{model-based wind estimation and compensation}%
 \label{chap:developed-work}
 
-This chapter describes the implementation of the proposed model-based wind estimation and compensation framework. First, the Dryden turbulence model is incorporated into the nonlinear airship model and the resulting augmented system is discretized to obtain a discrete-time state-space representation suitable for recursive state estimation. Subsequently, the implementation of the Unscented Kalman Filter (UKF) and the Extended Kalman Filter (EKF) is presented. Finally, the estimated wind states are used to realize the disturbance compensation methods described at the end of this chapter.
-
-
-
-
-
-\section{Model}
-
-The airship model derived in Section~\ref
-Given: 6 state model from intro
-extend to 12 state to use the measurements of the position and attitude for the kalman filter framework
-extend to 17 states given the realization of the wind in 5 states
-First a complete model is required to calculate the state transition function from it. Therefore we augment the six state airship model including any states that have known dynamics and are measured (position + attitude) and the wind states.
-
-Introduce state vector (12 states) and show that all gen forces can be expressed depending on those states.
-
-From the dynamics we get:
-\begin{equation}
-	\bm{M}\dot{\bm{\nu}}
-	=
-	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) + \bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) + \bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{V_A}) + \bm{\mathcal{F}}_\mathrm{prop}(\bm{u})
-	- \bm{\mathcal{F}}_\mathrm{cor}(\bm{x}).
-\end{equation}
-
-State space realization of the wind model. The parameters of the dryden wind model depend on the flight states, so we can easily express them depending on the state.
-Only the computation of W20 and wind direction is not state dependent, this is evaluated in \todo{ref}
-
-
-
-
-
-\subsection{Wind model}
-
-As stated in \todo{cite} the wind is described by a constant wind vector with turbulences, described by linear shaping filters. 
-As the state space realization of the constant wind is simply zero, we do not have to consider it in our state space implementation. The state space realization of the dryden model is given by:
-
-where eta describes white noise.
-
-
-
-As the dryden wind parameters depend exclusively on the altitude h and W20 in a nonlinear fashion, we can write the turbulence model as a nonlinear function depending on the states. W20 is chosen as a constant value, see \todo{cite}
-
-We obtain a stochastical state space model instead of a deterministic one.
-
-
-
-combined dynamics
-
-\subsection{Discretization}
-exact discretization of the wind dynamics, approx of model dynamics
+This chapter presents the implementation of the proposed model-based wind estimation and compensation framework.The first part focuses on the implementation of the Kalman filter used for wind estimation, including the required model formulation and discretization. In the second part, the estimated wind velocity is utilized to implement the disturbance compensation methods.
 
 
 
 
 
 \section{Kalman Filter}
-To get an Kalman Filter running we need a system in the following form
-\begin{itemize}
-	\item discrete state transition function
-	\item discrete measurement function
-	\item Process noise
-	\item Measurement noise
-\end{itemize}
-\todo{write down eq, with f, h, Q, R}
 
-We consider the case of additive process noise, which becomes clear later as we derive the equations.
+The implementation of the Kalman filter requires a discrete-time state-space model of the airship dynamics that captures the influence of wind. Starting from the nonlinear airship model, the Dryden wind model is incorporated to obtain an augmented state-space representation. Subsequently, the continuous-time system is discretized and the corresponding process noise covariance matrices are derived. Based on this discrete-time model, the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) are implemented for recursive wind estimation.
 
 
 
 
 
-\subsection{discrete state transition function}
+\subsection{State Space Description}
+\label{sec:3.1.1StateSpace}
+
+A valid and complete state space description is the fundamental prerequisite for implementing a Kalman filter. While the filter algorithm itself follows a well-defined prediction and correction procedure, its performance depends heavily on an accurate mathematical representation of the system dynamics and the available measurements \cite{Särkka2013KF}. Consequently, deriving an appropriate state space description is the first step toward implementing the wind estimation and compensation strategy presented in this thesis.
+
+The airship model derived in Section~\ref{sec:2.2AirshipModel} describes the translational and rotational dynamics using the generalized velocity vector
+
+\begin{equation}
+	{}_B \bm{\nu} =
+	\begin{bmatrix}
+		{}_B \bm{v}_B \\
+		{}_B \bm{\omega}_B
+	\end{bmatrix},
+\end{equation}
+
+where ${}_B\bm{v}_B$ and ${}_B\bm{\omega}_B$ denote the translational and angular velocities expressed in the body-fixed coordinate system. The rigid-body dynamics depend on the generalized forces acting at the COG and have been derived as
+
+\begin{equation}
+	\bm{M} {}_B \dot{\bm{\nu}}
+	=
+	{}_B \bm{\mathcal{F}}_\mathrm{grav}^\mathrm{\, COG}
+	+ {}_B \bm{\mathcal{F}}_\mathrm{buoy}^\mathrm{\, COG}
+	+ {}_B \bm{\mathcal{F}}_\mathrm{aero}^\mathrm{\, COG}
+	+ {}_B \bm{\mathcal{F}}_\mathrm{prop}^\mathrm{\, COG}
+	- {}_B \bm{\mathcal{F}}_\mathrm{cor}^\mathrm{\, COG}.
+	\label{eq:EOM_SS}
+\end{equation}
+
+Although Eq.~\eqref{eq:EOM_SS} describes the motion of the airship, it does not represent a complete state space description yet.
+
+First, the generalized forces acting on the airship do not depend on $\bm{\nu}$ alone. For example, $\bm{\mathcal{F}}_\mathrm{grav}$ and $\bm{\mathcal{F}}_\mathrm{buoy}$ must be transformed into the body-fixed coordinate system and thus depend on the attitude $\bm{\Theta}$ of the airship. To obtain a state-space model whose state evolution depends only on the current state and inputs, the attitude must be included in the state vector.
+
+Furthermore, the state-space model requires an output equation relating the state to the available onboard sensor measurements. As described in \todo{ref}, the airship is equipped with sensors providing measurements of its position and attitude.
+Therefore, to express the measurements as a function of the state, both position $\bm{p}$ and attitude $\bm{\Theta}$ must be included in the state.
+
+Consequently, the state vector is defined as
+
+\begin{equation}
+	\bm{x}
+	=
+	\begin{bmatrix}
+		{}_E \bm{p} \\
+		\bm{\Theta} \\
+		{}_B \bm{v}_B \\
+		{}_B \bm{\omega}_B
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		x \\ y \\ z \\ \phi \\ \theta \\ \psi \\ u \\ v \\ w \\  p \\ q \\ r
+	\end{bmatrix},
+\end{equation}
+
+where ${}_E \bm{p}$ represents the position in the earth-fixed coordinate system, whose kinematics are given by
+
+\begin{equation}
+	{}_E \dot{\bm{p}}
+	=
+	\begin{bmatrix}
+		\dot{x} \\ \dot{y} \\ \dot{z}
+	\end{bmatrix}
+	=
+	\bm{R}_{EB} {}_B \bm{v}_B,
+\end{equation}
+
+and $\bm{\Theta}$ contains the attitude angles, with respective kinematics \cite{Fossen2021Handbook}
+
+\begin{equation}
+	\dot{\bm{\Theta}}
+	=
+	\begin{bmatrix} 
+		\dot{\phi} \\ \dot{\theta} \\ \dot{\psi} 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		1 & \sin\phi\tan\theta & \cos\phi\tan\theta \\
+		0 & \cos\phi & -\sin\phi \\
+		0 & \dfrac{\sin\phi}{\cos\theta} & \dfrac{\cos\phi}{\cos\theta}
+	\end{bmatrix}
+	{}_B \bm{\omega}_B
+	=
+	\bm{J}(\bm{\Theta}) {}_B \bm{\omega}_B.
+\end{equation}
+
+Combining the rigid-body dynamics in Eq.~\eqref{eq:EOM_SS} with the kinematic equations for position and attitude yields the nonlinear state-space model
+
+\begin{equation}
+	\dot{\bm{x}}
+	=
+	\begin{bmatrix}
+		{}_E \dot{\bm{p}} \\
+		\dot{\bm{\Theta}} \\
+		{}_B \dot{\bm{v}}_B \\
+		{}_B \dot{\bm{\omega}}_B
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\bm{R}_{EB} \, {}_B\bm{v}_B \\[6pt]
+		\bm{J}(\bm{\Theta}) {}_B \bm{\omega}_B \\[6pt]
+		\bm{M}^{-1} \left( 	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+		+ 
+		\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+		+ 
+		\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v_A}) 
+		+ 
+		\bm{\mathcal{F}}_\mathrm{prop}(\bm{u})
+		- 
+		\bm{\mathcal{F}}_\mathrm{cor}(\bm{x}) \right)
+	\end{bmatrix}.
+	\label{eq:StateSpaceModel}
+\end{equation}
+
+\begin{equation}
+	\bm{y} = \bm{h}(\bm{x}) = \bm{x}.
+\end{equation}
+
+However, the aerodynamic forces and moments $\bm{\mathcal{F}}_\mathrm{aero}$ depend explicitly on the aerodynamic velocity, which is influenced by the wind velocity. Therefore, the wind dynamics must be incorporated into the state representation to obtain a complete model suitable for wind estimation.
+The incorporation of the wind model and the resulting augmented state space description are presented in  Section~\ref{sec:3.1.2WindModel}.
+
+The state space model derived above represents a deterministic description of the airship dynamics. In practice, however, both the system model and the sensor measurements are subject to uncertainty. Modeling inaccuracies arise primarily from the aerodynamic and propulsion models due to parameter uncertainties, simplifications, and unmodeled effects, while sensor measurements are affected by measurement noise. To account for these uncertainties, the system and measurement equations are augmented with stochastic process and measurement noise, respectively.
+
+Since the airship dynamics are formulated on a force and moment level, the process noise is introduced at the same level. This preserves the physical structure of the equations of motion while directly representing uncertainties in the modeled aerodynamic and propulsion forces and moments. The generalized force and moment vector is therefore modeled as
+
+\begin{equation}
+	\bm{\mathcal{F}}
+	=
+	\bm{\mathcal{F}}_{\mathrm{model}}
+	+
+	\bm{\zeta} 
+	\qquad
+	\text{with}
+	\qquad
+	\bm{\zeta}
+	\sim
+	\mathcal{N}
+	\left(
+	\bm{0},
+	\bm{\Sigma}_{\zeta}
+	\right),
+\end{equation}
+
+where $\bm{\mathcal{F}}_{\mathrm{model}}$ denotes the nominal generalized force and moment vector obtained from the airship model, and $\bm{\zeta}$ represents the modeling uncertainty associated with the aerodynamic and propulsion components.
+To reflect the assumption that modeling errors increase with the magnitude of the acting forces and moments, the standard deviation is chosen proportional to the corresponding aerodynamic and propulsion generalized forces,
+
+\begin{equation}
+	\bm{\sigma}_{\zeta}
+	=
+	\alpha_{\mathrm{aero}}
+	\left|
+	\bm{\mathcal{F}}_{\mathrm{aero}}
+	\right|
+	+
+	\alpha_{\mathrm{prop}}
+	\left|
+	\bm{\mathcal{F}}_{\mathrm{prop}}
+	\right|,
+\end{equation}
+
+where $\left|\cdot\right|$ denotes the element wise absolute value and $\alpha_{\mathrm{aero}}$ and $\alpha_{\mathrm{prop}}$ are tuning parameters that determine the relative uncertainty associated with the aerodynamic and propulsion models. In this work, both parameters are chosen as $\alpha_{\mathrm{aero}} = \alpha_{\mathrm{prop}} = 0.1$ corresponding to a standard deviation of each uncertain force and moment component equal to $10\%$ of its magnitude.
+
+The covariance matrix used for the process noise is then obtained as
+
+\begin{equation}
+	\bm{\Sigma}_{\zeta}
+	=
+	\operatorname{diag}
+	\left(
+	\bm{\sigma}_{\zeta}^2
+	\right).
+\end{equation}
+
+Similarly, the measurement noise is modeled as additive zero-mean Gaussian noise acting on the measurement equation
+
+\begin{equation}
+	\bm{y}
+	=
+	\bm{h}(\bm{x})
+	+
+	\bm{\xi} 
+	\qquad
+	\text{with}
+	\qquad
+	\bm{\xi}
+	\sim
+	\mathcal{N}
+	\left(
+	\bm{0},
+	\bm{\Sigma}_{\xi}
+	\right).
+\end{equation}
+
+Assuming uncorrelated noise across the individual sensor channels, the measurement noise covariance follows directly from the selected standard deviations,
+
+\begin{equation}
+	\bm{\Sigma}_{\xi}
+	=
+	\operatorname{diag}
+	\left(
+	\bm{\sigma}_{\xi}^{2}
+	\right),
+\end{equation}
+
+where $\bm{\sigma}_{\xi}$ contains conservative estimates for the standard deviations of the individual measured quantities. The chosen measurement noise standard deviations are summarized in Appendix~\ref{sec:...}.
 
 
 
 
 
-\subsection{discrete measurement function}
-The measurement function directly follows from the sensor equipment on board of the airship
+\subsection{Including the Wind Model}
+\label{sec:3.1.2WindModel}
+
+As stated in Section~\ref{sec:2.3WindModel}, the wind is modeled as the sum of constant wind and turbulence described by the Dryden turbulence model,
+
+\begin{equation}
+	{}_E \bm{v}_W = {}_E \bm{v}_{W, \mathrm{const}} + {}_E \bm{v}_{W, \mathrm{turb}}.
+\end{equation}
+
+To incorporate the wind model into the airship state space description, a state space realization of the wind dynamics is required. The dynamics of the constant wind component are simply given by
+
+\begin{equation}
+	{}_E\dot{\bm{v}}_\mathrm{const}=\bm{0}.
+\end{equation}
+
+Hence, the dynamic part of the wind model is entirely described by the Dryden turbulence model.
+The turbulent wind component is generated by passing white Gaussian noise through the Dryden shaping filters introduced in Section~\ref{sec:2.3.1Dryden}. Consequently, state space realizations of the transfer functions in Eqs.~\eqref{eq:Dryden_Hu}, \eqref{eq:Dryden_Hv}, and \eqref{eq:Dryden_Hw} are required. Using the controllable canonical form \cite{Lunze2012Regelungstechnik1} and introducing the white Gaussian noise $\eta_i \sim \mathcal{N}(0, 1)$, the first-order transfer function for the longitudinal wind component yields
+
+\begin{align}
+	\dot{x}_u
+	&=
+	\underbrace{
+	-\frac{V}{L_u}x_u
+	}_{\eqqcolon \bm{A}_u}
+	+ \eta_u, 
+	\\[4pt]
+	{}_E u_W
+	&=
+	\underbrace{
+	\sigma_u
+	\sqrt{\frac{2V}{\pi L_u}}
+	}_{\eqqcolon \bm{C}_u}
+	\,x_u .
+\end{align}
+
+The lateral and vertical shaping filters share the same state space structure. As both are of second order their state space representation is of dimension two. For the generic wind component $i\in\{v,w\}$, the realization is given by
+
+\begin{align}
+	\dot{\bm{x}}_i
+	&=
+	\underbrace{
+	\begin{bmatrix}
+		0 & 1\\[4pt]
+		-\dfrac{V^2}{L_i^2} &
+		-\dfrac{2V}{L_i}
+	\end{bmatrix}
+	}_{\eqqcolon \bm{A}_i}
+	\bm{x}_i
+	+
+	\begin{bmatrix}
+		0\\
+		1
+	\end{bmatrix}
+	\eta_i,
+	\\[8pt]
+	{}_E i_W
+	&=
+	\underbrace{
+	\begin{bmatrix}
+		\sigma_i \dfrac{V}{L_i}\sqrt{\dfrac{V}{\pi L_i}} &
+		\sigma_i \sqrt{\dfrac{3V}{\pi L_i}}
+	\end{bmatrix}
+	}_{\eqqcolon \bm{C}_i}
+	\bm{x}_i .
+\end{align}
+
+As defined in Section~\ref{sec:2.3.1Dryden}, the scale lengths $L_i$ depend on the flight altitude $h=-z$. The reference wind speed is assumed constant with $W_{20}=10\,\mathrm{m/s}$, allowing the turbulence intensities $\sigma_i$ to be precomputed. This assumption is justified in Section~\ref{sec:5.1.1W20}. Furthermore, since $V=\|{}_B\bm{v}_B\|_2$, the system matrices $\bm{A}_i$ and $\bm{C}_i$ depend on the airship state.
+
+Combining the state space realization for longitudinal, lateral and vertical wind direction yields the probabilistic state space description
+
+\begin{align}
+	\dot{\bm{x}}_W
+	&=
+	\underbrace{
+		\begin{bmatrix}
+			\bm{A}_u & \bm{0} & \bm{0}\\
+			\bm{0} & \bm{A}_v & \bm{0}\\
+			\bm{0} & \bm{0} & \bm{A}_w
+		\end{bmatrix}
+	}_{\eqqcolon \bm{A}_W(\bm{x})}
+	\bm{x}_W
+	+
+	\underbrace{
+		\begin{bmatrix}
+			1 & 0 & 0\\
+			0 & 0 & 0\\
+			0 & 1 & 0\\
+			0 & 0 & 0\\
+			0 & 0 & 1
+		\end{bmatrix}
+	}_{\eqqcolon \bm{B}_W}
+	\bm{\eta},
+	\\[8pt]
+	{}_E\bm{v}_{W}
+	&=
+	\underbrace{
+		\begin{bmatrix}
+			\bm{C}_u & \bm{0} & \bm{0}\\
+			\bm{0} & \bm{C}_v & \bm{0}\\
+			\bm{0} & \bm{0} & \bm{C}_w
+		\end{bmatrix}
+	}_{\eqqcolon \bm{C}_W(\bm{x})}
+	\bm{x}_W,
+	\label{eq:WindRelation}
+\end{align}
+
+where $\bm{A}_W(\bm{x}) \in \mathbb{R}^{5 \times 5}$ and $\bm{C}_W(\bm{x}) \in \mathbb{R}^{3 \times 5}$ depend on the state $\bm{x}$.
+The wind model can now be appended to the airship state space model, yielding the augmented state vector
+
+\begin{equation}
+	\tilde{\bm{x}} 
+	=
+	\begin{bmatrix}
+		\bm{x} \\ \bm{x}_W
+	\end{bmatrix}.
+\end{equation}
+
+Although the complete wind model consists of a constant and a turbulent component, only the Dryden filter states are appended to the system state as they describe the wind dynamics. Consequently, the augmented model contains only the five Dryden states, representing the internal states of the Dryden shaping filters. They can be used to describe the wind velocity according to Eq.\eqref{eq:WindRelation}. As a result the aerodynamic velocity is given by
+
+\begin{equation}
+	{}_B \bm{v}_A 
+	= 
+	{}_B \bm{v}_B - {}_B \bm{v}_W
+	=
+	{}_B \bm{v}_B - \bm{R}_{BE} \bm{C}_W(\bm{x}) \bm{x}_W ,
+\end{equation}
+
+which allows all aerodynamic forces and moments to be expressed as functions of the augmented state. This completes the nonlinear state space description of the airship, which is now given in the structure
+
+\begin{align}
+	\dot{\tilde{\bm{x}}} 
+	&= 
+	\begin{bmatrix}
+		\dot{\bm{x}} \\ \dot{\bm{x}}_W
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\bm{f}(\tilde{\bm{x}}, \bm{u})
+		\\
+		\bm{A}_W \bm{x}_W
+	\end{bmatrix}
+	+ 
+	\begin{bmatrix}
+		\bm{M}^{-1} \bm{\zeta} 
+		\\
+		\bm{B}_W \bm{\eta}
+	\end{bmatrix},
+	\\[4pt]
+	\bm{y} 
+	&=
+	\bm{h}(\tilde{\bm{x}}) + \bm{\xi}.
+\end{align}
 
 
 
 
 
-\subsection{Process Noise and Measurement Noise}
-
-we have $Q = [Q_model, Q_wind]$
-uncertainty through unmodeled forces
-uncertainty coming from wind -> discretization of covariance
-
-It should be noted that modeling the process noise covariance as a function of the state, e.g., through the dependence of the force uncertainty on the force magnitude, does not violate the assumption $\mathbb{E}[(\bm{x}_k - \bar{\bm{x}}_k)\bm{q}_k^T] = 0$ introduced above. This assumption only requires the process noise to be conditionally zero-mean given the state, $\mathbb{E}[\bm{q}_k \mid \bm{x}_k] = 0$, which permits its covariance $\bm{Q}_k$ to depend on the state while the cross-covariance with the state remains zero. In practice, however, $\bm{Q}_k$ cannot be evaluated at the true, unknown state and is instead evaluated at the current state estimate, $\bm{Q}_k = \bm{Q}(\hat{\bm{x}}_{k|k-1})$. This introduces a coupling between the state estimate and the assumed process noise level, which is a common approximation in state-dependent noise modeling \cite{Simon2006OptimalStateEstimation}.
-
+\subsection{Airspeed Sensor}
 
 measurement noise from sensor specifications
 Pitot tube only measurements if $u > 2 m/s$. To account for this we implement a time varying measurement noise, setting $R_{pitot tube} \rightarrow \infty$ if airspeed in x-direction is < 2.
@@ -100,21 +387,247 @@ To understand why this works lets look at the computation of the kalman gain. R 
 
 
 
+\subsection{Discretization}
+
+The Kalman filter framework requires a discrete-time state transition function and measurement function. Therefore, the continuous-time nonlinear state space model derived in the previous sections is transformed into the discrete form
+
+\begin{align}
+	\tilde{\bm{x}}_k 
+	&= 
+	\bm{f}_d(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1}) + \bm{q}_{k-1}, 
+	\\[4pt]
+	\bm{y}_k 
+	&= 
+	\bm{h}_d(\tilde{\bm{x}}_k) + \bm{r}_k.
+\end{align}
+
+where the discrete process and measurement noise are assumed to be zero-mean Gaussian stochastic processes,
+
+\begin{equation}
+	\bm{q}_{k}
+	\sim
+	\mathcal{N}(\bm{0},\bm{Q}_{k}),
+	\qquad
+	\bm{r}_k
+	\sim
+	\mathcal{N}(\bm{0},\bm{R}_k).
+\end{equation}
+
+The process noise covariance combines the uncertainty of the nonlinear airship model and the discretized Dryden wind model,
+
+\begin{equation}
+	\bm{Q}_k
+	=
+	\operatorname{blkdiag}
+	\left(
+	\bm{Q}_{k, \mathrm{model}},
+	\bm{Q}_{k, \mathrm{wind}}
+	\right).
+\end{equation}
+
+Since the augmented system consists of a nonlinear airship model and a linear wind model, both subsystems are discretized separately.
+
+An exact analytical discretization of the nonlinear airship dynamics is generally not available. Therefore, the state transition is approximated using the forward Euler method,
+
+\begin{equation}
+	\bm{x}_k = \bm{x}_{k-1} + T_s \bm{f}(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1}) + \bm{q}_{k-1, \mathrm{model}},
+\end{equation}
+
+where $T_s = 0.01\,\mathrm{s}$ denotes the sampling time. The forward Euler method exhibits a global error of order $\mathcal{O}(T_s)$. Although higher-order integration methods, such as the classical fourth-order Runge--Kutta method, provide greater numerical accuracy, they require multiple evaluations of the nonlinear dynamics per sampling step. Given the small sampling time and the presence of model uncertainties represented by the process noise, the additional computational effort is not justified for the present application.
+
+The continuous-time force and moment uncertainty introduced in Section~\ref{sec:3.1.1StateSpace} is transformed into an equivalent discrete-time covariance. Following \cite{BarShalom2001Discretization} and approximating $e^{\bm{A}T_s}\approx\bm{I}$, the discrete covariance is obtained as
+
+\begin{equation}
+	\bm{Q}_{k-1, \mathrm{model}}
+	=
+	\bm{M}^{-1}
+	\bm{\Sigma}_{\zeta}(\tilde{\bm{x}}_{k-1})
+	\left(\bm{M}^{-1}\right)^T.
+\end{equation}
+
+For fixed airship states, the Dryden shaping filters constitute a linear state-space model. Consequently, the wind dynamics can be discretized exactly using the matrix exponential,
+
+\begin{equation}
+	\bm{x}_{W, k} 
+	= 
+	\bm{A}_{W, k-1} \bm{x}_{W, k-1} + \bm{q}_{k-1, \mathrm{wind}},
+\end{equation}
+
+with the discrete state transition matrix \cite{Astrom1997Discretization}
+
+\begin{equation}
+	\bm{A}_{W, k-1} 
+	= 
+	\left.
+	e^{\bm{A}_W T_s}
+	\right\vert_{\bm{x}_{k-1}}.
+\end{equation}
+
+The corresponding discrete process noise covariance is given by \cite{BarShalom2001Discretization}
+
+\begin{equation}
+	\bm{Q}_{k-1, \mathrm{wind}}
+	=
+	\left.
+	\int_0^{T_s}
+	e^{\bm{A}_W\tau}
+	\bm{B}_W
+	\bm{\Sigma}_{\eta}
+	\bm{B}_W^T
+	e^{\bm{A}_W^T\tau}
+	\,d\tau
+	\right\vert_{\bm{x}_{k-1}},
+\end{equation}
+
+where $\bm{\Sigma}_{\eta}=\bm{I}_{3\times3}$ since the driving noise processes are independent standard Gaussian white noise processes. The integral is evaluated using the van Loan method \cite{VanLoan1978}.
+
+Finally, the discretized airship dynamics and the discretized Dryden wind model are combined to obtain the complete discrete-time state transition function 
+
+\begin{equation}
+	\bm{f}_d(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1})
+	=
+	\begin{bmatrix}
+		\bm{x}_{k-1} + T_s\, \bm{f}(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1}) \\[2pt]
+		\bm{A}_{W,k-1}\, \bm{x}_{W,k-1}
+	\end{bmatrix},
+\end{equation}
+
+with process noise covariance $\bm{Q}_{k-1}$ as given above. Since the measurement model introduced in Section~\ref{sec:3.1.1StateSpace} is a static, memoryless function of the state, its discretization is trivial, $\bm{h}_d(\tilde{\bm{x}}_k) = \bm{h}(\tilde{\bm{x}}_k)$, and no separate treatment is required.
 
 
-\subsubsection{RUKU vs Euler}
+
+
+
+\subsection{Extended Kalman Filter Implementation}
+\label{sec:3.1.5EKFImplementation}
+
+The implementation of the EKF directly follows the prediction and update equations introduced in Section~\ref{sec:2.4.1EKF}. Rather than reiterating the standard algorithm, this section discusses the implementation choices made in this work. In particular, it addresses the computation of the Jacobian matrices and a numerically robust formulation of the covariance update.
 
 
 
 
 
-\section{Implementation of UKF}
-The UKF obeys 3 Parameters, which mainly influence the spread of the sigma points.
-Parameters are set to beta = 2, kappa = 0 \todo{papers}. The optimal value for alpha is determined by an optimization run.
-\section{Implementation of EKF}
-\subsection{Analytical vs Numerical Jacobian}
-\subsection{Robustify EKF}
-The EKF is not as robust as the UKF due to several reasons \todo{...}. Robustness is a important desired property of the wind estimation algorithm for the specific use case in this thesis, which is to use it for an wind compensation algorithm. Thus to further improve the robustness an Joseph Form computation of the updated covariance is implemented.
+\subsubsection{Computation of Jacobians}
+
+The EKF requires the Jacobians $\bm{F}_k$ and $\bm{H}_k$ of the discrete-time state transition function $\bm{f}_d$ and measurement function $\bm{h}_d$ with respect to the augmented state $\tilde{\bm{x}}$. Both Jacobians are evaluated at each sampling instant using the current state estimate. An analytical derivation of the state transition Jacobian $\bm{F}_k$ is not practical for the considered system. The nonlinear aerodynamic force and moment models, together with their coupling to the wind states through the relative airspeed, result in lengthy expressions that are computationally inefficient to derive symbolically and evaluate online in the Simulink environment. Instead, $\bm{F}_k$ is approximated numerically using a forward finite-difference scheme,
+
+\begin{equation}
+	\left[\bm{F}_k\right]_{i}
+	\approx
+	\frac{
+		\bm{f}_d\!\left(\hat{\tilde{\bm{x}}}_{k-1} + \varepsilon \bm{e}_i,\bm{u}_{k-1}\right)
+		-
+		\bm{f}_d\!\left(\hat{\tilde{\bm{x}}}_{k-1},\bm{u}_{k-1}\right)
+	}{\varepsilon},
+\end{equation}
+
+where $\bm{e}_i$ denotes the $i$-th unit vector and $\left[\bm{F}_k\right]_{i}$ the $i$-th column of $\bm{F}_k$. A constant perturbation size of $\varepsilon = 10^{-6}$ is used. A forward finite-difference approximation was chosen due to its lower computational cost compared with central differencing while still providing sufficient accuracy for the present application.
+
+In contrast, the measurement Jacobian $\bm{H}_k$ is computed analytically from the measurement model. The comparatively simple structure of the measurement model allows for a straightforward analytical derivation, making a numerical approximation unnecessary.
+
+
+
+
+
+\subsubsection{Robust Covariance Update}
+
+The conventional EKF covariance update given in \eqref{eq:ekf_cov_update},
+
+\begin{equation}
+	\bm{P}_k
+	=
+	\left(\bm{I} - \bm{K}_k\bm{H}_k\right)
+	\bm{P}_k^-,
+\end{equation}
+
+can be sensitive to numerical errors. Inaccuracies in the Kalman gain $\bm{K}_k$, resulting for example from the numerical approximation of the state transition Jacobian, finite-precision arithmetic, or an ill-conditioned innovation covariance matrix, may cause the covariance matrix $\bm{P}_k$ to lose symmetry or positive semidefiniteness during simulation. If left unaddressed, these numerical effects can accumulate over time and may lead to filter divergence.
+
+To improve numerical robustness, the covariance update is implemented using the Joseph form \cite{Simon2006KF},
+
+\begin{equation}
+	\bm{P}_k
+	=
+	\left(\bm{I} - \bm{K}_k\bm{H}_k\right)
+	\bm{P}_k^-
+	\left(\bm{I} - \bm{K}_k\bm{H}_k\right)^T
+	+
+	\bm{K}_k \bm{R}_k \bm{K}_k^T,
+\end{equation}
+
+which better preserves the symmetry and positive semi-definiteness of the covariance matrix in finite-precision arithmetic. This improved numerical stability comes at the cost of additional matrix multiplications compared with the conventional covariance update.
+
+
+
+
+
+\subsection{Unscented Kalman Filter Implementation}
+\label{sec:3.1.6UKFImplementation}
+
+The implementation of the UKF directly follows the prediction and update equations introduced in Section~\ref{sec:2.4.2UKF}. Therefore, this section focuses on the implementation choices specific to the augmented airship--wind model, in particular the selection of the sigma point scaling parameters and the computation of the matrix square root.
+
+
+\subsubsection{Sigma Point Parameters}
+
+The unscented transform requires the selection of three scaling parameters: $\alpha$, $\beta$, and $\kappa$. The parameter $\alpha$ determines the spread of the sigma points around the estimated mean, $\beta$ incorporates prior knowledge about the distribution and is optimal at $\beta=2$ for Gaussian distributions, while $\kappa$ serves as an additional scaling parameter.
+
+Following the scaled unscented transform formulation in \cite{Julier2004Unscented},$\kappa$ is set to $\kappa=0$, which represents a commonly used practical choice. The parameter $\beta$ is set to $\beta=2$ as we consider Gaussian state distributions.
+
+The choice of $\alpha$ has a significant influence on the sigma point distribution and therefore on the filter performance. Instead of selecting this parameter manually, its value is determined through a Bayesian optimization procedure \cite{Snoek2012Bayesian} using the wind estimation performance as the optimization objective. Based on this optimization, $\alpha=0.01$ is selected for the UKF implementation.
+
+
+
+
+
+\subsubsection{Matrix Square Root Computation}
+
+The unscented transform requires the computation of the matrix square root of the state covariance matrix in order to generate the sigma points. In the present implementation, this operation is performed using a Cholesky decomposition, which provides an efficient and numerically stable factorization for positive definite covariance matrices,
+
+\begin{equation}
+	\bm{P}_k
+	=
+	\bm{L}_k \bm{L}_k^T .
+\end{equation}
+
+However, due to numerical errors introduced during the covariance propagation and update steps, the covariance matrix may no longer be exactly symmetric or positive semidefinite in finite-precision arithmetic. Since the Cholesky decomposition requires a positive definite matrix, these small numerical deviations can cause the decomposition to fail.
+
+To improve numerical robustness, the covariance matrix is therefore regularized prior to the Cholesky decomposition. First, symmetry is enforced by averaging the covariance matrix with its transpose
+
+\begin{equation}
+	\bm{P}_k
+	\leftarrow
+	\frac{1}{2}
+	\left(
+	\bm{P}_k
+	+
+	\bm{P}_k^T
+	\right).
+\end{equation}
+
+Subsequently, an eigenvalue decomposition is performed, and negative or numerically insignificant eigenvalues are replaced by a small positive tolerance. The covariance matrix is then reconstructed from the modified eigenvalues and symmetrized again before applying the Cholesky decomposition. This procedure ensures that the covariance matrix remains suitable for the sigma point generation while preserving the original covariance structure as closely as possible.
+
+
+
+
+
+\subsection{Filter Initialization}
+\label{sec:3.1.7Initialization}
+
+The filter is initialized with a zero state estimate and a small diagonal initial covariance matrix,
+
+\begin{equation}
+	\hat{\tilde{\bm{x}}}_0 = \bm{0},
+	\qquad
+	\bm{P}_0 = 10^{-3}\bm{I},
+\end{equation}
+
+where $\bm{I}$ denotes the identity matrix of the augmented state dimension. The zero initial state estimate eliminates the need for prior knowledge of the true initial condition. A small initial covariance is selected to limit large corrections and thus ensure a smooth convergence behavior during the first filter iterations. The influence of the initial estimate and covariance is mainly limited to the transient phase, during which the filter converges from the initial estimate toward the actual state trajectory. After convergence, the filter behavior is primarily determined by the process noise covariance $\bm{Q}_{k-1}$, the measurement noise covariance $\bm{R}_k$, and the innovation sequence. Therefore, the specific choice of $\hat{\tilde{\bm{x}}}_0$ and $\bm{P}_0$ has no significant influence on the long-term estimation performance.
+
+The EKF and UKF estimate the complete augmented state vector.
+The wind estimate is subsequently obtained from the estimated wind states through the wind model output equation \eqref{eq:WindRelation}
+
+\begin{equation}
+	\boxed{{}_E \hat{\bm{v}}_W = \bm{C}_W(\hat{\bm{x}}) \hat{\bm{x}}_W.}
+\end{equation}
 
 
 
@@ -463,13 +976,15 @@ In practice, exact disturbance compensation cannot be achieved due to two main s
 The second source of error originates from the aerodynamic model $\bm{\mathcal{F}}_\mathrm{aero}$ itself, which is an approximation of the true aerodynamic forces and moments and does not take all physical effects into account. These two error sources directly affect the computation of $\Delta \bm{\mathcal{F}}_\mathrm{wind}$. Therefore, the implemented compensation is given by
 
 \begin{equation}
-	\bm{\mathcal{F}}_\mathrm{comp} 
-	= 
-	-\Delta \widehat{\bm{\mathcal{F}}}_\mathrm{wind}
-	=
-	-\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \hat{\bm{v}}_A)
-	+
-	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B), 
+	\boxed{
+		\bm{\mathcal{F}}_\mathrm{comp} 
+		= 
+		-\Delta \widehat{\bm{\mathcal{F}}}_\mathrm{wind}
+		=
+		-\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \hat{\bm{v}}_A)
+		+
+		\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_B), 
+	}
 \end{equation}
 
 rather than the ideal compensation $-\Delta \bm{\mathcal{F}}_\mathrm{wind}$ derived above.
@@ -526,17 +1041,19 @@ In contrast to the Disturbance Feedforward approach, the disturbance does not ne
 
 % NDI compensation law
 \begin{equation}
-	\bm{\mathcal{F}}_\mathrm{comp} 
-	= 
-	-\Big(
-	\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
-	+ 
-	\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
-	+ 
-	\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
-	- 
-	\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
-	\Big).
+	\boxed{
+		\bm{\mathcal{F}}_\mathrm{comp} 
+		= 
+		-\Big(
+		\bm{\mathcal{F}}_\mathrm{grav}(\bm{x}) 
+		+ 
+		\bm{\mathcal{F}}_\mathrm{buoy}(\bm{x}) 
+		+ 
+		\bm{\mathcal{F}}_\mathrm{aero}(\bm{x}, \bm{v}_A) 
+		- 
+		\bm{\mathcal{F}}_\mathrm{cor}(\bm{x})
+		\Big).
+	}
 	\label{eq:NDIcompensation}
 \end{equation}
 

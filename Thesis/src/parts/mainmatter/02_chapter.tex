@@ -802,9 +802,14 @@ is given directly in the Earth-fixed frame.
 The corresponding shaping filters, which reproduce the characteristic Dryden turbulence spectra, are defined by the following transfer functions \cite{MILHDBK1797}:
 
 \begin{align}
-	H_u(s) &= \sigma_u \sqrt{\frac{2 L_u}{\pi V}} \, \frac{1}{1 + \dfrac{L_u}{V} s} \\[6pt]
-	H_v(s) &= \sigma_v \sqrt{\frac{L_v}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_v}{V} s}{\left(1 + \dfrac{L_v}{V} s\right)^2} \\[6pt]
+	H_u(s) &= \sigma_u \sqrt{\frac{2 L_u}{\pi V}} \, \frac{1}{1 + \dfrac{L_u}{V} s} 
+	\label{eq:Dryden_Hu}
+	\\[6pt]
+	H_v(s) &= \sigma_v \sqrt{\frac{L_v}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_v}{V} s}{\left(1 + \dfrac{L_v}{V} s\right)^2} 
+	\label{eq:Dryden_Hv}
+	\\[6pt]
 	H_w(s) &= \sigma_w \sqrt{\frac{L_w}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_w}{V} s}{\left(1 + \dfrac{L_w}{V} s\right)^2},
+	\label{eq:Dryden_Hw}
 \end{align}
 
 where $V = \left\|\bm{v}_B\right\|_2$ denotes the absolute velocity of the airship and $\sigma$, $L$ are the Dryden turbulence parameters.
@@ -844,6 +849,7 @@ Since the turbulence intensities $\sigma$ scale linearly with $W_{20}$, this par
 
 
 \section{Kalman Filter}
+\label{sec:2.4KalmanFilter}
 \nomenclature[A]{KF}{Kalman Filter}
 \nomenclature[A]{MMSE}{Minimum Mean Square Error}
 
@@ -892,9 +898,7 @@ while the covariance matrix describes its deviation from the mean and is defined
 	\right].
 \end{equation}
 
-The covariance matrix serves as a measure of the uncertainty associated with a random vector. The diagonal entries of $\bm{P}_{xx}$ represent the variances of the individual components and quantify their spread around the mean, where larger variances indicate greater uncertainty. The off-diagonal entries describe the correlation between the components and indicate how the uncertainty of one component is related to the uncertainty of another. Figure~\ref{fig:gaussians} illustrates a two dimensional Gaussian random vector with different means and variance values, showing that a larger variance results in a wider spread of likely values and therefore represents greater uncertainty.
-
-%Throughout this work, the covariance matrices are assumed to be diagonal, i.e., the individual components of the state and measurement vectors are treated as uncorrelated. Since these vectors are modeled as jointly Gaussian, uncorrelatedness implies independence, so this assumption is equivalent to treating the individual components as statistically independent.
+The covariance matrix serves as a measure of the uncertainty associated with a random vector. The diagonal entries of $\bm{P}_{xx}$ represent the variances of the individual components and quantify their spread around the mean, where larger variances indicate greater uncertainty. The off-diagonal entries describe the correlation between the components and indicate how the uncertainty of one component is related to the uncertainty of another.
 
 To describe the evolution of the state over time and how the measurements relate to the system state, the Kalman filter uses a discrete-time probabilistic state-space model. 
 To account for modeling inaccuracies and measurement uncertainties, as well as the stochastic wind, the process and measurement models are augmented by additive random vectors representing process noise and measurement noise, respectively.
@@ -1165,6 +1169,7 @@ Both methods retain the recursive prediction-update structure of the classical K
 
 
 \subsection{Extended Kalman Filter}
+\label{sec:2.4.1EKF}
 \nomenclature[A]{EKF}{Extended Kalman Filter}
 
 The nonlinear discrete-time probabilistic state-space model is given by
@@ -1314,6 +1319,7 @@ The EKF approximates the nonlinear state transition and measurement functions by
 
 
 \subsection{Unscented Kalman Filter}
+\label{sec:2.4.2UKF}
 \nomenclature[A]{UKF}{Unscented Kalman Filter}
 
 The unscented Kalman filter (UKF) avoids the local linearization employed by the EKF by propagating a deterministically chosen set of sample points, referred to as \emph{sigma points}, through the nonlinear process and measurement functions $\bm{f}$ and $\bm{h}$ \cite{Julier2004UKF}. The transformed sigma points are then used to reconstruct the mean and covariance of the propagated probability distribution using the so-called \emph{unscented transform}. Since the nonlinear functions are evaluated directly rather than approximated by a first-order Taylor expansion, the unscented transform captures the mean and covariance of the transformed distribution with at least second-order accuracy for arbitrary nonlinear functions and third-order accuracy for Gaussian distributions, while avoiding the computation of Jacobians \cite{Julier2004UKF}.
@@ -1327,15 +1333,15 @@ The probability distribution of the $n$-dimensional Gaussian random vector $\bm{
 \begin{align}
 	\bm{\mathcal{X}}_0 &= \bar{\bm{x}},
 	\notag\\[4pt]
-	\bm{\mathcal{X}}_i &= \bar{\bm{x}} + \sqrt{(n+\lambda)} \left( \sqrt{\bm{P}}\right)_i,
+	\bm{\mathcal{X}}_i &= \bar{\bm{x}} + \sqrt{(n+\lambda)} \left[ \sqrt{\bm{P}}\right]_i,
 	\qquad i=1,\ldots,n,
 	\notag\\[4pt]
-	\bm{\mathcal{X}}_{i+n} &= \bar{\bm{x}} - \sqrt{(n+\lambda)} \left( \sqrt{\bm{P}}\right)_i,
+	\bm{\mathcal{X}}_{i+n} &= \bar{\bm{x}} - \sqrt{(n+\lambda)} \left[ \sqrt{\bm{P}}\right]_i,
 	\qquad i=1,\ldots,n,
 	\label{eq:sigma_points}
 \end{align}
 
-where $( \sqrt{\bm{P}} )_i$ denotes the $i$-th column of a matrix square root satisfying $\sqrt{\bm{P}} \sqrt{\bm{P}}^T = \bm{P}$ and $\lambda$ is a scaling parameter defined as 
+where $[ \sqrt{\bm{P}} ]_i$ denotes the $i$-th column of a matrix square root satisfying $\sqrt{\bm{P}} \sqrt{\bm{P}}^T = \bm{P}$ and $\lambda$ is a scaling parameter defined as 
 
 \begin{equation}
 	\lambda = \alpha^2(n+\kappa)-n.
@@ -1477,6 +1483,7 @@ Jacobian evaluation. Although the UKF still relies on a finite set of sample poi
 
 
 \section{Disturbance Compensation}
+\label{sec:2.5DisturbanceCompensation}
 \nomenclature[A]{DFF}{Disturbance Feedforward}
 \nomenclature[A]{NDI}{Nonlinear Dynamic Inversion}
 \nomenclature[A]{LTI}{linear time-invariant}

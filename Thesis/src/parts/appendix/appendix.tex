@@ -54,6 +54,33 @@ Write your appendix content here.
 	\end{tabular}
 \end{table}
 
+
+
+\begin{table}[h]
+	\centering
+	\caption{Measurement noise standard deviations used for the Kalman filter.}
+	\label{tab:measurement_noise}
+	\begin{tabular}{lll}
+		\toprule
+		Measurement & Unit & Standard deviation $\sigma_{\eta}$ \\
+		\midrule
+		Position $x$ & m & $1$ \\
+		Position $y$ & m & $1$ \\
+		Position $z$ & m & $1$ \\
+		Velocity $u$ & m/s & $0.15$ \\
+		Velocity $v$ & m/s & $0.15$ \\
+		Velocity $w$ & m/s & $0.25$ \\
+		Roll angle $\phi$ & ° & $1$ \\
+		Pitch angle $\theta$ & ° & $1$ \\
+		Yaw angle $\psi$ & ° & $2.5$ \\
+		Angular velocity $p$ & °/s & $0.5$ \\
+		Angular velocity $q$ & °/s & $0.5$ \\
+		Angular velocity $r$ & °/s & $0.5$ \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
  -----------------------------------------------------------------------------------------
 \chapter{Second Appendix}%
 \label{chap:appenB}
@@ -126,4 +153,3 @@ Table~\ref{tab:scenario_conv} shows the data for the boxplot
 		\bottomrule
 	\end{tabular}
 \end{table}
-\todo{appendix, data for boxplot}
