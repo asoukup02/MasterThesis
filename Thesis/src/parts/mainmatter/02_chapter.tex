@@ -2,6 +2,10 @@
 \label{chap:2.Fundamentals}
 This chapter introduces the theoretical foundations and key concepts required for the remainder of this thesis. It presents the coordinate systems used throughout this work, the mathematical models of the airship and the wind, the fundamentals of Kalman filtering, and the control concepts underlying the proposed wind compensation approach.
 
+
+
+
+
 \section{Coordinate Systems}
 \label{sec:2.1.CoordinateSystems}
 
@@ -11,26 +15,33 @@ This chapter introduces the theoretical foundations and key concepts required fo
 \nomenclature[A]{CS}{Coordinate System}
 \nomenclature[A]{NED}{North-East-Down convention}
 \nomenclature[A]{COG}{Center of Gravity}
+\nomenclature[A]{NED}{North-East-Down}
 
 %
 
 To describe the motion and dynamics of the airship, as well as the wind velocity acting on the vehicle, two coordinate systems (CS) are considered throughout this work: the body-fixed coordinate system and the earth-fixed coordinate system. Their definitions and the corresponding coordinate transformations are introduced in the following \cite{Fichter2009Flugmechanik}.
 
 
+
+
+
 \subsection{Body-Fixed Coordinate System}
 
 The body-fixed coordinate system $B$ is attached to the airship and therefore translates and rotates together with the vehicle.
-Its origin is located at the Center of Gravity (COG) of the airship, and the coordinate axes are aligned with the body axes according to the North-East-Down (NED) convention.
-Consequently, the $x_B$-axis points towards the nose of the airship, the $y_B$-axis points towards the right side, and the $z_B$-axis points downwards.
+Its origin is located at the Center of Gravity (COG) of the airship, and the coordinate axes are defined according to the standard body-axis convention, with the $x_B$-axis points towards the nose of the airship, the $y_B$-axis points towards the right side, and the $z_B$-axis points downwards.
 
 The body-fixed coordinate system is used to describe quantities directly related to the vehicle dynamics, such as translational and rotational velocities, aerodynamic forces, propulsion forces, and moments. Since the equations of motion are formulated in the body-fixed frame, this coordinate system represents the primary reference frame for the dynamic model. A quantity expressed in the body-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_B(\cdot)$.
 
 
+
+
+
 \subsection{Earth-Fixed Coordinate System}
 
-The earth-fixed coordinate system $E$ is introduced as an inertial reference frame for describing the position and orientation of the airship, as well as the wind velocity. For simplicity, a flat-earth assumption is made, which neglects the curvature and rotation of the Earth. This assumption is justified by the relatively short flight distances considered in this work.
+The earth-fixed coordinate system $E$ is introduced as an inertial reference frame for describing the position of the airship and the wind velocity, and serves as the reference frame relative to which the airship's orientation is defined.
+For simplicity, a flat-earth assumption is made, which neglects the curvature and rotation of the Earth. This assumption is justified by the relatively short flight distances considered in this work.
 
-The origin of the earth-fixed coordinate system is chosen as an arbitrary point on the Earth's surface. The axes are aligned according to the NED convention, where the north and east axes span the horizontal plane and the down axis points towards the Earth's center. Since the earth-fixed coordinate system is assumed to be inertial, it is considered non-accelerating and non-rotating. A quantity expressed in the earth-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_E(\cdot)$.
+The origin of the earth-fixed coordinate system is chosen as an arbitrary point on the Earth's surface. The axes are aligned according to the North-East-Down (NED) convention, where the north and east axes span the horizontal plane and the down axis points vertically downward. Since the earth-fixed coordinate system is assumed to be inertial, it is considered non-accelerating and non-rotating. A quantity expressed in the earth-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_E(\cdot)$.
 
 The transformation from the earth-fixed coordinate system to the body-fixed coordinate system is described by the rotation matrix \cite{Fossen2021Handbook}
 
@@ -58,7 +69,8 @@ The transformation from the earth-fixed coordinate system to the body-fixed coor
 	\end{bmatrix},
 \end{equation}
 
-which maps vectors expressed in the earth-fixed coordinate system into the body-fixed coordinate system. $s_{(\cdot)}$ and $c_{(\cdot)}$, denote $\sin(\cdot)$ and $\cos(\cdot)$, respectively.
+which maps vectors expressed in the earth-fixed coordinate system into the body-fixed coordinate system.
+Here $\phi$, $\theta$, and $\psi$ denote the roll, pitch, and yaw angles, describing the orientation of $B$ relative to $E$ via the ZYX Euler angle sequence and $s_{(\cdot)}$ and $c_{(\cdot)}$ denote $\sin(\cdot)$ and $\cos(\cdot)$, respectively.
 
 The inverse transformation is given by the transpose of the rotation matrix
 
@@ -70,13 +82,26 @@ The inverse transformation is given by the transpose of the rotation matrix
 
 and describes the transformation from body-fixed CS to earth-fixed CS.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\textwidth]{src/pics/CS_TODO.png}
-	\caption{Definition of the earth-fixed and body-fixed coordinate systems. In blue the COV, orange the COG.}
-	\label{fig:coordinate_systems}
+	\begin{overpic}[width=\textwidth]{airship_exp.png}
+		\put(16, 41){$g$}
+		\put(35,20){$B$}
+		\put(27,21){$x_B$}
+		\put(31,26){$y_B$}
+		\put(34,15.5){$z_B$}
+		\put(89,9){$E$}
+		\put(80,10){$x_E$}
+		\put(97.5,17){$y_E$}
+		\put(88,2){$z_E$}
+		\put(40, 27){$\bm{r}_\mathrm{COV}$}
+		\put(60, 15.5){$\bm{r}$}
+	\end{overpic}
+	\caption{Airship with body-fixed coordinate system $B$ and earth-fixed coordinate system $E$. The orange dot marks the Center of Gravity and the blue dot marks the Center of Volume (COV), connected by the position vector $\bm{r}_{COV}$.}
+	\label{fig:airship_body_frame}
 \end{figure}
-\todo{replace with pdf}
+
+
 
 
 
@@ -89,8 +114,9 @@ and describes the transformation from body-fixed CS to earth-fixed CS.
 \nomenclature[D]{$(\cdot)_B$}{Quantity describing the body}
 %
 
-The airship is modeled using a six degree-of-freedom (6DOF) Newton Euler approach \cite{Fossen2021Handbook}. Therefore we assume the airship to be a rigid body with constant mass and model the translational and rotational dynamics accordingly. We express the equations of motion in body-coordinates, allowing for a constant inertia matrix.
+The airship is modeled using a six degree-of-freedom (6DOF) Newton Euler approach \cite{Fossen2021Handbook}. The airship is assumed to be a rigid body with constant mass, and the translational and rotational dynamics are modeled accordingly. The equations of motion are expressed in body-fixed coordinates, allowing for a constant inertia matrix.
 Unless stated otherwise, all quantities are expressed in the body-fixed coordinate frame, and all forces and moments are assumed to act at the center of gravity (COG). The corresponding frame identifier ${}_B(\cdot)$ and point-of-application identifier $(\cdot)^\mathrm{COG}$ are omitted throughout the remainder of this section for improved readability.
+
 
 %% Translational Dynamics
 The three-dimensional \textbf{translational dynamics} in body-coordinates are given by the linear momentum theorem as
@@ -103,15 +129,13 @@ The three-dimensional \textbf{translational dynamics} in body-coordinates are gi
 	\label{eq:Impulssatz}
 \end{equation}
 
-where $m$ denotes the mass of the airship, $\bm{I}_{3\times3} \in\mathbb{R}^{3\times3}$ denotes the identity matrix, $\bm{a}_B \in \mathbb{R}^3$ describes the acceleration of the body (airship) in body-fixed coordinates and $\bm{F}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external force acting at the center of gravity (COG), expressed in body-fixed coordinates. 
+where $m$ denotes the mass of the airship, $\bm{I}_{3\times3} \in\mathbb{R}^{3\times3}$ denotes the identity matrix, $\bm{a}_B \in \mathbb{R}^3$ describes the acceleration of the body (airship) in body-fixed coordinates and $\bm{F}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external force acting at the COG, expressed in body-fixed coordinates. 
 %The subscript $(\cdot)_B$ emphasizes the quantity of the body w.r.t the earth frame.
 
-To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying Euler's transport theorem yields
+To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying the transport theorem yields \cite{Greenwood2003Dynamics}
 
 \begin{equation}
 	\bm{a}_B 
-	= 
-	 \left( \frac{d}{dt}\bm{v}_B \right) 
 	= 
 	\dot{\bm{v}}_B + \left(\bm{\omega}_{EB} \times \bm{v}_B \right) 
 	= 
@@ -119,16 +143,9 @@ To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \m
 	\label{eq:TransportTheorem}
 \end{equation} 
 
-where $\bm{a}_{\mathrm{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the Earth CS. As the Earth CS is inertial this reduces to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
-%\begin{equation}
-%	\bm{\omega}_{EB} = \bm{\omega}_{B} = \begin{bmatrix}
-%		p \\
-%		q \\
-%		r
-%	\end{bmatrix}
-%	\label{eq:Angular_Velocity}
-%\end{equation} 
-Inserting Eq.~\eqref{eq:TransportTheorem} in Eq.~\eqref{eq:Impulssatz} and defining the Coriolis force as 
+where $\bm{a}_{\mathrm{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the Earth CS. As the Earth CS is inertial (non-rotating) this is equal to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
+
+Inserting Eq.~\eqref{eq:TransportTheorem} in Eq.~\eqref{eq:Impulssatz} and defining the Coriolis force as
 
 \begin{equation}
 	\bm{F}_\mathrm{cor}
@@ -152,31 +169,31 @@ yields the dynamics for the translational motion of the airship in body-fixed co
 The three-dimensional \textbf{rotational dynamics} in body-fixed coordinates are given by the angular momentum theorem as
 
 \begin{equation}
-	 \left( \frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right) \right)	
+	\frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right)
 	= 
 	\bm{M}_\mathrm{ext},
 	\label{eq:Drallsatz}
 \end{equation}
 
-where $\bm{I}_B \in \mathbb{R}^{3 \times 3}$ denotes the inertia matrix of the airship expressed in body-fixed coordinates and $\bm{M}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external moment acting about the center of gravity (COG), expressed in body-fixed coordinates.
+where $\bm{I}_B \in \mathbb{R}^{3 \times 3}$ denotes the inertia matrix of the airship expressed in body-fixed coordinates and $\bm{M}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external moment acting about the COG, expressed in body-fixed coordinates.
 
-To relate the change of angular momentum to the angular acceleration of the airship, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be considered. Applying Euler's transport theorem to the angular momentum vector yields
+To relate the change of angular momentum to the angular acceleration of the airship, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be considered. Applying the transport theorem to the angular momentum vector yields
 
 \begin{equation}
-	 \left( \frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right) \right)	
+	\frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right)
 	=
 	\bm{I}_B \, \dot{\bm{\omega}}_B + \left( \bm{\omega}_B \times 	\bm{I}_B \, \bm{\omega}_B \right),
 	\label{eq:AngularTransportTheorem}
 \end{equation}
 
-where the second term represents the gyroscopic acceleration caused by the rotation of the body-fixed coordinate system. Since the inertia matrix is constant when expressed in body-fixed coordinates, the time derivative only applies to the angular velocity.
+where the second term represents the gyroscopic moment caused by the rotation of the body-fixed coordinate system. Since the inertia matrix is constant when expressed in body-fixed coordinates, the time derivative only applies to the angular velocity.
 
 Defining the gyroscopic moment as
 
 \begin{equation}
 	\bm{M}_\mathrm{gyro}
 	=
-	\left( \bm{\omega}_B \times \bm{I}_B \, \bm{\omega}_B \right)
+	\left( \bm{\omega}_B \times \bm{I}_B \, \bm{\omega}_B \right),
 	\label{eq:GyroscopicMoment}
 \end{equation}
 
@@ -197,7 +214,7 @@ We can combine the translational dynamics~\eqref{eq:TranslationalDynamics} and t
 	=
 	\bm{\mathcal{F}}_\mathrm{ext}
 	-
-	\bm{\mathcal{F}}_\mathrm{cor}
+	\bm{\mathcal{F}}_\mathrm{cor},
 	\label{eq:EOMShort}
 \end{equation}
 
@@ -261,6 +278,10 @@ resulting in the final EOM
 
 The generalized external forces are derived in the following.
 
+
+
+
+
 \subsection{Gravitation and Buoyancy}
 The gravitational force computes to
 
@@ -292,13 +313,13 @@ As the gravitational force acts at the center of gravity, no gravitational momen
 	\end{bmatrix}.
 \end{equation}
 
-The buoyancy depends on the density of the surrounding air $\rho_{\mathrm{air}}$ and the lifting gas contained within the hull $\rho_{\mathrm{gas}}$ as well as the volume of the airship $V$. Assuming a homogeneous distribution, the resulting buoyancy force acts at the center of volume (COV) and is given by
+The buoyancy depends on the density of the surrounding air $\rho_{\mathrm{air}}$ and the lifting gas contained within the hull $\rho_{\mathrm{gas}}$ as well as the volume of the airship $V$, which is assumed constant for simplicity. Assuming a homogeneous distribution, the resulting buoyancy force acts at the center of volume (COV) and is given by
 
 \begin{equation}
 	\bm{F}_\mathrm{buoy}^\mathrm{\, COV} = -V \bm{g} (\rho_{\mathrm{air}} - \rho_{\mathrm{gas}}).
 \end{equation}
 
-In case of the airship \textit{Squid}, the volume is chosen such that $\bm{F}_\mathrm{grav} + \bm{F}_\mathrm{buoy} > \bm{0}$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
+In case of the airship \emph{Squid}, the volume is chosen such that $\bm{F}_\mathrm{grav} + \bm{F}_\mathrm{buoy} > \bm{0}$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
 To express the buoyancy contribution with respect to the center of gravity, the moment induced by the offset between the COV and COG is considered:
 
 \begin{equation}
@@ -306,7 +327,7 @@ To express the buoyancy contribution with respect to the center of gravity, the 
 \end{equation}
 
 where $\bm{r}_\mathrm{COV} \in \mathbb{R}^3$ denotes the vector from the COG to COV. Due to the design of
-the airship, $\bm{r}_\mathrm{COV}$ only contains a component along the $z_B$-direction.
+the airship \emph{Squid}, $\bm{r}_\mathrm{COV}$ only contains a component along the $z_B$-direction.
 Consequently, the generalized buoyant force expressed at the COG is given by
 
 \begin{equation}
@@ -323,28 +344,35 @@ Consequently, the generalized buoyant force expressed at the COG is given by
 	\bm{F}_\mathrm{buoy}^{\mathrm{\, COV}}.
 \end{equation}
 
+
+
+
+
 \subsection{Aerodynamics}
 The aerodynamic forces and moments play a central role in the airship dynamics, as they directly depend on the aerodynamic velocity. The aerodynamic velocity is defined as 
 
 \begin{equation}
 	\bm{v}_A
 	=
-	\bm{v}_B - \bm{v}_W
+	\bm{v}_B - \bm{v}_W,
 \end{equation} 
 
-and denotes the relative velocity between the airship and the surrounding air (often called \textit{airspeed}), where $\bm{v}_W \in \mathbb{R}^3$ corresponds to the wind velocity expressed in body-fixed coordinates. As a result, the aerodynamical forces and moments contain information about the current wind conditions.
+and denotes the relative velocity between the airship and the surrounding air (commonly referred to as airspeed), where $\bm{v}_W \in \mathbb{R}^3$ corresponds to the wind velocity expressed in body-fixed coordinates. As a result, the aerodynamical forces and moments contain information about the current wind conditions.
 An accurate aerodynamic model is therefore essential and forms the basis for the wind estimation approach presented in this work.
 
-As described in \cite{Li2007AirshipDynamics}, the aerodynamic forces and moments can be classified into several contributions, including drag, added mass, viscous effects, and fin forces. Since these contributions account for the majority of the aerodynamic effects, they are considered in the present model. 
+As described in \cite{Li2007AirshipDynamics}, the aerodynamic forces and moments can be classified into several contributions, of which drag, added mass, viscous effects, and fin forces are the dominant ones. These are therefore considered in the present model:
 
 \begin{equation}
 	\bm{\mathcal{F}}_\mathrm{aero} 
 	=
-	\bm{\mathcal{F}}_\mathrm{drag} + \bm{\mathcal{F}}_\mathrm{am} + \bm{\mathcal{F}}_\mathrm{visc} + \bm{\mathcal{F}}_\mathrm{fins}
+	\bm{\mathcal{F}}_\mathrm{drag} + \bm{\mathcal{F}}_\mathrm{am} + \bm{\mathcal{F}}_\mathrm{visc} + \bm{\mathcal{F}}_\mathrm{fins}.
 \end{equation}
 
-A detailed derivation of the individual contributions is omitted here; instead, the resulting expressions are summarized for completeness. An extensive derivation of the aerodynamic forces and moments can be found in \cite{Li2007AirshipDynamics}.
+A detailed derivation of the individual contributions is omitted here; instead, the resulting expressions are presented for completeness. An extensive derivation of the aerodynamic forces and moments can be found in \cite{Li2007AirshipDynamics}.
 The aerodynamic forces act at the center of volume. Therefore, the offset between the COV and the COG results in an induced moment, which is considered in the aerodynamic moment contribution.
+
+
+
 
 
 \subsubsection{Aerodynamic Drag}
@@ -391,6 +419,9 @@ Since the aerodynamic drag force acts at the COV, it must be transformed to the 
 \end{equation}
 
 
+
+
+
 \subsubsection{Added Mass}
 For an airship, the added mass can be interpreted as the effective mass of the surrounding air that is accelerated together with the vehicle \cite{Newman1977Hydrodynamics}.
 The associated added-mass forces and moments arise from the inertia of this accelerated air and contribute to the equations of motion in two ways: through a constant added-mass matrix and through a velocity-dependent coupling term:
@@ -417,8 +448,7 @@ The associated added-mass forces and moments arise from the inertia of this acce
 
 For steady translation $\left( \bm{\omega}_B = \bm{0} \right)$, the coupling term reduces to the classical \emph{Munk moment}, $-\bm{v}_A~\times~\left( \bm{M}_{11} \bm{v}_A \right)$, which is a destabilizing moment characteristic of elongated bodies first described in \cite{Munk1924Aerodynamic}.
 
-The entries of the added-mass matrix are computed using the analytical expressions given by \cite{Li2007AirshipDynamics} and are listed in Appendix~ \todo{add ref and write M in appendix}.
-
+The entries of the added-mass matrix are computed using the analytical expressions given by \cite{Li2007AirshipDynamics}.
 
 Since the generalized added-mass force acts at the COV, it is transformed to the COG as
 
@@ -437,6 +467,10 @@ Since the generalized added-mass force acts at the COV, it is transformed to the
 	\bm{F}_\mathrm{am}^{\mathrm{\, COV}}.	
 \end{equation}
 
+
+
+
+
 \subsubsection{Viscous Aerodynamic Effects}
 In contrast to the added-mass forces, which are associated with the acceleration of the surrounding air, the viscous forces and moments originate from the interaction between the airship surface and the surrounding airflow. These effects arise from viscous shear stresses and pressure differences and are described in detail by \cite{Anderson2017Fundamentals}.
 
@@ -445,7 +479,7 @@ The magnitude of the viscous force and moment acting normal to the hull centerli
 \begin{equation}
 	F_\mathrm{N, visc}^\mathrm{\, COV}
 	=
-	q_0 \left( -C_\mathrm{F, hif} \sin2\gamma + C_\mathrm{F, hvf} \sin^2\gamma \right)
+	q_0 \left( -C_\mathrm{F, hif} \sin2\gamma + C_\mathrm{F, hvf} \sin^2\gamma \right),
 \end{equation} 
 
 \begin{equation}
@@ -480,7 +514,7 @@ The viscous force and moment are then decomposed into their body-axis components
 	\qquad
 	F_{\mathrm{visc}, z} ^\mathrm{\, COV}
 	= 
-	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}
+	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}},
 \end{equation}
 
 and the corresponding body-axis moment components are
@@ -513,6 +547,9 @@ Again, we have to transform the force and moment to the COG.
 \end{equation}
 
 
+
+
+
 \subsubsection{Fin Forces}
 The fin forces are computed using a lumped approach, in which each of the four fins is treated as a single lifting surface. The contribution of each fin depends on the local aerodynamic velocity and the corresponding angle of attack. The total fin force and moment are then obtained by summing the individual fin contributions.
 
@@ -539,7 +576,7 @@ The geometric angle of attack of each fin is computed from the local velocity co
 \begin{equation}
 	\alpha_{\mathrm{fin}, i} 
 	= 
-	\operatorname{atan2}\! \left( \frac{v_{\perp, \mathrm{fin}, i}}{u_{\mkern1mu \mathrm{fin}, i}} \right),
+	\operatorname{atan2}\! \left( v_{\perp, \mathrm{fin}, i}, \, u_{\mkern1mu \mathrm{fin}, i} \right),
 \end{equation}
 
 and is saturated at the stall angle $\alpha_\text{stall}$.
@@ -566,7 +603,7 @@ The total fin force and moment about the COV are obtained by summing the individ
 	\sum_{i=1}^{4} \bm{r}_{\mathrm{fin}, i} \times \bm{F}_{\mathrm{fin}, i},
 \end{equation}
 
-where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{N,Fi}$ into its body-fixed components according to the orientation of the respective fin.
+where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{N, \mathrm{fin}, i}$ into its body-fixed components according to the orientation of the respective fin.
 
 As with the previous contributions, the resulting force and moment are transformed to the COG to obtain the generalized fin forces
 
@@ -585,11 +622,15 @@ As with the previous contributions, the resulting force and moment are transform
 	\bm{F}_\mathrm{fins}^{\mathrm{\, COV}}.	
 \end{equation}
 
+
+
+
+
 \subsection{Propulsion}
 The propulsion forces and moments resulting from the command input $\bm{u} \in \mathbb{R}^9$ are computed in two steps. 
 First, the thrust generated by each individual motor $F_{\mathrm{motor}, i}$ is determined from the corresponding motor command $u_i$ using a nonlinear motor model. Due to the different characteristics of the impellers and the stern propeller, separate parameter sets are used for the two actuator types.
+The impeller commands $u_i$, $i=1,\dots,8$, are normalized to $u_i \in [0,1]$, reflecting their unidirectional operation, while the stern propeller command $u_9$ is normalized to $u_9 \in [-1,1]$ to allow for both forward and reverse thrust.
 The resulting motor thrust is therefore given by
-
 
 \begin{equation}
 	F_{\mathrm{motor},i}
@@ -634,14 +675,14 @@ with
 		\bm{d}_1 &
 		\cdots &
 		\bm{d}_9
-		\\
+		\\[4pt]
 		\bm{r}_1 \times \bm{d}_1 &
 		\cdots &
 		\bm{r}_9 \times \bm{d}_9
 	\end{bmatrix},
 \end{equation}
 
-where $\bm{r}_i \in \mathbb{R}^3$ denotes the position vector of the $i$-th motor relative to the COG, and $\bm{d}_i \in \mathbb{R}^3$ denotes the corresponding unit thrust direction vector.
+where $\bm{r}_i \in \mathbb{R}^3$ denotes the position vector of the $i$-th motor relative to the COG, and $\bm{d}_i \in \mathbb{R}^3$ denotes the corresponding fixed unit thrust direction vector.
 
 
 
@@ -959,9 +1000,9 @@ Because the initial state $\bm{x}_0$ is Gaussian, the process and measurement no
 Here the superscript $(\cdot)^-$ denotes \emph{a priori} quantities, computed before incorporating the measurement at time step $k$, while quantities without superscript denote \emph{a posteriori} quantities, computed after incorporating the measurement. In both cases, the state estimate is given by the conditional mean of the state, whereas the associated covariance quantifies the remaining uncertainty of that estimate.
 For notational simplicity, the explicit conditioning on the available measurements is omitted in the remainder of this section.
 
-Starting from the initial estimate $\hat{\bm{x}}_0$, the Kalman filter recursively computes the state estimate at each time step $k$ by alternating between two steps: a prediction step and an update step. In the prediction step, the previous a posteriori state estimate $\hat{\bm{x}}_{k-1}$ and the system model are used to propagate the estimate and its associated uncertainty forward in time, yielding the a priori estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^-$.  Additionally, the predicted measurement corresponding to $\hat{\bm{x}}_k^-$ is calculated.
+Starting from the initial estimate $\hat{\bm{x}}_0$, the Kalman filter recursively computes the state estimate at each time step $k$ by alternating between two steps: a prediction step and an update step. In the prediction step, the previous \emph{a posteriori} state estimate $\hat{\bm{x}}_{k-1}$ and the system model are used to propagate the estimate and its associated uncertainty forward in time, yielding the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^-$.  Additionally, the predicted measurement corresponding to $\hat{\bm{x}}_k^-$ is calculated.
 
-In the subsequent update step, the latest measurement is incorporated to correct the a priori estimate $\hat{\bm{x}}_k^-$. The correction is based on the so-called innovation, i.e., the difference between the actual and predicted measurement, and is weighted according to the relative uncertainties of the prediction and the measurement. The resulting a posteriori estimate $\hat{\bm{x}}_k$, incorporates all available information up to time step $k$.
+In the subsequent update step, the latest measurement is incorporated to correct the \emph{a priori} estimate $\hat{\bm{x}}_k^-$. The correction is based on the so-called innovation, i.e., the difference between the actual and predicted measurement, and is weighted according to the relative uncertainties of the prediction and the measurement. The resulting \emph{a posteriori} estimate $\hat{\bm{x}}_k$, incorporates all available information up to time step $k$.
 The corresponding equations are introduced in the following \cite{Särkkä2013KF}.
 
 
@@ -970,7 +1011,7 @@ The corresponding equations are introduced in the following \cite{Särkkä2013KF
 
 \subsubsection{Prediction}
 
-By taking the expectation of Eq.~\eqref{eq:discrete_system} and using $\mathbb{E}[\bm{q}_{k-1}] = 0$, the a priori estimate computes to
+By taking the expectation of Eq.~\eqref{eq:discrete_system} and using $\mathbb{E}[\bm{q}_{k-1}] = 0$, the \emph{a priori} estimate computes to
 
 \begin{equation}
 	\hat{\bm{x}}_{k}^- 
@@ -983,7 +1024,7 @@ By taking the expectation of Eq.~\eqref{eq:discrete_system} and using $\mathbb{E
 
 which can be computed for all $k$ recursively given the input $\bm{u}_k$ and initial estimate $\hat{\bm{x}}_0$.
 
-The a priori covariance at time step $k$ is defined as
+The \emph{a priori} covariance at time step $k$ is defined as
 
 \begin{equation}
 	\bm{P}_{k}^- 
@@ -1040,7 +1081,7 @@ Substituting Eq.~\eqref{eq:error_prop} into the covariance definition \eqref{eq:
 \end{align}
 
 The cross term vanishes because the process noise $\bm{q}_{k-1}$ is assumed to be uncorrelated with the state estimation error $\bm{x}_{k-1} - \hat{\bm{x}}_{k-1}$.
-Equations~\eqref{eq:mean_prop} and \eqref{eq:cov_prop_exp} together describe how the a priori mean and covariance of the state evolve under the linear system model.
+Equations~\eqref{eq:mean_prop} and \eqref{eq:cov_prop_exp} together describe how the \emph{a priori} mean and covariance of the state evolve under the linear system model.
 Accordingly, the predicted output computes to
 
 \begin{equation}
@@ -1056,7 +1097,7 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-In the update step, the a priori estimate $\hat{\bm{x}}_k^-$ obtained from the prediction step is corrected using the latest measurement $\bm{y}_k$, resulting in the a posteriori estimate $\hat{\bm{x}}_k$. The correction is expressed as a linear combination of the a priori estimate and the innovation, weighted by the Kalman gain $\bm{K}_k$,
+In the update step, the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ obtained from the prediction step is corrected using the latest measurement $\bm{y}_k$, resulting in the \emph{a posteriori} estimate $\hat{\bm{x}}_k$. The correction is expressed as a linear combination of the \emph{a priori} estimate and the innovation, weighted by the Kalman gain $\bm{K}_k$,
 
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k,
@@ -1074,7 +1115,7 @@ where the innovation $\tilde{\bm{y}}_k$ is defined as the difference between the
 	\label{eq:innovation}
 \end{equation}
 
-The Kalman gain $\bm{K}_k \in \mathbb{R}^{n \times m}$ is chosen such that the a posteriori estimate $\hat{\bm{x}}_k$ in Eq.~\eqref{eq:state_update} minimizes the trace of the a posteriori covariance $\bm{P}_k$, consistent with the MMSE criterion in Eq.~\eqref{eq:mmse}. The resulting optimal gain is given by \cite{Särkkä2013KF}
+The Kalman gain $\bm{K}_k \in \mathbb{R}^{n \times m}$ is chosen such that the \emph{a posteriori} estimate $\hat{\bm{x}}_k$ in Eq.~\eqref{eq:state_update} minimizes the trace of the \emph{a posteriori} covariance $\bm{P}_k$, consistent with the MMSE criterion in Eq.~\eqref{eq:mmse}. The resulting optimal gain is given by \cite{Särkkä2013KF}
 
 \begin{equation}
 	\bm{K}_k = \bm{P}_k^{xy} \bm{S}_k^{-1}, 
@@ -1082,7 +1123,7 @@ The Kalman gain $\bm{K}_k \in \mathbb{R}^{n \times m}$ is chosen such that the a
 	\label{eq:kalman_gain}
 \end{equation}
 
-where $\bm{S}_k \in \mathbb{R}^{m \times m}$ denotes the innovation covariance, which quantifies the uncertainty associated with the innovation. Assuming that the measurement noise $\bm{r}_k$ is uncorrelated with the a priori estimation error $\bm{x}_k - \hat{\bm{x}}_k^-$, the innovation covariance can be computed using Eqs.~\eqref{eq:discrete_system_output} and \eqref{eq:predicted_output} as
+where $\bm{S}_k \in \mathbb{R}^{m \times m}$ denotes the innovation covariance, which quantifies the uncertainty associated with the innovation. Assuming that the measurement noise $\bm{r}_k$ is uncorrelated with the \emph{a priori} estimation error $\bm{x}_k - \hat{\bm{x}}_k^-$, the innovation covariance can be computed using Eqs.~\eqref{eq:discrete_system_output} and \eqref{eq:predicted_output} as
 
 \begin{equation}
 	\bm{S}_k 
@@ -1097,7 +1138,7 @@ where $\bm{S}_k \in \mathbb{R}^{m \times m}$ denotes the innovation covariance, 
 	\label{eq:innovation_cov}
 \end{equation}
 
-and $\bm{P}_k^{xy} \in \mathbb{R}^{n \times m}$ denotes the cross-covariance between the a priori state estimation error and the innovation, given by
+and $\bm{P}_k^{xy} \in \mathbb{R}^{n \times m}$ denotes the cross-covariance between the \emph{a priori} state estimation error and the innovation, given by
 
 \begin{equation}
 	\bm{P}_k^{xy} 
@@ -1110,7 +1151,7 @@ and $\bm{P}_k^{xy} \in \mathbb{R}^{n \times m}$ denotes the cross-covariance bet
 	\label{eq:cross_cov}
 \end{equation}
 
-The a posteriori covariance follows by substituting Eqs.~\eqref{eq:innovation} and \eqref{eq:state_update} into the definition of the estimation error,
+The \emph{a posteriori} covariance follows by substituting Eqs.~\eqref{eq:innovation} and \eqref{eq:state_update} into the definition of the estimation error,
 
 \begin{equation}
 	\bm{x}_k - \hat{\bm{x}}_k 
@@ -1137,7 +1178,7 @@ Substituting the optimal gain from Eq.~\eqref{eq:kalman_gain} simplifies this ex
 	\label{eq:cov_update}
 \end{equation}
 
-This concludes the update step. Together, the prediction and update steps in Eqs.~\eqref{eq:mean_prop}, \eqref{eq:cov_prop_exp}, \eqref{eq:state_update}, and \eqref{eq:cov_update} form the recursive Kalman filter algorithm, alternately propagating the a priori estimate forward in time and correcting it into an a posteriori estimate as new measurements become available.
+This concludes the update step. Together, the prediction and update steps in Eqs.~\eqref{eq:mean_prop}, \eqref{eq:cov_prop_exp}, \eqref{eq:state_update}, and \eqref{eq:cov_update} form the recursive Kalman filter algorithm, alternately propagating the \emph{a priori} estimate forward in time and correcting it into an \emph{a posteriori} estimate as new measurements become available.
 
 The recursive state estimate can be summarized compactly as
 
@@ -1249,7 +1290,7 @@ Analogously to the classical Kalman filter, the \emph{a priori} state estimate i
 
 whereas the second term computes to zero because the expected value of the state estimation error computes to zero: $\mathbb{E}[\bm{x}_{k-1}-\hat{\bm{x}}_{k-1}] = \hat{\bm{x}}_{k-1} - \hat{\bm{x}}_{k-1} = \bm{0}$.
 
-The a priori covariance follows from the state estimation error 
+The \emph{a priori} covariance follows from the state estimation error 
 
 \begin{equation}
 	\bm{x}_{k} - \hat{\bm{x}}_{k}^- 
@@ -1258,14 +1299,14 @@ The a priori covariance follows from the state estimation error
 	\label{eq:error_prop_EKF}
 \end{equation}
 
-Equation~\eqref{eq:error_prop_EKF} has the same structure as in the linear case in Eq.~\eqref{eq:error_prop}, with $\bm{A}_{k-1}$ replaced by the Jacobian $\bm{F}_{k-1}$. Applying the linear covariance propagation result from Eq.~\eqref{eq:cov_prop_exp} to this locally linearized system gives the a priori covariance
+Equation~\eqref{eq:error_prop_EKF} has the same structure as in the linear case in Eq.~\eqref{eq:error_prop}, with $\bm{A}_{k-1}$ replaced by the Jacobian $\bm{F}_{k-1}$. Applying the linear covariance propagation result from Eq.~\eqref{eq:cov_prop_exp} to this locally linearized system gives the \emph{a priori} covariance
 
 \begin{equation}
 	\bm{P}_k^- = \bm{F}_{k-1} \bm{P}_{k-1} \bm{F}_{k-1}^T + \bm{Q}_{k-1}.
 	\label{eq:ekf_cov_prop}
 \end{equation}
 
-The predicted measurement follows analogously by evaluating the nonlinear measurement function at the a priori estimate,
+The predicted measurement follows analogously by evaluating the nonlinear measurement function at the \emph{a priori} estimate,
 
 \begin{equation}
 	\hat{\bm{y}}_k^- = \bm{h}(\hat{\bm{x}}_k^-).
@@ -1280,7 +1321,7 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-As in the linear case, the a posteriori estimate is obtained by correcting the a priori estimate with the innovation,
+As in the linear case, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation,
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k, 
 	\label{eq:ekf_state_update}
@@ -1297,7 +1338,7 @@ where the innovation is given by
 	\label{eq:innovation_ekf}
 \end{equation}
 
-Equation~\eqref{eq:innovation_ekf} has the same structure as in the linear case, with $\bm{C}_k$ replaced by the Jacobian $\bm{H}_k$. Applying the linear update equations from Eqs.~\eqref{eq:kalman_gain}--\eqref{eq:cov_update} to this locally linearized system yields the innovation covariance, Kalman gain, and a posteriori covariance,
+Equation~\eqref{eq:innovation_ekf} has the same structure as in the linear case, with $\bm{C}_k$ replaced by the Jacobian $\bm{H}_k$. Applying the linear update equations from Eqs.~\eqref{eq:kalman_gain}--\eqref{eq:cov_update} to this locally linearized system yields the innovation covariance, Kalman gain, and \emph{a posteriori} covariance,
 
 \begin{align}
 	\bm{S}_k &= \bm{H}_k \bm{P}_k^- \bm{H}_k^T + \bm{R}_k,
@@ -1391,7 +1432,7 @@ In the UKF algorithm, the unscented transform is applied separately during the p
 
 \subsubsection{Prediction}
 
-A set of sigma points $\bm{\mathcal{X}}_{k-1,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the previous a posteriori estimate $\hat{\bm{x}}_{k-1}$ and covariance $\bm{P}_{k-1}$. The sigma points are then propagated individually through the nonlinear state transition function,
+A set of sigma points $\bm{\mathcal{X}}_{k-1,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the previous \emph{a posteriori} estimate $\hat{\bm{x}}_{k-1}$ and covariance $\bm{P}_{k-1}$. The sigma points are then propagated individually through the nonlinear state transition function,
 
 \begin{equation}
 	\bm{\mathcal{X}}_{k,i}^- = \bm{f}(\bm{\mathcal{X}}_{k-1,i}, \bm{u}_{k-1}), 
@@ -1400,7 +1441,7 @@ A set of sigma points $\bm{\mathcal{X}}_{k-1,i}$ is generated according to Eq.~\
 	\label{eq:ukf_sigma_prop}
 \end{equation}
 
-Applying the unscented transform in Eqs.~\eqref{eq:unscented_transform1} and \eqref{eq:unscented_transform2} to the propagated sigma points yields the a priori estimate and covariance \cite{Wan2001UKF},
+Applying the unscented transform in Eqs.~\eqref{eq:unscented_transform1} and \eqref{eq:unscented_transform2} to the propagated sigma points yields the \emph{a priori} estimate and covariance \cite{Wan2001UKF},
 
 \begin{align}
 	\hat{\bm{x}}_k^- 
@@ -1415,7 +1456,7 @@ Applying the unscented transform in Eqs.~\eqref{eq:unscented_transform1} and \eq
 
 where the process noise covariance $\bm{Q}_{k-1}$ is added directly, consistent with the additive noise formulation in Eq.~\eqref{eq:ekf_system}. 
 
-To incorporate the computed a priori estimate into the output prediction, a new set of sigma points $\bm{\mathcal{X}}_{k,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the a priori estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^- $. 
+To incorporate the computed \emph{a priori} estimate into the output prediction, a new set of sigma points $\bm{\mathcal{X}}_{k,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^- $. 
 The predicted measurement is obtained by propagating the redrawn sigma points through the nonlinear measurement function and applying the unscented transform~\eqref{eq:unscented_transform1}
 
 \begin{align}
@@ -1439,7 +1480,7 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-As in the linear Kalman filter and the EKF, the a posteriori estimate is obtained by correcting the a priori estimate with the innovation,
+As in the linear Kalman filter and the EKF, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation,
 
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k, 
@@ -1447,7 +1488,7 @@ As in the linear Kalman filter and the EKF, the a posteriori estimate is obtaine
 	\label{eq:ukf_state_update}
 \end{equation}
 
-The innovation covariance and the cross-covariance between the a priori state and the predicted measurement are reconstructed from the propagated sigma points using the unscented transform,
+The innovation covariance and the cross-covariance between the \emph{a priori} state and the predicted measurement are reconstructed from the propagated sigma points using the unscented transform,
 
 \begin{align}
 	\bm{S}_k 
@@ -1460,7 +1501,7 @@ The innovation covariance and the cross-covariance between the a priori state an
 	\label{eq:ukf_innovation_cov}
 \end{align}
 
-where the measurement noise covariance $\bm{R}_k$ is added directly to $\bm{S}_k$, analogous to $\bm{Q}_{k-1}$ in Eq.~\eqref{eq:ukf_mean_cov_prop}. As in the linear Kalman filter, the Kalman gain and a posteriori covariance follow from Eqs.~\eqref{eq:kalman_gain} and \eqref{eq:cov_update},
+where the measurement noise covariance $\bm{R}_k$ is added directly to $\bm{S}_k$, analogous to $\bm{Q}_{k-1}$ in Eq.~\eqref{eq:ukf_mean_cov_prop}. As in the linear Kalman filter, the Kalman gain and \emph{a posteriori} covariance follow from Eqs.~\eqref{eq:kalman_gain} and \eqref{eq:cov_update},
 
 \begin{align}
 	\bm{K}_k 
