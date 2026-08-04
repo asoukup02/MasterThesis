@@ -77,7 +77,7 @@ The inverse transformation is given by the transpose of the rotation matrix
 \begin{equation}
 	\bm{R}_{EB}
 	=
-	\left( \bm{R}_{BE} \right)^T
+	\left( \bm{R}_{BE} \right)^T,
 \end{equation}
 
 and describes the transformation from body-fixed CS to earth-fixed CS.
@@ -132,7 +132,7 @@ The three-dimensional \textbf{translational dynamics} in body-coordinates are gi
 where $m$ denotes the mass of the airship, $\bm{I}_{3\times3} \in\mathbb{R}^{3\times3}$ denotes the identity matrix, $\bm{a}_B \in \mathbb{R}^3$ describes the acceleration of the body (airship) in body-fixed coordinates and $\bm{F}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external force acting at the COG, expressed in body-fixed coordinates. 
 %The subscript $(\cdot)_B$ emphasizes the quantity of the body w.r.t the earth frame.
 
-To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying the transport theorem yields \cite{Greenwood2003Dynamics}
+To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \mathbb{R}^3$, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be taken into account. Applying the transport theorem yields \cite{Greenwood2003Dynamics}:
 
 \begin{equation}
 	\bm{a}_B 
@@ -154,7 +154,7 @@ Inserting Eq.~\eqref{eq:TransportTheorem} in Eq.~\eqref{eq:Impulssatz} and defin
 	\label{eq:CoriolisForce}
 \end{equation}
 
-yields the dynamics for the translational motion of the airship in body-fixed coordinates
+yields the dynamics for the translational motion of the airship in body-fixed coordinates:
 
 \begin{equation}
 	m\bm{I}_{3\times3} \, \dot{\bm{v}}_B 
@@ -177,7 +177,7 @@ The three-dimensional \textbf{rotational dynamics} in body-fixed coordinates are
 
 where $\bm{I}_B \in \mathbb{R}^{3 \times 3}$ denotes the inertia matrix of the airship expressed in body-fixed coordinates and $\bm{M}_\mathrm{ext} \in \mathbb{R}^3$ represents the resultant external moment acting about the COG, expressed in body-fixed coordinates.
 
-To relate the change of angular momentum to the angular acceleration of the airship, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be considered. Applying the transport theorem to the angular momentum vector yields
+To relate the change of angular momentum to the angular acceleration of the airship, the rotation of the body-fixed coordinate system relative to the earth-fixed coordinate system must be considered. Applying the transport theorem to the angular momentum vector yields:
 
 \begin{equation}
 	\frac{d}{dt} \left( \bm{I}_B \, \bm{\omega}_{B} \right)
@@ -197,7 +197,7 @@ Defining the gyroscopic moment as
 	\label{eq:GyroscopicMoment}
 \end{equation}
 
-and rearranging Eq.~\eqref{eq:Drallsatz} yields the rotational dynamics of the airship in body-fixed coordinates
+and rearranging Eq.~\eqref{eq:Drallsatz} yields the rotational dynamics of the airship in body-fixed coordinates:
 
 \begin{equation}
 	\bm{I}_B \, \dot{\bm{\omega}}_B
@@ -207,7 +207,7 @@ and rearranging Eq.~\eqref{eq:Drallsatz} yields the rotational dynamics of the a
 \end{equation}
 
 
-We can combine the translational dynamics~\eqref{eq:TranslationalDynamics} and the rotational dynamics~\eqref{eq:RotationalDynamics} into one equation obtaining the Newton Euler Equations for the airship.
+The translational dynamics~\eqref{eq:TranslationalDynamics} and the rotational dynamics~\eqref{eq:RotationalDynamics} can be combined into one equation obtaining the Newton Euler Equations for the airship:
 
 \begin{equation}
 	\bm{M}\dot{\bm{\nu}}
@@ -260,13 +260,13 @@ The generalized external forces acting on the airship can be further classified 
 However, due to the complexity of the real environment and the limitations of the available model knowledge, not all forces and moments acting on the airship can be fully accounted for. The resulting discrepancies between modeled and actual system behavior are considered model uncertainties. 
 These uncertainties are not explicitly modeled within the presented equations of motion but are addressed in the subsequent estimation and control design.
 
-The external forces and moments acting on the airship are divided into four main categories: gravitational, buoyancy, aerodynamic, and propulsion.
+The external forces and moments acting on the airship are divided into four main categories: gravitational, buoyancy, aerodynamic, and propulsion,
 
 \begin{equation}
 	\bm{\mathcal{F}}_\mathrm{ext} = \bm{\mathcal{F}}_\mathrm{grav} + \bm{\mathcal{F}}_\mathrm{buoy} + \bm{\mathcal{F}}_\mathrm{aero} + \bm{\mathcal{F}}_\mathrm{prop},
 \end{equation}
 
-resulting in the final EOM
+resulting in the final EOM:
 
 \begin{equation}
 	\bm{M}\dot{\bm{\nu}}
@@ -442,7 +442,7 @@ The associated added-mass forces and moments arise from the inertia of this acce
 		\\
 		\bm{v}_A \times \left( \bm{M}_{11} \bm{v}_A + \bm{M}_{12} \bm{\omega}_B \right) 
 		+ 
-		\bm{\omega}_B \times \left( \bm{M}_{21} \bm{v}_A + \bm{M}_{22} \bm{\omega}_B \right)
+		\bm{\omega}_B \times \left( \bm{M}_{21} \bm{v}_A + \bm{M}_{22} \bm{\omega}_B \right).
 	\end{bmatrix}
 \end{equation}
 
@@ -529,7 +529,7 @@ and the corresponding body-axis moment components are
 	-M_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}.
 \end{equation}
 
-Again, we have to transform the force and moment to the COG.
+Again, we have to transform the force and moment to the COG:
 
 \begin{equation}
 	\bm{\mathcal{F}}_\mathrm{visc}
@@ -553,7 +553,7 @@ Again, we have to transform the force and moment to the COG.
 \subsubsection{Fin Forces}
 The fin forces are computed using a lumped approach, in which each of the four fins is treated as a single lifting surface. The contribution of each fin depends on the local aerodynamic velocity and the corresponding angle of attack. The total fin force and moment are then obtained by summing the individual fin contributions.
 
-For each fin $i=1,\dots,4$, located at position $\bm{r}_{\mathrm{fin}, i}$ relative to the COV, the local aerodynamic velocity follows from the rigid-body velocity field
+For each fin $i=1,\dots,4$, located at position $\bm{r}_{\mathrm{fin}, i}$ relative to the COV, the local aerodynamic velocity follows from the rigid-body velocity field:
 
 \begin{equation}
 	\bm{v}_{A, \mathrm{fin}, i} 
@@ -571,7 +571,7 @@ from which the local dynamic pressure is obtained as
 	\frac{1}{2}\rho_\text{air}\left\|\bm{v}_{A, \mathrm{fin}, i}\right\|_2^2.
 \end{equation}
 
-The geometric angle of attack of each fin is computed from the local velocity component perpendicular to the fin surface $v_{\perp, \mathrm{fin}, i}$ and the local velocity component along the hull centerline $u_{\mkern1mu \mathrm{fin}, i}$
+The geometric angle of attack of each fin is computed from the local velocity component perpendicular to the fin surface $v_{\perp, \mathrm{fin}, i}$ and the local velocity component along the hull centerline $u_{\mkern1mu \mathrm{fin}, i}$ as
 
 \begin{equation}
 	\alpha_{\mathrm{fin}, i} 
@@ -591,7 +591,7 @@ The resulting normal force on each fin computes to
 
 where $C_\mathrm{F,fnf}$ is the empirical fin normal-force coefficient that is assumed to capture all aerodynamic effects of the fins, including geometric and interference effects, in a single fitted parameter.
 
-The total fin force and moment about the COV are obtained by summing the individual fin contributions,
+The total fin force and moment about the COV are obtained by summing the individual fin contributions:
 
 \begin{equation}
 	\bm{F}_\mathrm{fins}^\mathrm{\, COV} 
@@ -605,7 +605,7 @@ The total fin force and moment about the COV are obtained by summing the individ
 
 where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{N, \mathrm{fin}, i}$ into its body-fixed components according to the orientation of the respective fin.
 
-As with the previous contributions, the resulting force and moment are transformed to the COG to obtain the generalized fin forces
+As with the previous contributions, the resulting force and moment are transformed to the COG to obtain the generalized fin forces:
 
 \begin{equation}
 	\bm{\mathcal{F}}_\mathrm{fins}
@@ -627,6 +627,8 @@ As with the previous contributions, the resulting force and moment are transform
 
 
 \subsection{Propulsion}
+\label{sec:2.2.3Propulsion}
+
 The propulsion forces and moments resulting from the command input $\bm{u} \in \mathbb{R}^9$ are computed in two steps. 
 First, the thrust generated by each individual motor $F_{\mathrm{motor}, i}$ is determined from the corresponding motor command $u_i$ using a nonlinear motor model. Due to the different characteristics of the impellers and the stern propeller, separate parameter sets are used for the two actuator types.
 The impeller commands $u_i$, $i=1,\dots,8$, are normalized to $u_i \in [0,1]$, reflecting their unidirectional operation, while the stern propeller command $u_9$ is normalized to $u_9 \in [-1,1]$ to allow for both forward and reverse thrust.
@@ -646,7 +648,7 @@ The resulting motor thrust is therefore given by
 		\left( k_{\mathrm{stern}} \, u_i^2
 		+
 		(1-k_{\mathrm{stern}})u_i \right),
-		& i = 9
+		& i = 9.
 	\end{cases}
 \end{equation}
 
@@ -656,7 +658,7 @@ motor. This transformation is described by the motor effectiveness matrix
 $\bm{B}_\mathrm{eff}^{\,\mathrm{COG}} \in \mathbb{R}^{6 \times 9}$, which
 maps the individual motor thrusts to the generalized force vector acting at the COG. The matrix
 incorporates the orientation of each motor as well as the moment contributions
-resulting from their respective positions relative to the COG.
+resulting from their respective positions relative to the COG:
 
 
 \begin{equation}
@@ -691,7 +693,7 @@ where $\bm{r}_i \in \mathbb{R}^3$ denotes the position vector of the $i$-th moto
 \section{Wind Model}
 \label{sec:2.3WindModel}
 
-To ensure that the simulation results are representative of real flight conditions, the wind model needs to accurately capture the dominant characteristics of atmospheric wind while remaining computationally efficient. In particular, a state-space realization is required so that the wind model can be incorporated into the airship dynamics, providing the necessary states for wind estimation within the Kalman filter framework. Since atmospheric wind generally consists of a slowly varying mean component combined with rapidly changing turbulence, the wind in this work is modeled as the sum of a constant mean wind and a stochastic turbulence component~\cite{Etkin1995Dynamics}.
+To ensure that the simulation results are representative of real flight conditions, the wind model needs to accurately capture the dominant characteristics of atmospheric wind while remaining computationally efficient. In particular, a state-space realization is required so that the wind model can be incorporated into the airship dynamics, providing the necessary states for wind estimation within the Kalman filter framework. Since atmospheric wind generally consists of a slowly varying mean component combined with rapidly changing turbulence, the wind in this work is modeled as the sum of a constant mean wind and a stochastic turbulence component~\cite{Etkin1995Dynamics}:
 
 \begin{equation}
 	\bm{v}_W = \bm{v}_{W, \mathrm{const}} + \bm{v}_{W, \mathrm{turb}}.
@@ -700,13 +702,14 @@ To ensure that the simulation results are representative of real flight conditio
 Stochastic turbulence models are widely used in aerospace applications because they reproduce the statistical properties of atmospheric turbulence without requiring an explicit description of the underlying turbulent wind field. A simple stochastic model is the random walk, in which white noise is integrated to generate a randomly varying signal.
 Among the most commonly used models are the Dryden and the von Kármán turbulence models. Although the von Kármán model generally provides a more accurate representation of the atmospheric turbulence spectrum, it describes turbulence using non-rational functions and therefore cannot be represented exactly by a finite-dimensional state-space model. In contrast, the Dryden turbulence model approximates atmospheric turbulence by passing white noise through linear shaping filters, resulting in rational transfer functions that are realizable in state-space form \cite{Hoblit1988Gust, MILHDBK1797}. 
 
-Due to its ease of implementation while still describing atmospheric turbulence sufficiently well, the Dryden turbulence model is adopted throughout this work.
+
+Since an exact finite-dimensional state-space representation is required for integration into the Kalman filter framework, and the Dryden model still describes atmospheric turbulence sufficiently well for this purpose, it is adopted throughout this work.
 Figure~\ref{fig:DrydenvsKarmanvsRW} compares wind turbulences generated by a random walk model, the Dryden turbulence model and the von Kármán turbulence model. While the random walk exhibits an unrealistic long-term drift, the Dryden model produces bounded, correlated wind disturbances similar to the von Kármán model.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{src/pics/DrydenvsKarmanvsRW.pdf}
-	\caption{Comparision of wind turbulences created by the random walk, von Kármán and Dryden model for identical white noise input.}
+	\caption{Comparison of wind turbulence created by the random walk, von Kármán and Dryden model for identical white noise input.}
 	\label{fig:DrydenvsKarmanvsRW}
 \end{figure}
 
@@ -843,10 +846,10 @@ is given directly in the Earth-fixed frame.
 The corresponding shaping filters, which reproduce the characteristic Dryden turbulence spectra, are defined by the following transfer functions \cite{MILHDBK1797}:
 
 \begin{align}
-	H_u(s) &= \sigma_u \sqrt{\frac{2 L_u}{\pi V}} \, \frac{1}{1 + \dfrac{L_u}{V} s} 
+	H_u(s) &= \sigma_u \sqrt{\frac{2 L_u}{\pi V}} \, \frac{1}{1 + \dfrac{L_u}{V} s},
 	\label{eq:Dryden_Hu}
 	\\[6pt]
-	H_v(s) &= \sigma_v \sqrt{\frac{L_v}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_v}{V} s}{\left(1 + \dfrac{L_v}{V} s\right)^2} 
+	H_v(s) &= \sigma_v \sqrt{\frac{L_v}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_v}{V} s}{\left(1 + \dfrac{L_v}{V} s\right)^2}, 
 	\label{eq:Dryden_Hv}
 	\\[6pt]
 	H_w(s) &= \sigma_w \sqrt{\frac{L_w}{\pi V}} \, \frac{1 + \dfrac{\sqrt{3} L_w}{V} s}{\left(1 + \dfrac{L_w}{V} s\right)^2},
@@ -894,12 +897,9 @@ Since the turbulence intensities $\sigma$ scale linearly with $W_{20}$, this par
 \nomenclature[A]{KF}{Kalman Filter}
 \nomenclature[A]{MMSE}{Minimum Mean Square Error}
 
-\cite{Maybeck1979KF}
-\cite{Särkkä2013KF}
+The Kalman filter (KF), introduced by Kalman in 1960 \cite{Kalman1960KF}, is one of the most widely used algorithms for state estimation in dynamic systems \cite{Maybeck1979KF, Särkkä2013KF}. Its objective is to estimate the state of a system from noisy or incomplete sensor measurements by recursively combining an uncertain mathematical model of the system with incoming measurements. At each time step, the filter first predicts the current state based on the system dynamics and then refines this prediction using the latest measurement. The prediction and measurement are weighted according to their respective uncertainties, allowing the filter to balance the information provided by the system model and the sensor measurements.
 
-The Kalman filter (KF), introduced by Kalman in 1960 \cite{Kalman1960KF}, is one of the most widely used algorithms for state estimation in dynamic systems. Its objective is to estimate the state of a system from noisy or incomplete sensor measurements by recursively combining an uncertain mathematical model of the system with incoming measurements. At each time step, the filter first predicts the current state based on the system dynamics and then refines this prediction using the latest measurement. The prediction and measurement are weighted according to their respective uncertainties, allowing the filter to balance the information provided by the system model and the sensor measurements.
-
-Under the assumptions of linear system dynamics the Kalman filter yields the optimal state estimate in the minimum mean-square error (MMSE) sense \cite{Simon2006KF}. More specifically, at each time step $k$, it computes the state estimate that minimizes the expected squared estimation error conditioned on all available measurements,
+Under the assumptions of linear system dynamics and Gaussian process and measurement noise, the Kalman filter yields the optimal state estimate in the minimum mean-square error (MMSE) sense \cite{Simon2006KF}. More specifically, at each time step $k$, it computes the state estimate that minimizes the expected squared estimation error conditioned on all available measurements:
 
 \begin{equation}
 	\hat{\bm{x}}_{k}
@@ -939,10 +939,12 @@ while the covariance matrix describes its deviation from the mean and is defined
 	\right].
 \end{equation}
 
+By construction, $\bm{P}_{xx}$ is symmetric and positive semidefinite, i.e., $\bm{v}^T \bm{P}_{xx} \bm{v} \geq 0$ for all $\bm{v} \in \mathbb{R}^n$, which is required for $\bm{P}_{xx}$ to represent a valid covariance matrix.
+
 The covariance matrix serves as a measure of the uncertainty associated with a random vector. The diagonal entries of $\bm{P}_{xx}$ represent the variances of the individual components and quantify their spread around the mean, where larger variances indicate greater uncertainty. The off-diagonal entries describe the correlation between the components and indicate how the uncertainty of one component is related to the uncertainty of another.
 
 To describe the evolution of the state over time and how the measurements relate to the system state, the Kalman filter uses a discrete-time probabilistic state-space model. 
-To account for modeling inaccuracies and measurement uncertainties, as well as the stochastic wind, the process and measurement models are augmented by additive random vectors representing process noise and measurement noise, respectively.
+To account for modeling inaccuracies and measurement uncertainties, as well as the stochastic wind, the process and measurement models are augmented by additive random vectors representing process noise and measurement noise, respectively:
 
 \begin{align}
 	\bm{x}_k 
@@ -958,7 +960,7 @@ To account for modeling inaccuracies and measurement uncertainties, as well as t
 \end{align}
 
 where $\bm{x}_k \in \mathbb{R}^n$ denotes the system state, $\bm{y}_k \in \mathbb{R}^m$ the measurement, $\bm{u}_k \in \mathbb{R}^p$ the known deterministic input, $\bm{A}_{k-1} \in \mathbb{R}^{n \times n}$ the state transition matrix, $\bm{B}_{k-1} \in \mathbb{R}^{n \times p}$ the input matrix, and $\bm{C}_k \in \mathbb{R}^{m \times n}$ the measurement matrix. The system matrices may be time-varying.
-The random vectors $\bm{q}_{k-1} \in \mathbb{R}^{n}$ and $\bm{r}_k \in \mathbb{R}^{m}$ represent the process and measurement noise, respectively. Both are modeled as zero-mean, white Gaussian noise processes with covariance matrices $\bm{Q}_{k-1} \in \mathbb{R}^{n \times n}$ and $\bm{R}_k \in \mathbb{R}^{m \times m}$,
+The random vectors $\bm{q}_{k-1} \in \mathbb{R}^{n}$ and $\bm{r}_k \in \mathbb{R}^{m}$ represent the process and measurement noise, respectively. Both are modeled as zero-mean, white Gaussian noise processes with covariance matrices $\bm{Q}_{k-1} \in \mathbb{R}^{n \times n}$ and $\bm{R}_k \in \mathbb{R}^{m \times m}$:
 
 \begin{equation}
 	\mathbb{E}[\bm{q}_{k}] = 0, 
@@ -974,7 +976,7 @@ The random vectors $\bm{q}_{k-1} \in \mathbb{R}^{n}$ and $\bm{r}_k \in \mathbb{R
 	\forall k.
 \end{equation}
 
-As a consequence of this formulation, the state and the measurement are themselves random vectors rather than deterministic quantities. Therefore, the initial condition is not a fixed value but a initial distribution,
+As a consequence of this formulation, the state and the measurement are themselves random vectors rather than deterministic quantities. Therefore, the initial condition is not a fixed value but an initial distribution,
 
 \begin{equation}
 	\bm{x}_0 \sim \mathcal{N}(\hat{\bm{x}}_0, \bm{P}_0),
@@ -982,13 +984,13 @@ As a consequence of this formulation, the state and the measurement are themselv
 
 with initial state estimate $\hat{\bm{x}}_0 \in \mathbb{R}^{n}$ and covariance $\bm{P}_0 \in \mathbb{R}^{n \times n}$ assumed given.
 
-The state estimate at any time step is defined as the mean of the state's probability distribution. 
+The state estimate at any time step is defined as the mean of the state's probability distribution,
 
 \begin{equation}
-	\hat{\bm{x}}_k = \mathbb{E}[\bm{x}_k] = \bar{\bm{x}}_k
+	\hat{\bm{x}}_k = \mathbb{E}[\bm{x}_k] = \bar{\bm{x}}_k.
 \end{equation}
 
-Because the initial state $\bm{x}_0$ is Gaussian, the process and measurement noise are Gaussian, and both the prediction and update steps introduced below act linearly on Gaussian random vectors, the conditional distribution of the state remains Gaussian at every time step, both before and after a measurement is incorporated,
+Because the initial state $\bm{x}_0$ is Gaussian, the process and measurement noise are Gaussian, and both the prediction and update steps introduced below act linearly on Gaussian random vectors, the conditional distribution of the state remains Gaussian at every time step \cite{Särkkä2013KF}, both before and after a measurement is incorporated:
 
 \begin{equation}
 	\bm{x}_k \mid \bm{y}_{1:k-1} \sim \mathcal{N}(\hat{\bm{x}}_k^-, \bm{P}_k^-), 
@@ -1002,7 +1004,7 @@ For notational simplicity, the explicit conditioning on the available measuremen
 
 Starting from the initial estimate $\hat{\bm{x}}_0$, the Kalman filter recursively computes the state estimate at each time step $k$ by alternating between two steps: a prediction step and an update step. In the prediction step, the previous \emph{a posteriori} state estimate $\hat{\bm{x}}_{k-1}$ and the system model are used to propagate the estimate and its associated uncertainty forward in time, yielding the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^-$.  Additionally, the predicted measurement corresponding to $\hat{\bm{x}}_k^-$ is calculated.
 
-In the subsequent update step, the latest measurement is incorporated to correct the \emph{a priori} estimate $\hat{\bm{x}}_k^-$. The correction is based on the so-called innovation, i.e., the difference between the actual and predicted measurement, and is weighted according to the relative uncertainties of the prediction and the measurement. The resulting \emph{a posteriori} estimate $\hat{\bm{x}}_k$, incorporates all available information up to time step $k$.
+In the subsequent update step, the latest measurement is incorporated to correct the \emph{a priori} estimate $\hat{\bm{x}}_k^-$. The correction is based on the so-called innovation, i.e., the difference between the actual and predicted measurement, and is weighted according to the relative uncertainties of the prediction and the measurement. The resulting \emph{a posteriori} estimate $\hat{\bm{x}}_k$ incorporates all available information up to time step $k$.
 The corresponding equations are introduced in the following \cite{Särkkä2013KF}.
 
 
@@ -1022,7 +1024,7 @@ By taking the expectation of Eq.~\eqref{eq:discrete_system} and using $\mathbb{E
 	\label{eq:mean_prop}
 \end{equation}
 
-which can be computed for all $k$ recursively given the input $\bm{u}_k$ and initial estimate $\hat{\bm{x}}_0$.
+which can be computed for all $k$ recursively given the input sequence and initial estimate $\hat{\bm{x}}_0$.
 
 The \emph{a priori} covariance at time step $k$ is defined as
 
@@ -1033,7 +1035,7 @@ The \emph{a priori} covariance at time step $k$ is defined as
 	\label{eq:cov_prop_def}
 \end{equation}
 
-Subtracting Eq.~\eqref{eq:mean_prop} from Eq.~\eqref{eq:discrete_system}, the known input term $\bm{B}_{k-1} \bm{u}_{k-1}$ cancels, leaving the propagated estimation error
+Subtracting Eq.~\eqref{eq:mean_prop} from Eq.~\eqref{eq:discrete_system}, the known input term $\bm{B}_{k-1} \bm{u}_{k-1}$ cancels, leaving the propagated estimation error,
 
 \begin{equation}
 	\bm{x}_{k} - \hat{\bm{x}}_{k}^- 
@@ -1042,7 +1044,7 @@ Subtracting Eq.~\eqref{eq:mean_prop} from Eq.~\eqref{eq:discrete_system}, the kn
 	\label{eq:error_prop}
 \end{equation}
 
-Substituting Eq.~\eqref{eq:error_prop} into the covariance definition \eqref{eq:cov_prop_def} yields
+Substituting Eq.~\eqref{eq:error_prop} into the covariance definition \eqref{eq:cov_prop_def} yields:
 
 \begin{align}
 	\bm{P}_k^- 
@@ -1076,11 +1078,12 @@ Substituting Eq.~\eqref{eq:error_prop} into the covariance definition \eqref{eq:
 	}_{=\,\bm{0}}
 	\notag\\[4pt]
 	&=
-	\bm{A}_{k-1}\bm{P}_{k-1}\bm{A}_{k-1}^T + \bm{Q}_{k-1}	
+	\bm{A}_{k-1}\bm{P}_{k-1}\bm{A}_{k-1}^T + \bm{Q}_{k-1}	.
 	\label{eq:cov_prop_exp}
 \end{align}
 
-The cross term vanishes because the process noise $\bm{q}_{k-1}$ is assumed to be uncorrelated with the state estimation error $\bm{x}_{k-1} - \hat{\bm{x}}_{k-1}$.
+The cross term vanishes because the process noise $\bm{q}_{k-1}$ is assumed to be uncorrelated with the state estimation error $\bm{x}_{k-1} - \hat{\bm{x}}_{k-1}$. 
+Note that $\bm{P}_k^-$ in Eq.~\eqref{eq:cov_prop_exp} is guaranteed to be positive semidefinite: $\bm{A}_{k-1}\bm{P}_{k-1}\bm{A}_{k-1}^T$ is PSD as a congruence transformation of the PSD matrix $\bm{P}_{k-1}$, and $\bm{Q}_{k-1}$ is PSD by definition, so their sum is PSD.
 Equations~\eqref{eq:mean_prop} and \eqref{eq:cov_prop_exp} together describe how the \emph{a priori} mean and covariance of the state evolve under the linear system model.
 Accordingly, the predicted output computes to
 
@@ -1097,7 +1100,7 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-In the update step, the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ obtained from the prediction step is corrected using the latest measurement $\bm{y}_k$, resulting in the \emph{a posteriori} estimate $\hat{\bm{x}}_k$. The correction is expressed as a linear combination of the \emph{a priori} estimate and the innovation, weighted by the Kalman gain $\bm{K}_k$,
+In the update step, the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ obtained from the prediction step is corrected using the latest measurement $\bm{y}_k$, resulting in the \emph{a posteriori} estimate $\hat{\bm{x}}_k$. The correction is expressed as a linear combination of the \emph{a priori} estimate and the innovation, weighted by the Kalman gain $\bm{K}_k$:
 
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k,
@@ -1162,7 +1165,7 @@ The \emph{a posteriori} covariance follows by substituting Eqs.~\eqref{eq:innova
 	\label{eq:posterior_error}
 \end{equation}
 
-so that, following the same expansion as in Eq.~\eqref{eq:innovation_cov},
+so that, following the same expansion as in Eq.~\eqref{eq:innovation_cov}:
 
 \begin{equation}
 	\bm{P}_k 
@@ -1171,7 +1174,7 @@ so that, following the same expansion as in Eq.~\eqref{eq:innovation_cov},
 	\label{eq:cov_update_joseph}
 \end{equation}
 
-Substituting the optimal gain from Eq.~\eqref{eq:kalman_gain} simplifies this expression to
+Substituting the optimal gain from Eq.~\eqref{eq:kalman_gain} simplifies this expression to:
 
 \begin{equation}
 	\bm{P}_k = \bm{P}_k^- - \bm{K}_k \bm{S}_k \bm{K}_k^T = (\bm{I} - \bm{K}_k \bm{C}_k)\bm{P}_k^-.
@@ -1188,7 +1191,7 @@ The recursive state estimate can be summarized compactly as
 	\underbrace{\bm{A}_{k-1}\hat{\bm{x}}_{k-1} + \bm{B}_{k-1}\bm{u}_{k-1}}
 	_{\text{Prediction}}
 	+
-	\underbrace{\bm{K}_k\left(\bm{y}_k - \hat{\bm{y}}_k\right)}
+	\underbrace{\bm{K}_k\left(\bm{y}_k - \hat{\bm{y}}_k^-\right)}
 	_{\text{Update}},
 \end{equation}
 
@@ -1202,7 +1205,7 @@ This predictor-corrector structure is common to many state estimation methods, i
 
 The presented equations describe the Kalman filter formulation for linear systems. In many real-world applications, however, the system dynamics and measurement models are inherently nonlinear. This is also the case for the airship model considered in this work, whose nonlinear equations of motion require a nonlinear state estimation approach.
 
-Several methods have been proposed to extend the Kalman filter framework to nonlinear systems, including the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) \cite{Maybeck1979,Simon2006,Julier1997}. 
+Several methods have been proposed to extend the Kalman filter framework to nonlinear systems, including the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) \cite{Maybeck1979KF,Simon2006KF,Julier1997UKF}. 
 Both methods retain the recursive prediction-update structure of the classical Kalman filter while employing different strategies to handle nonlinearities. These two approaches are introduced in the following.
 
 
@@ -1244,7 +1247,7 @@ Specifically, the nonlinear state transition function $\bm{f}$ is linearized aro
 	\label{eq:ekf_measurement_linearization}
 \end{align}
 
-where $\bm{F}_{k-1} \in \mathbb{R}^{n \times n}$ denotes the Jacobian of $\bm{f}$ with respect to the state, evaluated at $(\hat{\bm{x}}_{k-1}, \bm{u}_{k-1})$, and $\bm{H}_k \in \mathbb{R}^{m \times n}$ denotes the Jacobian of $\bm{h}$ with respect to the state, evaluated at $\hat{\bm{x}}_k^-$,
+where $\bm{F}_{k-1} \in \mathbb{R}^{n \times n}$ denotes the Jacobian of $\bm{f}$ with respect to the state, evaluated at $(\hat{\bm{x}}_{k-1}, \bm{u}_{k-1})$, and $\bm{H}_k \in \mathbb{R}^{m \times n}$ denotes the Jacobian of $\bm{h}$ with respect to the state, evaluated at $\hat{\bm{x}}_k^-$:
 
 \begin{equation}
 	\bm{F}_{k-1} 
@@ -1265,7 +1268,7 @@ where $\bm{F}_{k-1} \in \mathbb{R}^{n \times n}$ denotes the Jacobian of $\bm{f}
 
 \subsubsection{Prediction}
 
-Analogously to the classical Kalman filter, the \emph{a priori} state estimate is obtained by propagating the previous \emph{a posteriori} estimate through the system model. Taking the expectation of the linearized state equation in Eq.~\eqref{eq:ekf_linearization} yields
+Analogously to the classical Kalman filter, the \emph{a priori} state estimate is obtained by propagating the previous \emph{a posteriori} estimate through the system model. Taking the expectation of the linearized state equation in Eq.~\eqref{eq:ekf_linearization} yields:
 
 \begin{align}
 	\hat{\bm{x}}_{k}^-
@@ -1288,9 +1291,9 @@ Analogously to the classical Kalman filter, the \emph{a priori} state estimate i
 	\label{eq:mean_prop_ekf}
 \end{align}
 
-whereas the second term computes to zero because the expected value of the state estimation error computes to zero: $\mathbb{E}[\bm{x}_{k-1}-\hat{\bm{x}}_{k-1}] = \hat{\bm{x}}_{k-1} - \hat{\bm{x}}_{k-1} = \bm{0}$.
+where the second term computes to zero because the expected value of the state estimation error computes to zero: $\mathbb{E}[\bm{x}_{k-1}-\hat{\bm{x}}_{k-1}] = \hat{\bm{x}}_{k-1} - \hat{\bm{x}}_{k-1} = \bm{0}$.
 
-The \emph{a priori} covariance follows from the state estimation error 
+The \emph{a priori} covariance follows from the state estimation error,
 
 \begin{equation}
 	\bm{x}_{k} - \hat{\bm{x}}_{k}^- 
@@ -1299,7 +1302,7 @@ The \emph{a priori} covariance follows from the state estimation error
 	\label{eq:error_prop_EKF}
 \end{equation}
 
-Equation~\eqref{eq:error_prop_EKF} has the same structure as in the linear case in Eq.~\eqref{eq:error_prop}, with $\bm{A}_{k-1}$ replaced by the Jacobian $\bm{F}_{k-1}$. Applying the linear covariance propagation result from Eq.~\eqref{eq:cov_prop_exp} to this locally linearized system gives the \emph{a priori} covariance
+Equation~\eqref{eq:error_prop_EKF} has the same structure as in the linear case in Eq.~\eqref{eq:error_prop}, with $\bm{A}_{k-1}$ replaced by the Jacobian $\bm{F}_{k-1}$. Applying the linear covariance propagation result from Eq.~\eqref{eq:cov_prop_exp} to this locally linearized system gives the \emph{a priori} covariance,
 
 \begin{equation}
 	\bm{P}_k^- = \bm{F}_{k-1} \bm{P}_{k-1} \bm{F}_{k-1}^T + \bm{Q}_{k-1}.
@@ -1321,7 +1324,8 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-As in the linear case, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation,
+As in the linear case, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation:
+
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k, 
 	\label{eq:ekf_state_update}
@@ -1338,7 +1342,7 @@ where the innovation is given by
 	\label{eq:innovation_ekf}
 \end{equation}
 
-Equation~\eqref{eq:innovation_ekf} has the same structure as in the linear case, with $\bm{C}_k$ replaced by the Jacobian $\bm{H}_k$. Applying the linear update equations from Eqs.~\eqref{eq:kalman_gain}--\eqref{eq:cov_update} to this locally linearized system yields the innovation covariance, Kalman gain, and \emph{a posteriori} covariance,
+Equation~\eqref{eq:innovation_ekf} has the same structure as in the linear case, with $\bm{C}_k$ replaced by the Jacobian $\bm{H}_k$. Applying the linear update equations from Eqs.~\eqref{eq:kalman_gain}--\eqref{eq:cov_update} to this locally linearized system yields the innovation covariance, Kalman gain, and \emph{a posteriori} covariance:
 
 \begin{align}
 	\bm{S}_k &= \bm{H}_k \bm{P}_k^- \bm{H}_k^T + \bm{R}_k,
@@ -1388,15 +1392,15 @@ where $[ \sqrt{\bm{P}} ]_i$ denotes the $i$-th column of a matrix square root sa
 	\lambda = \alpha^2(n+\kappa)-n.
 \end{equation} 
 
-The parameters $\alpha$, $\beta$, and $\kappa$ determine the spread of the sigma points around the mean. A common default choice is $\kappa=0$ with $\alpha$ chosen small and positive to keep the sigma points close to $\bar{\bm{x}}$. For Gaussian random vectors $\beta = 2$ is optimal \cite{Wan2001UKF}.
+The parameters $\alpha$ and $\kappa$ determine the spread of the sigma points around the mean, while $\beta$ incorporates prior knowledge of the distribution shape into the covariance weighting. A common default choice is $\kappa=0$ with $\alpha$ chosen small and positive to keep the sigma points close to $\bar{\bm{x}}$. For Gaussian random vectors $\beta = 2$ is optimal \cite{Wan2001UKF}.
 
-The sigma points $\bm{\mathcal{X}}_i$ are then propagated through the nonlinear function
+The sigma points $\bm{\mathcal{X}}_i$ are then propagated through the nonlinear function:
 
 \begin{equation}
 	\bm{\mathcal{Y}}_i = \bm{g}(\bm{\mathcal{X}}_i), \qquad i = 0, \ldots, 2n
 \end{equation}
 
-to obtain the set of transformed sigma points $\bm{\mathcal{Y}}_i$. The mean and covariance of the transformed distribution $\bm{y}$ are reconstructed as the weighted sample mean and covariance of the propagated sigma points
+to obtain the set of transformed sigma points $\bm{\mathcal{Y}}_i$. The mean and covariance of the transformed distribution $\bm{y}$ are reconstructed as the weighted sample mean and covariance of the propagated sigma points:
 
 \begin{align}
 	\bar{\bm{y}} 
@@ -1432,7 +1436,7 @@ In the UKF algorithm, the unscented transform is applied separately during the p
 
 \subsubsection{Prediction}
 
-A set of sigma points $\bm{\mathcal{X}}_{k-1,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the previous \emph{a posteriori} estimate $\hat{\bm{x}}_{k-1}$ and covariance $\bm{P}_{k-1}$. The sigma points are then propagated individually through the nonlinear state transition function,
+A set of sigma points $\bm{\mathcal{X}}_{k-1,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the previous \emph{a posteriori} estimate $\hat{\bm{x}}_{k-1}$ and covariance $\bm{P}_{k-1}$. The sigma points are then propagated individually through the nonlinear state transition function:
 
 \begin{equation}
 	\bm{\mathcal{X}}_{k,i}^- = \bm{f}(\bm{\mathcal{X}}_{k-1,i}, \bm{u}_{k-1}), 
@@ -1457,7 +1461,7 @@ Applying the unscented transform in Eqs.~\eqref{eq:unscented_transform1} and \eq
 where the process noise covariance $\bm{Q}_{k-1}$ is added directly, consistent with the additive noise formulation in Eq.~\eqref{eq:ekf_system}. 
 
 To incorporate the computed \emph{a priori} estimate into the output prediction, a new set of sigma points $\bm{\mathcal{X}}_{k,i}$ is generated according to Eq.~\eqref{eq:sigma_points} from the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^- $. 
-The predicted measurement is obtained by propagating the redrawn sigma points through the nonlinear measurement function and applying the unscented transform~\eqref{eq:unscented_transform1}
+The predicted measurement is obtained by propagating the redrawn sigma points through the nonlinear measurement function and applying the unscented transform~\eqref{eq:unscented_transform1}:
 
 \begin{align}
 	\bm{\mathcal{Y}}_{k,i} 
@@ -1480,7 +1484,7 @@ This concludes the prediction step.
 
 \subsubsection{Update}
 
-As in the linear Kalman filter and the EKF, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation,
+As in the linear Kalman filter and the EKF, the \emph{a posteriori} estimate is obtained by correcting the \emph{a priori} estimate with the innovation:
 
 \begin{equation}
 	\hat{\bm{x}}_k = \hat{\bm{x}}_k^- + \bm{K}_k \tilde{\bm{y}}_k, 
@@ -1488,7 +1492,7 @@ As in the linear Kalman filter and the EKF, the \emph{a posteriori} estimate is 
 	\label{eq:ukf_state_update}
 \end{equation}
 
-The innovation covariance and the cross-covariance between the \emph{a priori} state and the predicted measurement are reconstructed from the propagated sigma points using the unscented transform,
+The innovation covariance and the cross-covariance between the \emph{a priori} state and the predicted measurement are reconstructed from the propagated sigma points using the unscented transform:
 
 \begin{align}
 	\bm{S}_k 
@@ -1517,7 +1521,7 @@ where the measurement noise covariance $\bm{R}_k$ is added directly to $\bm{S}_k
 This concludes the update step.
 
 The UKF approximates the propagation of the state distribution by deterministically sampling a set of sigma points and propagating them through the nonlinear process and measurement functions. Consequently, it captures the effect of nonlinear transformations on the mean and covariance more accurately than the EKF, while avoiding the first-order linearization error associated with Taylor series approximations \cite{Julier2004UKF}. In contrast to the EKF, no Jacobians of $\bm{f}$ or $\bm{h}$ are required. Instead, the nonlinear functions are evaluated directly at $2n+1$ sigma points, resulting in a computational cost that scales with the state dimension. 
-Jacobian evaluation. Although the UKF still relies on a finite set of sample points and therefore does not provide the exact optimality guarantees of the linear Kalman filter, its improved accuracy relative to the EKF at comparable computational cost has made it a widely used alternative for nonlinear state estimation.
+Although the UKF still relies on a finite set of sample points and therefore does not provide the exact optimality guarantees of the linear Kalman filter, its improved accuracy relative to the EKF at comparable computational cost has made it a widely used alternative for nonlinear state estimation.
 
 
 
@@ -1668,7 +1672,7 @@ The general structure of a compensation-based control approach is depicted in Fi
 
 Disturbance feedforward (DFF) is an explicit model-based disturbance compensation strategy that utilizes measurements or estimates of external disturbances to generate a compensating control input before the disturbance affects the controlled output.
 
-Consider the linear time-invariant (LTI) system
+Consider the linear time-invariant (LTI) system,
 
 \begin{equation}
 	\dot{\bm{x}}
@@ -1682,7 +1686,7 @@ Consider the linear time-invariant (LTI) system
 
 where $\bm{x} \in \mathbb{R}^n$ denotes the system state, $\bm{u} \in \mathbb{R}^p$ the control input, and $\bm{d} \in \mathbb{R}^q$ a measurable or estimated disturbance acting on the system through the disturbance input matrix $\bm{E} \in \mathbb{R}^{n \times q}$.
 
-Now the feedback control law is augmented with a disturbance feedforward compensation term 
+Now the feedback control law is augmented with a disturbance feedforward compensation term:
 
 \begin{equation}
 	\bm{u}
@@ -1715,7 +1719,7 @@ where $\bm{B}^{\dagger}$ denotes the Moore-Penrose pseudoinverse of the input ma
 
 which are independent of the disturbance.
 
-The same principle can be extended to nonlinear systems. Consider the nonlinear input affine dynamics \cite{Isidori1995NonlinearControlSystems}
+The same principle can be extended to nonlinear systems. Consider the nonlinear input affine dynamics \cite{Isidori1995NonlinearControlSystems},
 
 \begin{equation}
 	\dot{\bm{x}}
@@ -1729,7 +1733,7 @@ The same principle can be extended to nonlinear systems. Consider the nonlinear 
 \end{equation}
 
 
-where $\bm{f}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$, $\bm{g}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times m}$, and $\bm{g}_d: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times q}$ denote the nonlinear system dynamics, the input distribution matrix, and the disturbance distribution matrix, respectively. As for the linear case, we augment the control input with an compensation feedforward term
+where $\bm{f}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$, $\bm{g}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times p}$, and $\bm{g}_d: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times q}$ denote the nonlinear system dynamics, the input distribution matrix, and the disturbance distribution matrix, respectively. As for the linear case, the control input is augmented with a compensation feedforward term:
 
 \begin{equation}
 	\bm{u}_{\mathrm{comp}}
@@ -1737,7 +1741,7 @@ where $\bm{f}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$, $\bm{g}: \mathbb{R}^{
 	-
 	\bm{g}^{\dagger}(\bm{x})
 	\bm{g}_d(\bm{x})
-	\bm{d},
+	\bm{d}.
 \end{equation}
 
 For an invertible input matrix $\bm{g}(\bm{x})$, this results in the compensated dynamics
@@ -1770,7 +1774,7 @@ The nonlinear dynamics are described by
 \end{equation}
 
 
-where $\bm{f}: \mathbb{R}^{n} \times \mathbb{R}^q \rightarrow \mathbb{R}^{n}$ represents the known nonlinear system dynamics including the influence of the disturbance and $\bm{g}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times m}$ denotes the input distribution matrix.
+where $\bm{f}: \mathbb{R}^{n} \times \mathbb{R}^q \rightarrow \mathbb{R}^{n}$ represents the known nonlinear system dynamics including the influence of the disturbance and $\bm{g}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{n \times p}$ denotes the input distribution matrix.
 
 The control input is augmented as
 
@@ -1782,7 +1786,7 @@ The control input is augmented as
 	\bm{u}_{\mathrm{comp}},
 \end{equation}
 
-where the feedback term is responsible for defining the desired closed-loop behavior, whereas the compensation term is designed to cancel the known nonlinear system dynamics and disturbance effects. The compensation term is therefore selected as:
+where the feedback term is responsible for defining the desired closed-loop behavior, whereas the compensation term is designed to cancel the known nonlinear system dynamics and disturbance effects. The compensation term is therefore selected as
 
 \begin{equation}
 	\bm{u}_{\mathrm{comp}}
@@ -1792,7 +1796,7 @@ where the feedback term is responsible for defining the desired closed-loop beha
 	\bm{f}(\bm{x},\bm{d}).
 \end{equation}
 
-Substituting the compensation term into the system dynamics \eqref{eq:stateSpaceNDI} results in the compensated dynamics assuming that the nonlinear dynamics can be exactly inverted through the input distribution matrix
+Substituting the compensation term into the system dynamics \eqref{eq:stateSpaceNDI} results in the compensated dynamics, assuming that the nonlinear dynamics can be exactly inverted through the input distribution matrix:
 
 \begin{equation}
 	\dot{\bm{x}}
