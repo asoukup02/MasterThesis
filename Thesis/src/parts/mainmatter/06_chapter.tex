@@ -1,5 +1,11 @@
 \chapter{Conclusion and Outlook}
 
+Overall, the comparison of the wind estimation performance demonstrates that both the EKF and UKF provide comparable wind estimation performance for the investigated airship operating conditions. Although the UKF avoids the explicit model linearization required by the EKF, this does not result in a significant reduction in estimation error within the considered test range. The observed differences are comparatively small and depend on the individual scenario rather than consistently favoring one filter. Consequently, the EKF provides a suitable alternative to the UKF for the subsequent analyses, while offering the advantage of a lower computational effort associated with the propagation of a single linearized state model instead of multiple sigma points.
+
+
+
+
+
 Outlook
 
 The model-based approach proves to be a powerful tool for wind estimation given a good model of the system is available.  

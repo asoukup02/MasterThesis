@@ -727,6 +727,7 @@ The wind estimate is subsequently obtained from the estimated wind states throug
 
 
 \section{Compensation}
+\label{sec:3.2Compensation}
 
 While wind is modeled as an additional system state in the Kalman Filter implementation, it can also be considered as an external disturbance acting on the airship. Therefore, the wind estimation provided by the Kalman Filter can be utilized to compensate for the effect of wind disturbances.
 Two compensation approaches are implemented and evaluated: a nonlinear Disturbance Feedforward (DFF) controller and a Nonlinear Dynamic Inversion (NDI) controller. Both approaches can be interpreted as an augmentation to the existing PID controller, adding an additional compensation term:

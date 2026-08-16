@@ -33,12 +33,12 @@ where $x_k$ denotes the reference value and $\hat{x}_k$ the corresponding estima
 
 In the following evaluation, the RMSE is applied to assess both the wind estimation accuracy and the resulting state tracking performance. The wind RMSE quantifies the deviation between the estimated and actual wind components, while the state RMSE is used to evaluate the tracking error of the airship states. 
 
-In addition, whenever a category comprises multiple related components (e.g., the three position axes or the three velocity axes), an average RMSE is reported to provide a single, representative accuracy measure for that category. For a category with $M$ components, each with its own RMSE according to \eqref{eq:rmse}, the average RMSE is defined as
-
-\begin{equation}
-	\overline{\mathrm{RMSE}} = \frac{1}{M}\sum_{j=1}^{M} \mathrm{RMSE}(x_j).
-	\label{eq:rmse_avg}
-\end{equation}
+%In addition, whenever a category comprises multiple related components (e.g., the three velocity axes), an average RMSE is reported to provide a single, representative accuracy measure for that category. For a category with $M$ components, each with its own RMSE according to \eqref{eq:rmse}, the average RMSE is defined as
+%
+%\begin{equation}
+%	\mathrm{RMSE} = \frac{1}{M}\sum_{j=1}^{M} \mathrm{RMSE}(x_j).
+%	\label{eq:rmse_avg}
+%\end{equation}
 
 The remainder of this chapter is structured as follows. In Section~\ref{sec:5.1WindEstimation}, the performance of the wind estimation algorithm is evaluated for the considered flight and wind scenarios. Subsequently, Section~\ref{sec:5.2WindCompensation} investigates the effectiveness of the proposed wind compensation strategies and their impact on the overall control performance.
 
@@ -62,7 +62,7 @@ The reference wind speed $W_{20}$ cannot be directly obtained from the system st
 
 To determine an appropriate value for the reference wind speed $W_{20}$, the influence on the wind estimation performance is investigated. First, a constant reference wind speed $W_{20,\mathrm{true}} \in \{0, 1.6, 5,8.3\}\mathrm{m/s}$ is specified for the Dryden model to generate the actual wind conditions in the simulation. The Kalman filter is then configured with varying assumed values $W_{20,\mathrm{ass}}$ ranging from $0$ to $15\,\mathrm{m/s}$. The investigated range covers the expected wind conditions of up to approximately $30\,\mathrm{km/h}$ ($\approx 8.3 \mathrm{m/s}$) and extends beyond this value to assess the impact of overestimating the turbulence intensity on the wind estimation performance.
 
-For each combination of true value, $W_{20, \mathrm{true}}$ and assumed value, $W_{20,\mathrm{ass}}$, the same set of 27 wind scenarios is simulated to evaluate the estimation performance under different wind conditions. Each scenario is defined by a unique combination of constant wind component and Dryden turbulence model random seed, resulting in 27 distinct wind conditions that are applied consistently across all values of $W_{20,\mathrm{ass}}$.
+For each combination of true value, $W_{20, \mathrm{true}}$ and assumed value, $W_{20,\mathrm{ass}}$, the same set of 27 wind scenarios is simulated to evaluate the estimation performance under different wind conditions. Each scenario is defined by a unique combination of constant wind component and Dryden turbulence model random seed, resulting in 27 distinct wind conditions.
 For each test case, the RMSE between the estimated and actual wind velocity is calculated individually for each axis. The resulting RMSE values are then averaged over all three axes and subsequently over all 27 wind scenarios to obtain a representative performance measure for each assumed value of $W_{20,\mathrm{ass}}$.
 
 For this analysis, the airspeed sensor is deliberately not considered, as its measurement would provide additional information that directly constrains the internal Dryden states. Consequently, the resulting wind estimate would become less sensitive to the assumed turbulence intensity, making it more difficult to quantify the influence of the assumed $W_{20}$ value.
@@ -164,7 +164,7 @@ First, even for wind conditions without turbulence ($W_{20,\mathrm{true}}=0$), a
 This behavior follows from the resulting process noise covariance of the wind model, $\bm{Q}_{\mathrm{wind}}$, derived in Section~\ref{sec:3.1.4Discretization}. For $W_{20,\mathrm{ass}}=0$, the input matrix of the Dryden model, $\bm{B}_W$, becomes the zero matrix, resulting in $\bm{Q}_{\mathrm{wind}}=\bm{0}$. Consequently, no process uncertainty is assigned to the wind states, and their evolution is fully determined by the deterministic state matrix $\bm{A}_W$. Since the Dryden state matrix is stable, the wind states, and hence the estimated wind velocity, converge to zero regardless of the initial state. With the zero initial condition used in this work, the estimated wind velocity remains zero for the entire time. As the constant wind component is generally non-zero, this results in a large estimation error even though no turbulence is present.
 
 Second, matching the assumed and true reference wind speeds ($W_{20,\mathrm{ass}} = W_{20,\mathrm{true}}$) does generally not yield the lowest RMSE. 
-Increasing $W_{20,\mathrm{ass}}$ increases the process noise covariance $Q_{\mathrm{wind}}$, thereby allowing the estimated wind states to adapt more readily to rapid changes in the actual wind. Consequently, an assumed value that exceeds $W_{20,\mathrm{true}}$ can provide better estimation performance than a perfectly matched value by allowing the filter greater flexibility to track the wind dynamics. 
+Increasing $W_{20,\mathrm{ass}}$ increases the process noise covariance $\bm{Q}_{\mathrm{wind}}$, thereby allowing the estimated wind states to adapt more readily to rapid changes in the actual wind. Consequently, an assumed value that exceeds $W_{20,\mathrm{true}}$ can provide better estimation performance than a perfectly matched value by allowing the filter greater flexibility to track the wind dynamics. 
 
 Both observations can be illustrated using a concrete example, shown in Figure~\ref{fig:Estimation_differentW20}.
 
@@ -175,7 +175,7 @@ Both observations can be illustrated using a concrete example, shown in Figure~\
 	\label{fig:Estimation_differentW20}
 \end{figure}
 
-This raises the question of why $W_{20,\mathrm{ass}}$ should not simply be chosen as large as possible. Increasing $W_{20,\mathrm{ass}}$ increases the process noise covariance $Q_{\mathrm{wind}}$, giving the wind states greater freedom to change in response to deviations between the measured and predicted system behavior. While this can improve the tracking of rapid wind changes, a large $W_{20,\mathrm{ass}}$ can make the estimate overly sensitive to such deviations, resulting in wind overestimation. Consequently, the estimated wind becomes increasingly noisy and may exhibit peaks and oscillations that are not present in the actual wind. Such behavior is undesirable for the subsequent compensation strategy, as fluctuations and overestimation in the wind estimate can directly translate into unnecessary or excessive compensation commands.
+This raises the question of why $W_{20,\mathrm{ass}}$ should not simply be chosen as large as possible. Increasing $W_{20,\mathrm{ass}}$ increases the process noise covariance $\bm{Q}_{\mathrm{wind}}$, giving the wind states greater freedom to change in response to deviations between the measured and predicted system behavior. While this can improve the tracking of rapid wind changes, a large $W_{20,\mathrm{ass}}$ can make the estimate overly sensitive to such deviations. As a result, the estimated wind becomes increasingly noisy and may exhibit peaks and oscillations that are not present in the actual wind. Such behavior is undesirable for the subsequent compensation strategy, as strong fluctuations in the wind estimate can directly translate into unnecessary or excessive compensation commands.
 
 Across all tested true wind conditions, $W_{20,\mathrm{ass}}=10 \mathrm{m/s}$ consistently provides good estimation performance, with the resulting RMSE being close to or matching the best value within each panel. Although larger values of $W_{20,\mathrm{ass}}$ can yield lower RMSE in individual scenarios, $W_{20,\mathrm{ass}}=10 \mathrm{m/s}$ provides a suitable trade-off between responsiveness and estimation noise without introducing the potential effects associated with excessive process noise. It is therefore selected as the reference wind speed for the remainder of this work.
 
@@ -189,9 +189,9 @@ Consequently, no online adaptation of $W_{20}$ based on the current flight or wi
 \subsection{UKF vs EKF}
 \label{sec:5.1.2EKFvsUKF}
 
-Both the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) provide nonlinear extensions of the Kalman filter and are therefore suitable for the nonlinear augmented airship model considered in this work. The EKF accounts for the nonlinearities by locally linearizing the system and measurement models using their Jacobians. In contrast, the UKF propagates a set of deterministically selected sigma points through the nonlinear models, avoiding the explicit linearization required by the EKF. %While the two approaches differ in how they approximate the propagation of the state distribution, their estimation performance is expected to be comparable when the nonlinearities are sufficiently well represented by the local linearization.
+Both the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) provide nonlinear extensions of the Kalman filter and are therefore suitable for the nonlinear augmented airship model considered in this work. The EKF accounts for the nonlinearities by locally linearizing the system and measurement models using their Jacobians. In contrast, the UKF propagates a set of deterministically selected sigma points through the nonlinear models, avoiding the explicit linearization required by the EKF. 
 
-To compare the wind estimation performance of the EKF and UKF, both filters are evaluated using the same test suite. The filters are configured with identical initial conditions as well as identical process and measurement noise covariances. For each filter, test runs covering the six flight scenarios described at the beginning of this section are carried out. For each flight scenario, the same set of 27 wind conditions is applied, while the true turbulence intensity is varied through $W_{20,\mathrm{true}} \in \{0,5,10\} \mathrm{m/s}$. This results in a total of $N=486$ simulation runs for each filter. Using identical filter configurations, flight scenarios, and wind conditions ensures that any observed differences in estimation performance can be attributed to the respective filtering approach rather than to variations in the test conditions.
+To compare the wind estimation performance of the EKF and UKF, both filters are evaluated using the same test suite. The filters are configured with identical initial conditions as well as identical process and measurement noise covariances. For each filter, test runs covering the six flight scenarios described at the beginning of this section are carried out. For each flight scenario, the same set of 27 constant wind contributions and Dryden turbulence model random seeds is applied, while the true turbulence intensity is varied through $W_{20,\mathrm{true}} \in \{0,5,10\} \mathrm{m/s}$. This results in a total of $N=486$ simulation runs for each filter. Using identical filter configurations, flight scenarios, and wind conditions ensures that any observed differences in estimation performance can be attributed to the respective filtering approach rather than to variations in the test conditions.
 
 Figure~\ref{fig:timeplot_EKFvsUKF} shows the actual wind together with the EKF and UKF estimates for a single representative test scenario. 
 
@@ -217,88 +217,112 @@ The resulting RMSE values are therefore obtained separately for each of the 486 
 	\label{fig:EKFvsUKF_histogram}
 \end{figure}
 
-The results indicate that the EKF and UKF achieve comparable overall wind estimation performance. The distributions exhibit a similar range and concentration of RMSE values, with only relatively small differences between the two filters. This suggests that the choice between the EKF and UKF has no substantial influence on the wind estimation accuracy under the investigated operating conditions. Consequently, the choice between the two approaches can instead be guided by other considerations, in particular their computational effort and implementation complexity.
+The results indicate that the EKF and UKF achieve comparably good overall wind estimation performance. The distributions exhibit a similar range and concentration of RMSE values, with only relatively small differences between the two filters. This suggests that the choice between the EKF and UKF has no substantial influence on the wind estimation accuracy under the investigated operating conditions.
 
-\todo{Discuss comp. cost differences}
-
-
-Following the comparison of the estimation accuracy and computational cost of the EKF and UKF, the remainder of this section focuses on the wind estimation performance for different turbulence intensities and flight scenarios. 
+Since no significant difference between the two filtering approaches is observed, the following analysis focuses on the factors that instead determine the general wind estimation performance. In particular, the influence of the turbulence intensity and the flight scenario is investigated.
 
 The intensity of the turbulent wind represents an important factor influencing the estimation problem. In the Dryden model used in this work, the turbulence intensity increases with the true reference wind speed $W_{20,\mathrm{true}}$. Consequently, higher values of $W_{20,\mathrm{true}}$ result in stronger fluctuations in the actual wind and therefore in more demanding estimation conditions. Figure~\ref{fig:barchart_EKFvsUKF} shows the average RMSE for both filters as a function of $W_{20,\mathrm{true}}$. For each reference wind speed the RMSE is averaged over all six flight scenarios and 27 wind conditions.
 
 % W20 plot
+\definecolor{ukfcolor}{RGB}{222,84,0}
+\definecolor{ekfcolor}{RGB}{18,112,191}
+
 \begin{figure}[htb]
 	\centering
-	\definecolor{barukf}{RGB}{222,84,0}
-	\definecolor{barekf}{RGB}{18,112,191}
-	
-	\pgfplotsset{
-		wind bar/.style={
-			ybar,
-			bar width=14pt,
-			width=0.6\textwidth,
-			height=6cm,
-			enlarge x limits=0.3,
-			xlabel={Reference Wind Speed $W_{20,\mathrm{true}}$ [m/s]},
+	\begin{tikzpicture}
+		\begin{axis}[
+			boxplot/draw direction=y,
+			width=0.8\textwidth, height=8.5cm,
 			ylabel={RMSE [m/s]},
-			ymin=0,
-			ymax=1.05,
-			symbolic x coords={0,5,10},
-			xtick=data,
+			xtick={0.3250,1.9750,3.6250},
+			xticklabels={$W_{20, \mathrm{true}}=0\,$m/s, $W_{20, \mathrm{true}}=5\,$m/s, $W_{20, \mathrm{true}}=10\,$m/s},
+			x tick label style={rotate=0, align=center, font=\normalsize},
+			xtick style={draw=none},
+			xlabel={Reference Wind Speed},
+			xmin=-0.7500, xmax=4.7000,
+			ymin=0, ymax=1.0,
+			boxplot/whisker range=1.5,
+			boxplot/box extend=0.50,
+			xmajorgrids=false,
 			ymajorgrids=true,
-			grid style={gray!20},
-			error bars/y dir=both,
-			error bars/y explicit,
-			error bars/error bar style={line width=0.8pt},
+			grid style={gray!25},
+			extra x ticks={1.1500,2.8000},
+			extra x tick labels={},
+			extra x tick style={grid=major, major grid style={gray!35},
+				tick style={draw=none}},
 			legend style={
 				at={(0.02,0.98)}, anchor=north west,
 				legend columns=1,
-				fill=white,
-				fill opacity=0.9,
-				draw=black,
-				text opacity=1,
+				fill=white, fill opacity=0.9, draw=black!40, text opacity=1,
 			},
-			legend image post style={
-				xscale=1,
-				yscale=1.5,
-			},
-		}
-	}
-	
-	\begin{tikzpicture}
-		\begin{axis}[
-			wind bar,
-			title={Wind estimation RMSE for different turbulence intensities},
 			]
-				
-			\addplot+[fill=barekf!50!white, draw=barekf!80!black, area legend, error bars/.cd, y dir=both, y explicit]
-			table[x=W20,y=mean,y error=std] {
-				W20 mean std
-				0 0.18984 0.22752
-				5 0.28108 0.32127
-				10 0.50648 0.44631
-			};
-			\addlegendentry{Extended KF}
+			% W20=0, UKF (n=162)
+			\addplot+[boxplot prepared={
+				lower whisker=0.0136, lower quartile=0.0955,
+				median=0.1298,
+				upper quartile=0.1845, upper whisker=0.3070,
+				draw position=0.0000
+			}, mark=none, fill=ukfcolor!50, draw=ukfcolor, forget plot]
+			coordinates {};
 			
-			\addplot+[fill=barukf!50!white, draw=barukf!70!black, area legend, error bars/.cd, y dir=both, y explicit]
-			table[x=W20,y=mean,y error=std] {
-				W20 mean std
-				0 0.23895 0.28182
-				5 0.31397 0.3292
-				10 0.50904 0.44627
-			};
+			% W20=0, EKF (n=162)
+			\addplot+[boxplot prepared={
+				lower whisker=0.0118, lower quartile=0.0866,
+				median=0.1082,
+				upper quartile=0.1541, upper whisker=0.2550,
+				draw position=0.6500
+			}, mark=none, fill=ekfcolor!50, draw=ekfcolor, forget plot]
+			coordinates {};
+			
+			% W20=5, UKF (n=157)
+			\addplot+[boxplot prepared={
+				lower whisker=0.0708, lower quartile=0.1660,
+				median=0.1999,
+				upper quartile=0.2881, upper whisker=0.4233,
+				draw position=1.6500
+			}, mark=none, fill=ukfcolor!50, draw=ukfcolor, forget plot]
+			coordinates {};
+			
+			% W20=5, EKF (n=157)
+			\addplot+[boxplot prepared={
+				lower whisker=0.0494, lower quartile=0.1561,
+				median=0.1921,
+				upper quartile=0.2599, upper whisker=0.4095,
+				draw position=2.3000
+			}, mark=none, fill=ekfcolor!50, draw=ekfcolor, forget plot]
+			coordinates {};
+			
+			% W20=10, UKF (n=141)
+			\addplot+[boxplot prepared={
+				lower whisker=0.1581, lower quartile=0.2870,
+				median=0.3632,
+				upper quartile=0.5163, upper whisker=0.8510,
+				draw position=3.3000
+			}, mark=none, fill=ukfcolor!50, draw=ukfcolor, forget plot]
+			coordinates {};
+			
+			% W20=10, EKF (n=141)
+			\addplot+[boxplot prepared={
+				lower whisker=0.1767, lower quartile=0.2726,
+				median=0.3547,
+				upper quartile=0.4908, upper whisker=0.7418,
+				draw position=3.9500
+			}, mark=none, fill=ekfcolor!50, draw=ekfcolor, forget plot]
+			coordinates {};
+			
+			\addlegendimage{area legend, fill=ekfcolor!50, draw=ekfcolor}
+			\addlegendentry{Extended KF}			
+			\addlegendimage{area legend, fill=ukfcolor!50, draw=ukfcolor}
 			\addlegendentry{Unscented KF}
-			
 		\end{axis}
 	\end{tikzpicture}
-	\caption{Average wind estimation RMSE for different values of $W_{20,\mathrm{true}}$, averaged over the six flight scenarios and 27 wind conditions. The line within indicates the standard deviation of the RMSE.}
+	\caption{Average wind estimation RMSE for different values of $W_{20,\mathrm{true}}$, averaged over the six flight scenarios and 27 wind conditions. Boxes show the interquartile range (Q1--Q3) with the median line; whiskers extend to the most extreme point within 1.5$\times$IQR. Outlier points beyond the whiskers are omitted..}
 	\label{fig:barchart_EKFvsUKF}
 \end{figure}
 
-\todo{change plot to whiskers}
 For both filtering approaches, the estimation error generally increases as the turbulence intensity is increased. This behavior is expected, as stronger turbulence results in larger and more rapid variations of the actual wind, making it more difficult for the filters to track the changing wind conditions. Nevertheless, the EKF and UKF exhibit a similar response to increasing turbulence intensity. No systematic improvement of one filtering approach over the other can be observed across the investigated range of $W_{20,\mathrm{true}}$.
 
-Not only different turbulence intensities effect the wind estimation, but also by the motion of the airship itself. Different flight scenarios affect the system dynamics and the information available to the estimator. It is therefore of interest to investigate whether the estimation performance remains consistent across different types of motion. The following analysis compares the wind estimation performance for the considered flight scenarios.
+The influence of the flight scenario on wind estimation performance is investigated next, keeping the filter configuration fixed and varying only the aircraft motion. The resulting RMSE values, averaged across all 27 wind conditions and three reference wind speed values, are shown in Fig.~\ref{fig:EKFvsUKF_scenarios}.
 
 \definecolor{ukfcolor}{RGB}{222,84,0}
 \definecolor{ekfcolor}{RGB}{18,112,191}
@@ -1295,89 +1319,120 @@ Not only different turbulence intensities effect the wind estimation, but also b
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Mean RMSE by scenario for Unscented KF and Extended KF. Boxes show the interquartile range (Q1--Q3) with the median line; whiskers extend to the most extreme point within 1.5$\times$IQR. Outlier points beyond the whiskers are omitted.}
-	\label{fig:rmse-converged}
+	\label{fig:EKFvsUKF_scenarios}
 \end{figure}
 
-The scenario-wise results show that the relative performance of the EKF and UKF stays consistent across the considered flight scenarios, where more challenging flight conditions like curve and forward fast create slightly bigger errors in the estimation. 
-Against this pattern, interestingly the hovering operating mode is the most challenging to the filters. To understand this we need to dive a bit deeper into how the estimator obtains a wind estimation value.
-
-In general the Kalman filter needs an error, in the estimated and predicted output to correct its estimate. This somehow requires that enough information is available. In the shape of changing wind conditions or a new measurement coming in. 
-
-For hovering mode we have two things appearing at once.
-1: V = 0, and the dryden model does not create any turbulences by design. If no turbulence and thus the wind field stays more or less constant there are no new external wind forces acting on the airship, thus no new information available. 
-
-2: No movement, as V = 0. therefore due to the uncertainty of the dynamics and measurement, a wrong estimation may settle, without being recognized as there is no information.
-
-
-Maybe work with observability gramian???? Quantify observability?
+Whereas the relative performance of the EKF and UKF stays similar across all flight scenarios, the results show a clear dependence of the wind estimation performance on the flight scenario. In particular, the Hover scenario exhibits a noticeably larger estimation error than the other investigated cases. This result is unexpected, since the pure-rotation scenario — in which the vehicle likewise remains at a fixed position and undergoes no translational motion — achieves considerably better performance. To understand this behavior, the influence of the flight dynamics and the resulting information available for wind-state estimation is examined in more detail.
 
 
 
 
 
+\subsubsection{Analysis of Wind Estimation Performance in Hover}
 
+To analyze the coupling between the wind velocity and the airship dynamics, the linearized dynamics considered by the EKF (Section~\ref{sec:2.4.1EKF}) are utilized.
+Since the wind velocity influences the airship dynamics only through the aerodynamic generalized forces, its influence is limited to the translational and rotational dynamics described by the original 6-DOF equations derived in Section~\ref{sec:2.2AirshipModel}. This coupling is captured by the corresponding Jacobian block
 
+\begin{equation}
+	\bm{F}_{v_W} = \frac{\partial \bm{f}_{\mathrm{6DOF}}}{\partial \bm{v}_W},
+\end{equation}
 
+which describes how perturbations of the wind velocity affect the six-degree-of-freedom airship dynamics. The singular values of this matrix provide a measure of the strength of this coupling. As shown in Fig.\ref{fig:EKFvsUKF_Sigmas} the singular values are considerably smaller in Hover than in Forward Flight or in Rotation.
+Thus, in the absence of translational or rotational motion, perturbations of the wind velocities have only a weak influence on the vehicle dynamics.
 
-
-
-
-% -----------------------------------------------------------
-% Table: Hover scenario performance by turbulence intensity -
-% converged
-% -----------------------------------------------------------
-\begin{table}[htbp]
+\begin{figure}[htbp]
 	\centering
-	\caption{Wind-estimation RMSE for the \textit{hover} scenario by turbulence intensity $W_{20}$, computed on the converged window ($t = 20$--$100\,\mathrm{s}$).}
-	\label{tab:hover_w20_conv}
-	\begin{tabular}{lrrrrrr}
+	\includegraphics[width=0.48\textwidth]{src/pics/EKFvsUKF_Min_sigmas.pdf}
+	\hfill
+	\includegraphics[width=0.48\textwidth]{src/pics/EKFvsUKF_Max_sigmas.pdf}
+	\caption{W20 = 5, vwconst = -2 0 -0.5}
+	\label{fig:EKFvsUKF_Sigmas}
+\end{figure}
+
+This reduced coupling directly affects the ability of the filter to correct the wind estimate. An error in the estimated wind velocity first affects the predicted airship states through the system dynamics. If the coupling represented by $\bm{F}_{v_W}$ is weak, the resulting change in the predicted airship states is small. Since the predicted measurements are obtained from these predicted states, the influence of the wind-velocity error on the predicted measurements is likewise small. 
+Consequently, the innovation is only weakly influenced by the wind-velocity error and therefore contains limited information about the wind-state error.
+
+As the innovation determines the correction applied during the measurement update according to Eq.~\eqref{eq:ekf_state_update}, the limited sensitivity of the innovation to the wind-velocity error also limits the extent to which the measurement update can correct the wind estimate. 
+This can lead to slower convergence of the estimated wind and a larger estimation error over the finite simulation duration. In contrast, during Forward Flight or Rotation, perturbations of the wind states produce larger changes in the airship dynamics and, consequently, in the predicted measurements. The resulting innovations are therefore more sensitive to wind-state errors, allowing the filter to correct the wind estimate more effectively.
+
+An additional effect further degrading the wind estimation performance during Hover results from the characteristics of the Dryden turbulence model. In this model, the intensity of the generated wind turbulence scales with the magnitude of the body-fixed velocity $V = \left\|\bm{v}_B\right\|_2$. During Hover, $V \approx 0$, and the corresponding process noise of the wind dynamics vanishes, $\bm{Q}_\mathrm{wind} \approx \bm{0}$. As a result, the wind in the simulation reduces to a near-constant disturbance rather than a time-varying turbulent process.
+
+This has two consequences for the estimator. First, $\bm{Q}_\mathrm{wind}$ enters the covariance prediction of the EKF in an additive way according to Eq.~\eqref{eq:ekf_cov_prop}. A vanishing process noise therefore results in a smaller \emph{a priori} covariance of the wind states. 
+Since the Kalman gain increases with the a priori covariance, a smaller predicted covariance generally results in a smaller Kalman gain and, consequently, in slower adaption of the wind estimate \cite{Maybeck1979KF}.
+
+Second, the near-constant true wind results in a lack of time-varying excitation of the airship dynamics. If turbulent fluctuations are present, they lead to corresponding variations in the vehicle motion and the measured states. These time-varying responses provide additional information that is correlated with the wind states and can therefore help the filter distinguish wind-induced changes from changes associated with other state uncertainties. In Hover, where the Dryden turbulence contribution vanishes, this additional source of excitation and information is largely absent. Figure~\ref{fig:EKFvsUKF_timeplot_hover} visualizes the effect on the wind estimation performance during hover. 
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\textwidth]{src/pics/EKFvsUKF_timeplot_hover_0_25_0_-5_no_unc.pdf}
+	\caption{CONSTANT WIND, No uncertainty. Process noise is disabled for visualization purposes to highlight the convergence behavior of the wind estimate.}
+	\label{fig:EKFvsUKF_timeplot_hover}
+\end{figure}
+%\begin{figure}[htbp]
+%	\centering
+%	\includegraphics[width=\textwidth]{src/pics/EKFvsUKF_timeplot_hover_0_25_0_-5.pdf}
+%	\caption{CONSTANT WIND}
+%	\label{fig:my_figure}
+%\end{figure}
+
+Overall, the increased wind-estimation error during Hover is likely the result of a combination of all three effects discussed above. The individual contribution of each effect cannot be isolated based on the present analysis. In a real environment, however, $V \approx 0$ does not necessarily imply the absence of atmospheric turbulence. Therefore, this particular characteristic of the Dryden model is expected to be less pronounced in real-world conditions, and the wind-estimation performance during Hover relative to the other flight modes may be better.
+
+
+
+
+
+\subsection{Computational Cost}
+
+As the choice between the EKF and UKF has no substantial influence on the wind-estimation accuracy under the investigated operating conditions, the choice between the two approaches can instead be guided by other considerations, in particular their computational effort.
+
+To compare the computational cost of both approaches, the EKF and UKF are evaluated separately using isolated filter implementations with identical input data and simulation conditions. An initial simulation is performed before the runtime measurements to reduce the influence of initialization effects. The subsequent 100 simulations are used to determine the mean computational runtime per simulation step, with the results given in Table~\ref{tab:EKFvsUKF_Runtime}.
+
+\begin{table}[htb]
+	\centering
+	\caption{Mean computational runtime per simulation step for the EKF and UKF. The results are obtained from 100 simulations with a simulated duration of $1000\,\mathrm{s}$ and a simulation step size of $0.01\,\mathrm{s}$. The normalized runtime is given relative to the EKF.}
+	\label{tab:EKFvsUKF_Runtime}
+	\begin{tabular}{lcc}
 		\toprule
-		& \multicolumn{3}{c}{UKF} & \multicolumn{3}{c}{EKF} \\
-		\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-		$W_{20}$ & Mean & Std & Median & Mean & Std & Median \\
+		Filter & Mean runtime per step [ms] & Normalized runtime [-] \\
 		\midrule
-		0  (none)     & 0.711 & 0.297 & 0.858 & 0.479 & 0.244 & 0.506 \\
-		5  (light)    & 0.612 & 0.389 & 0.609 & 0.459 & 0.232 & 0.485 \\
-		10 (moderate) & 0.493 & 0.212 & 0.432 & 0.476 & 0.171 & 0.457 \\
+		EKF & 0.153 & 1.00 \\
+		UKF & 0.296 & 1.94 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
-\todo{include in observability explanaiton}
 
+The UKF requires approximately $94\%$ more computational time per simulation step than the EKF.
+The difference in computational cost primarily results from the different treatment of the nonlinear system and measurement models. In the EKF, the state-transition Jacobian $\bm{F}$ is approximated numerically using forward differences. For the 17-dimensional state vector, this requires $n=17$ additional evaluations of the nonlinear state-transition function per step. The measurement Jacobian $\bm{H}$ is obtained analytically and only needs to be evaluated once per simulation step.
 
+In the UKF, in contrast, the nonlinearities are propagated through $2n+1=35$ sigma points. Generating these sigma points requires a matrix square-root operation, after which all $2n+1$ sigma points are propagated through the nonlinear state-transition function $\bm{f}$. For the measurement update, a new set of sigma points is generated from the predicted state and propagated through the nonlinear measurement function $\bm{h}$. 
 
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\textwidth]{src/pics/EKFvsUKF_timeplot_hover_0_25_0_-5.pdf}
-	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
-	\label{fig:my_figure}
-\end{figure}
-
-
-when setting the force uncertainty to zero the oscillations vanish (for R = 0 only convergence rate is improved)
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\textwidth]{src/pics/EKFvsUKF_timeplot_hover_0_25_0_-5_no_unc.pdf}
-	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
-	\label{fig:my_figure}
-\end{figure}
-
-
-
-
-
-Overall, the comparison of the wind estimation performance demonstrates that both the EKF and UKF provide comparable wind estimation performance for the investigated airship operating conditions. Although the UKF avoids the explicit model linearization required by the EKF, this does not result in a significant reduction in estimation error within the considered test range. The observed differences are comparatively small and depend on the individual scenario rather than consistently favoring one filter. Consequently, the EKF provides a suitable alternative to the UKF for the subsequent analyses, while offering the advantage of a lower computational effort associated with the propagation of a single linearized state model instead of multiple sigma points.
+Consequently, the UKF requires more evaluations of the nonlinear models and additional matrix operations compared with the EKF. This additional computational effort is reflected in the measured runtime and explains the higher computational cost of the UKF in the present implementation.
 
 
 
 
 
 \subsection{Effect of Airspeed Sensor}
-The Airship is equipped with an 1-D airspeed sensor. Its interesting to know how the wind estimation changes if no airspeed sensor is in place, to quantify the importance of the AS.
 
-\todo{include one time plot and one numeric comparision}
+The 1D airspeed measurement provides an additional source of information for the wind-state estimation. It is therefore of interest to assess to what extent its availability affects the estimation performance. For this purpose, the wind estimation is compared with and without the airspeed measurement. The comparison first considers a representative time history to illustrate the effect on the estimation behavior.
+
+\begin{figure}[htbp]
+	\centering
+	% figure
+	\caption{Comparison of wind-state estimation with and without the 1D airspeed measurement for a representative test case.}
+	\label{fig:WindEst_Airspeed_Time}
+\end{figure}
+
+The comparison shows that the wind can still be estimated successfully when the airspeed measurement is omitted. To assess whether this observation holds across the investigated flight conditions, the complete EKF and UKF test suite described in Section~\ref{sec:5.1.2EKFvsUKF} is repeated without the 1D airspeed measurement. The resulting RMSE values are then compared with those obtained using the complete measurement set.
+
+\begin{figure}[htbp]
+	\centering
+	% figure
+	\caption{Comparison of wind-estimation RMSE with and without the 1D airspeed measurement for the complete EKF and UKF test suite.}
+	\label{fig:WindEst_Airspeed_RMSE}
+\end{figure}
+
+The results show that the wind-estimation performance remains good even without the airspeed measurement, indicating that the remaining measurements provide sufficient information for the estimation of the wind states. The 1D airspeed measurement therefore provides additional information, but is not essential for achieving good wind-estimation performance under the investigated conditions.
 
 
 
@@ -1386,47 +1441,81 @@ The Airship is equipped with an 1-D airspeed sensor. Its interesting to know how
 \section{Wind compensation}
 \label{sec:5.2WindCompensation}
 
-Compensation method has influence on the wind estimation as well. 
+Building on the wind-estimation results from the previous section, this section investigates the influence of wind compensation methods on the tracking performance. The estimated wind velocity is used by the two compensation approaches, Disturbance Feedforward (DFF) and Nonlinear Dynamic Inversion (NDI), which are both implemented as complementary components to the PID controller according to the structure introduced in Section~\ref{sec:3.2Compensation}. The PID controller without compensation therefore serves as the baseline, while DFF and NDI are evaluated in combination with the PID controller. The objective is to identify a controller configuration that provides consistently good performance across all investigated flight scenarios.
 
-We look only at converged data.
+Since the compensation approaches explicitly account for a portion of the wind-induced disturbances, the PID gains can be adjusted to take advantage of the additional disturbance rejection. To investigate the influence of the controller tuning, three different PID gain sets are considered for each compensation approach. The original PID gains are retained as the Robust gain set. These gains are tuned for the standalone PID controller with an emphasis on achieving robust tracking performance across all investigated flight scenarios. The Aggressive gain set is obtained by scaling all PID gains by a factor of two while maintaining their relative values, resulting in a more responsive controller tuning. Finally, the Compensated (Comp) gain set is specifically tuned using the no-wind model and is therefore optimized for tracking performance in the absence of wind disturbances. This results in seven distinct controller configurations: the PID baseline and three gain settings each for DFF and NDI.
 
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\textwidth]{src/pics/Compensation_Trajectory_5_25_0_0.pdf}
-	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
-	\label{fig:my_figure}
-\end{figure}
+To compare the control performance across the different compensation approaches and gain settings, all configurations are evaluated using the same test suite. The six flight scenarios described at the beginning of this section are considered. For each flight scenario, the same set of nine constant wind contributions is applied, while the true turbulence intensity is varied through $W_{20,\mathrm{true}} \in \{0,5,10\} \mathrm{m/s}$.
+This results in 27 unique wind conditions per flight scenario. Across all seven configurations, this results in a total of $N = 1134$ simulation runs. Using identical flight scenarios and wind conditions for all configurations ensures that differences in control performance can be attributed to the compensation approach and PID tuning.
 
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\textwidth]{src/pics/Compensation_Trajectory_5_25_0_0_noCompGains.pdf}
-	\caption{Comparision of wind estimation performance for different estimated W20, W20 actual is 5.}
-	\label{fig:my_figure}
-\end{figure}
+For the evaluation of the tracking performance, all 12 airship states, consisting of position, velocity, attitude, and angular rate, are considered. In contrast to the wind-estimation evaluation, where the wind components share the same physical unit, these state variables differ both in their units and magnitudes. Their RMSE values can therefore not be directly averaged to obtain a meaningful overall measure of control performance, as states with larger numerical magnitudes would dominate the resulting metric.
+To obtain a single overall performance metric for each controller/gain combination, the RMSE values are processed in four steps.
 
-To enable a fair comparison of the evaluated controller and gain combinations across flight scenarios, the raw RMSE values are first normalized and subsequently aggregated into a single scale-independent performance metric. This step is necessary because the twelve tracked state variables --- position, velocity, attitude, and angular rate errors --- differ substantially in both physical units and magnitude (e.g.\ position errors on the order of meters versus attitude errors on the order of radians), such that a direct average of the raw RMSE values would be dominated by the variables with the largest absolute scale.
+First, for each combination of flight scenario and controller/gain configuration, the RMSE of each of the 12 airship states is averaged across the 27 wind conditions considered for that scenario. This yields one representative RMSE value for each state, scenario, and controller/gain configuration, denoted $\mathrm{RMSE}_{x,s,c}$.
 
-\paragraph{Normalization.}
-For a given scenario $s$, the mean RMSE of variable $v$ is computed across all $M$ evaluated controller/gain combinations:
+Second, since these RMSE values still differ in unit and magnitude across the 12 states, they cannot yet be combined into a single metric. To make them comparable, the values are normalized separately for each scenario and state. For a given scenario and state, the RMSE values obtained across all seven controller/gain configurations are averaged to obtain a reference value. Each individual RMSE value is then divided by this reference:
+
 \begin{equation}
-	\overline{\mathrm{RMSE}}_{s,v} = \frac{1}{M}\sum_{m=1}^{M} \mathrm{RMSE}_{s,m,v}
-	\label{eq:scenario_mean}
-\end{equation}
-Each raw RMSE value is then expressed relative to this scenario- and variable-specific reference:
-\begin{equation}
-	\widetilde{\mathrm{RMSE}}_{s,m,v} = \frac{\mathrm{RMSE}_{s,m,v}}{\overline{\mathrm{RMSE}}_{s,v}}
+	\widetilde{\mathrm{RMSE}}_{x,s,c} = \frac{\mathrm{RMSE}_{x,s,c}}{\frac{1}{7}\sum_{c'=1}^{7} \mathrm{RMSE}_{x,s,c'}}.
 	\label{eq:norm_rmse}
 \end{equation}
-A normalized value of $\widetilde{\mathrm{RMSE}}_{s,m,v} = 1$ therefore corresponds to average performance for that scenario and variable, while values below and above $1$ indicate above- and below-average estimation or control accuracy, respectively.
 
-\paragraph{Aggregation.}
-Since the normalized quantities in Eq.~\eqref{eq:norm_rmse} are dimensionless and share a common reference (the scenario average), they can be meaningfully averaged across all $V = 12$ state variables to obtain a single figure of merit per scenario and controller/gain combination:
+This yields a dimensionless value that expresses the performance of a given controller/gain configuration relative to the average across all configurations, for the respective scenario and state. A value below one indicates better-than-average performance, while a value above one indicates worse-than-average performance.
+
+Third, since the normalized values are dimensionless and share a common reference, they can be meaningfully combined across the 12 state variables by averaging them,
+
 \begin{equation}
-	\overline{\widetilde{\mathrm{RMSE}}}_{s,m} = \frac{1}{V}\sum_{v=1}^{V} \widetilde{\mathrm{RMSE}}_{s,m,v}
+	\text{Scenario Performance Metric}_{s,c} = \frac{1}{12}\sum_{x=1}^{12} \widetilde{\mathrm{RMSE}}_{x,s,c}.
 	\label{eq:avg_norm_rmse}
 \end{equation}
-This average normalized RMSE weights each state variable equally regardless of its native units or magnitude, and is used throughout Section~\ref{sec:results} to compare the relative performance of the PID, NDI, and DFF control architectures under the Aggressive, Comp, and Robust gain settings.
 
+The result is a single measure of the relative performance of each controller/gain configuration within a given flight scenario, referred to as the Scenario Performance Metric. As with the individual normalized RMSE values, values below one indicate better-than-average performance, while values above one indicate worse-than-average performance.
+
+Finally, the Scenario Performance Metric is averaged across the six flight scenarios to obtain the Overall Performance Metric for each controller/gain configuration. 
+
+\begin{equation}
+	\text{Overall Performance Metric}_{c} = \frac{1}{6}\sum_{s=1}^{6} \text{Scenario Performance Metric}_{s,c}.
+	\label{eq:avg_norm_rmse}
+\end{equation}
+
+This metric is used to compareis used to compare the PID, NDI, and DFF control architectures under the Robust, Aggressive, and Comp gain settings. Table~\ref{tab:performance_metric} lists the resulting Overall Performance Metrics.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Overall Performance Metric for each controller architecture and gain setting. Values below one indicate better-than-average, and values above one worse-than-average, tracking performance.}
+	\label{tab:performance_metric}
+	\begin{tabular}{llc}
+		\toprule
+		Method & Gains & Overall Performance Metric \\
+		\midrule
+		NDI & Robust & 0.8309 \\
+		DFF & Aggressive & 0.9012 \\
+		NDI & Aggressive & 1.0278 \\
+		DFF & Robust & 1.0320 \\
+		DFF & Comp & 1.0405 \\
+		PID & Robust & 1.0643 \\
+		NDI & Comp & 1.1033 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The Scenario Performance Metric shows the best overall performance for the NDI method with the Robust gain set. These gains were originally developed for the standalone PID controller with an emphasis on achieving robust tracking performance across all investigated flight scenarios. 
+In contrast, the Comp gain set, which is tuned under no-wind conditions, yields by far the worst performance among the considered gain sets for both DFF and NDI. This behavior can be explained by the fact that neither compensation method completely eliminates the effects of the wind disturbances. 
+The Comp gain set is tuned in the absence of such disturbances and therefore provides insufficient robustness when these residual disturbances are present. Consequently, its tracking performance decreases considerably under the investigated wind conditions, and the Comp gain set is not considered further.
+
+Figure~\ref{fig:Compensation_curve_trajectory} provides a visual impression of the tracking behavior of the PID baseline and the Robust and Aggressive gain sets for DFF and NDI. The figure shows the resulting trajectories a representative test run for the Curve scenario, illustrating the differences in trajectory tracking between the considered controller configurations. 
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\textwidth]{src/pics/Compensation_Trajectory_5_25_0_0_noCompGains.pdf}
+	\caption{Comparison of the trajectories for the PID baseline and the DFF and NDI compensation approaches with Robust and Aggressive gain settings for a representative Curve scenario test run.}
+	\label{fig:Compensation_curve_trajectory}
+\end{figure}
+
+The results show a clear improvement over the baseline PID controller for this specific test run. The controller configurations are subsequently compared quantitatively using the Scenario Performance Metric across all six flight scenarios, allowing their performance to be evaluated systematically under the investigated flight conditions.
+
+The results show a clear improvement over the baseline PID controller for this specific test run. The Overall Performance Metric shows the NDI with the Robust gain set as the best-performing configuration across the investigated conditions. However, the overall metric alone does not reveal how consistently this performance is achieved across the individual flight scenarios. Therefore, the controller configurations are subsequently compared using the Scenario Performance Metric separately for each of the six flight scenarios. This allows the strengths and weaknesses of the different compensation approaches and gain settings to be identified.
+The Scenario Performance Metric for the controller/gain configurations are shown in Fig.~\ref{fig:Compensation_Scenario_Performance_Metric}.
 
 % original	
 %\begin{figure}[htbp]
@@ -1571,7 +1660,7 @@ This average normalized RMSE weights each state variable equally regardless of i
 			height=5cm,
 			enlarge x limits=0.12,
 			xlabel={Method--Gains combination},
-			ylabel={Avg.\ norm.\ RMSE},
+			ylabel={Scenario Performance Metric},
 			ymin=0,
 			ymax=2.1,
 			xticklabel style={font=\small},
@@ -1678,10 +1767,17 @@ This average normalized RMSE weights each state variable equally regardless of i
 		\end{tikzpicture}
 	\end{subfigure}
 	
-	\caption{Comparison of average normalized RMSE across selected controller/gain combinations for each flight scenario, sorted from highest to lowest. The orange bar highlights the NDI controller with Robust gains. The combinations NDI-Comp and DFF-Comp have been left out for better clarity.}
-	\label{fig:rmse_barchart}
+	\caption{Comparison of the Scenario Performance Metric across selected controller/gain combinations for each flight scenario, sorted from highest to lowest. The orange bar highlights the NDI controller with Robust gains.}
+	\label{fig:Compensation_Scenario_Performance_Metric}
 \end{figure}
 
+The NDI with the Robust gain set achieves the best or second-best Scenario Performance Metric in five of the six flight scenarios. This consistently strong performance demonstrates that the NDI-Robust configuration provides a robust overall solution across the different flight conditions, rather than achieving its performance primarily through optimization for individual scenarios. The exception is Hover, where the NDI-Robust configuration performs considerably worse.
+
+The comparatively poor performance of NDI-Robust in Hover can be attributed to two effects. First, NDI relies more strongly on an accurate wind estimate than DFF, as the estimated wind is directly used to determine the compensation through the nonlinear dynamic inversion. Since the wind estimation performance is generally worse in Hover, as discussed in section~\ref{sec:5.1.2EKFvsUKF}, the resulting wind-estimation error has a stronger impact on the NDI compensation and consequently on the tracking performance.
+
+Second, the Aggressive gain set performs comparatively well in Hover. In this flight condition, the tracking deviations are generally smaller and the system dynamics are less demanding than during translational or rotational motion. Consequently, the disadvantages typically associated with the higher gains, such as increased oscillations or sensitivity to disturbances, are less pronounced in Hover. The higher gains can therefore improve the tracking performance without introducing the same degree of adverse effects observed in the other flight scenarios.
+
+The comparatively lower Scenario Performance Metric of NDI with Robust gains in Hover does not necessarily indicate poor absolute tracking performance in this flight condition. Rather, it indicates that its performance is worse relative to the other controller/gain configurations considered for Hover. To illustrate this distinction, Fig.~\ref{fig:ndi_robust_grouped_rmse} shows the grouped RMSE values for the NDI with Robust gains across the six flight scenarios. The RMSE values are grouped according to the four categories of airship states—position, velocity, attitude, and angular rate—allowing the absolute tracking errors in the different flight scenarios to be compared directly. The figure shows that the tracking errors during Hover are generally not large in absolute terms, despite the comparatively lower Scenario Performance Metric. This highlights that the metric primarily captures the relative performance of a controller configuration within each flight scenario, rather than its absolute tracking accuracy across different scenarios.
 
 \begin{figure}[htbp]
 	
@@ -1768,49 +1864,7 @@ This average normalized RMSE weights each state variable equally regardless of i
 	\label{fig:ndi_robust_grouped_rmse}
 \end{figure}
 
-\todo{address the hovering problem, as V = 0.}
-\todo{one more plot showin that for W20 = 0 only hovering is bad}
-
-Zusammenhang zwischen schlechter windschätzung und schlechter performance im hover mode gerstellen (besonders für NDI)
-
-\begin{table}[htbp]
-	\centering
-	\caption{Average normalized RMSE per controller/gain combination, averaged across all flight scenarios and state variables.}
-	\label{tab:avg_norm_rmse_combo}
-	\begin{tabular}{llc}
-		\toprule
-		Method & Gains & Avg.\ norm.\ RMSE \\
-		\midrule
-		NDI & Robust & 0.8309 \\
-		DFF & Aggressive & 0.9012 \\
-		NDI & Aggressive & 1.0278 \\
-		DFF & Robust & 1.0320 \\
-		DFF & Comp & 1.0405 \\
-		PID & Robust & 1.0643 \\
-		NDI & Comp & 1.1033 \\
-		\bottomrule
-	\end{tabular}
-\end{table}
-
-
-The wind compensation is heavily dependant on the quality of the wind estimation.
-
-Setting:
-
-Results
-We are looking for one controller which yields the best results for all scenarios. Although we may find better settings for single scenarios we do not want to need to switch.
-
-While theoretically the compensation should allow for a more aggressive PID as the disturbance should compensate the wind disturbance this does not hold up in the results presented. Reason therefore is errors in wind estimation, convergence rates of the KF, maybe even delay of one time step, general uncertainty in the model (uncertain forces etc)
-
-Tuning: The PID controller is retuned on the undisturbed model, as the compensation should eliminate those, allowing for a faster PID control. 
-It shows that the retuned PID is far too aggressive and not able to achieve good performance for all flight envelopes, although performing better on some. The reason for this is that although theoretically the Compensation should compensate for the wind, it is not able to fully cancel it due to uncertainties in the wind estimation and state measurements. Hence a robust controller is desired anyways. A combination of the robust PID with the compensation is beneficial. 
-
-Why are the Comp controllers performing bad? -> give examples when they are instable while the others are not. And state that this is the reason why they are not considered in the future.
-
-\subsection{Problems with Observability}
-Due to the lack of sensory equipment to measure airspeed the wind estimation depends heavily on the effect of the aerodynamic forces on the airship to estimate the wind velocities. Because only the aerodynamic Forces are directly dependent on the airspeed and thus on the wind velocity. The Compensation uses the current wind estimate to compute the estimation and thus requires a good estimation of wind. Exactly there lies the problem, if the compensation fully compensates for the effect of wind on the airship, the wind estimation quality automatically decreases, leading to a poor estimation and so on. 
-To break up this cycle we need to guarantee that the information about the effect of the wind is not fully lost. To achieve this a gain, manipulating the output of the compensation is introduced. This gain in range 0 to 1 determines how aggressively the wind compensation works and balances the wind compensation with the wind estimation.   
-
+Overall, the results show that the choice of compensation method and PID tuning has a significant influence on the tracking performance. Among the investigated configurations, NDI with the Robust gain set provides the most consistent performance across the different flight scenarios, achieving the best or second-best result in all scenarios except Hover. The comparatively weaker performance in Hover is mainly attributed to the increased influence of wind-estimation errors on the NDI compensation and the favorable behavior of higher gains in this flight condition. Overall, NDI with the Robust gain set is therefore identified as the most suitable configuration for achieving consistent tracking performance across the investigated flight conditions.
 
 
 \section{Flight Test}
