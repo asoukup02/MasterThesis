@@ -5,7 +5,6 @@
 
 \chapter{Introduction}%
 \label{chap:1.Introduction}
-% DO NOT USE \\ TO FORCE LINEBREAKS, JUST LEAVE A BLANK LINE
 This chapter serves as an overview of existing methods and ...
 
 % ---------------------------------------------------------------------------------------------------
@@ -39,42 +38,64 @@ Based on the estimated wind, a model-based compensation strategy is implemented 
 
 To evaluate the proposed approach, the complete estimation and compensation framework is implemented in a MATLAB/Simulink simulation environment using a comprehensive nonlinear airship model. The performance of the estimator and the effectiveness of the compensation strategy are assessed under various wind conditions and flight maneuvers representative of realistic operating scenarios.
 
- NDI has been widely applied in flight control, where a single nonlinear controller can provide consistent handling across large flight envelopes without extensive gain-scheduling %\citep{enns1994dynamic},
- making it a natural candidate for airship control given the vehicle's wide range of operating speeds, attitudes, and wind conditions.
- 
- warum Kalman Filter?
- 
+
+
+
+
 \section{State of the art / Related work}
 \label{sec:RelatedWork}
 - Airship dynamics
 - Wind estimation
 - Wind compensation / disturbance observers
-- Positioning of your contribution
+- Positioning this thesis
+
+
+
+
 
 \section{Airship squid}
-This work is performed on the airship squid, which is further specified in this section.
-The airship was designed and built by roboloon and consists of a elastic hull, which is usually filled with Helium. For maneuvering the airships has one stern propeller at the back, four fins and four impellers integrated in the fins totalling 9 control surfaces making the airship an overactuated system.
 
-A full table showing the specifications of the airship can be found in Table~ \ref{tab:airship_specs}
+This work is carried out on the airship Squid, an airship developed and built by roboloon in Stuttgart. Squid features a novel propulsion system that enables omnidirectional maneuvering and is therefore well suited for the investigation of wind estimation and compensation. An overview of the airship and its main components is shown in Figure~\ref{fig:airship_squid}.
 
-\todo{Picture of airship}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics{src/pics/squid.png}
+	\caption{CAD model of the Airship Squid and its components.}
+	\label{fig:airship_squid}
+\end{figure}
 
 
-\subsection{Hardware}
+
+
+
+\subsection{Airship Configuration}
 \label{sec:1.4.1Hardware}
 
-The airship is equipped with an IMU, GPS and a 1D pitot tube measuring the airspeed in the body-fixes x axis. This pitot tube yields the restriction of only measuring airspeeds abve 1.5m/s, below this threshold no measurement is available.
+The airship consists of an approximately 8~m long elastic hull with a volume of 16.3~m$^3$, which is filled with helium to provide the required buoyant lift. The hull is equipped with an integrated safety valve for controlled release of helium when required. The center of gravity (COG) is positioned below the center of volume (COV), while the mass is distributed approximately evenly along the longitudinal and lateral axes. This configuration provides a naturally level orientation of the airship during hovering without requiring additional control effort.
 
-\subsection{Software}
-The airship is controlled by a PID controller ...
-The PID is tuned to allow for robust behavior in all flight envelopes.
+The propulsion system of the airship consists of a stern propeller, four rudders, and eight impellers with four impellers at the front and four in the back. They arranged such that their combined actuation can generate motion in all translational and rotational directions. By simultaneously actuating selected engines, the individual thrust forces can be combined to produce a desired resultant force and moment acting on the airship. This propulsion concept results in an overactuated system, as multiple combinations of actuator commands can be used to generate the same desired generalized force.
 
-All algorithms are first implemented in simulation. This simulation poses a model of the airship as derived in Chapter \todo{ref} and an implementation of the PID controller. Additionally uncertainties for the forces are considered.
-After successful validation in the simulation a real world flight test is carried out.
+The airship is equipped with several onboard measurement systems that provide the information required for state estimation and control. The central flight-control hardware is a Cube Orange (Pixhawk~2.1), which integrates two processing units, three accelerometers, three gyroscopes, two barometers, and a compass~\cite{Cube}. In addition, an external GPS unit is connected to the flight controller and provides position and velocity measurements. The combination of the inertial, barometric, magnetic, and GPS measurements provides information on the airship's position, translational velocity, attitude, and angular rates, which form the basis for the state estimation used in the control system.
 
-Allocator
+For the wind estimation investigated in this work, the airspeed measurement provides useful information on the relative wind velocity. The airship is therefore equipped with a one-dimensional Pitot tube that measures the airspeed along the body-fixed $x$-axis. The measurement is only available for airspeeds above approximately 2~m/s. Below this threshold, no valid airspeed measurement is provided. This limitation is particularly relevant for low-speed flight and hovering conditions and is therefore taken into account in the design and evaluation of the wind estimation method.
+
+The flight-control hardware is housed together with the battery and the remaining electrical components in the gondola located below the hull. The gondola additionally provides space for a camera and further payload. Additional sensors can be installed in the payload bay for specific applications.
 
 
-\section{Thesis Structure}
+
+
+
+\subsection{Control Architecture}
+
+The airship is controlled using a PID-based control structure. The controller receives a desired position and generates the corresponding desired forces and moments acting on the airship. The PID controller is tuned to provide robust behavior across the considered flight envelope and therefore serves as the baseline controller for this work.
+
+The control allocator converts the desired forces and moments into individual actuator commands. Due to the overactuated propulsion system, multiple combinations of actuator inputs can produce the same desired generalized forces. The control allocator therefore determines a suitable actuator configuration while accounting for the available actuator constraints. The design and implementation of the PID controller and control allocator, including their mathematical formulation and derivation, are described in detail in \cite{Ahmed2022Controller}.
+
+Before being implemented on the physical airship, all algorithms developed in this work are first evaluated in simulation. The simulation environment contains the airship model derived in Chapter~\ref{sec:2.2AirshipModel}, together with the implemented PID controller and control allocator. In addition to the nominal airship dynamics, uncertainties in the force and moment model are considered to account for discrepancies between the model and the physical system.
+
+After successful validation in simulation, the algorithms are evaluated in real-world flight tests on the Airship Squid. This two-stage procedure allows the developed estimation and compensation methods to be investigated under controlled and reproducible simulation conditions before their performance is assessed on the physical airship.
+
+
+
 
 

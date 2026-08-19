@@ -344,7 +344,7 @@ The wind model can now be appended to the airship state-space model, yielding th
 	\end{bmatrix}.
 \end{equation}
 
-Although the complete wind model consists of a constant and a turbulent component, only the Dryden filter states are appended to the system state as they describe the wind dynamics. Consequently, the augmented model contains only the five Dryden states, representing the internal states of the Dryden shaping filters. They can be used to describe the wind velocity according to Eq.~\eqref{eq:WindRelation}. As a result the aerodynamic velocity is given by
+Although the complete wind model consists of a constant and a turbulent component, only the Dryden filter states are appended to the system state, as they describe the wind dynamics. Consequently, the augmented model contains only the five Dryden states, representing the internal states of the Dryden shaping filters. These states can be used to describe the wind velocity according to Eq.~\eqref{eq:WindRelation}. The aerodynamic velocity is therefore given by
 
 \begin{equation}
 	{}_B \bm{v}_A 
@@ -354,7 +354,9 @@ Although the complete wind model consists of a constant and a turbulent componen
 	{}_B \bm{v}_B - \bm{R}_{BE} \bm{C}_W \bm{x}_W ,
 \end{equation}
 
-which allows all aerodynamic forces and moments to be expressed as functions of the augmented state. This completes the nonlinear state-space description of the airship, which is now given in the structure:
+which allows all aerodynamic forces and moments to be expressed as functions of the augmented state. Although the Dryden states are nominally zero-mean by construction, their estimates within the Kalman filter are not constrained to this property. Since the constant and turbulent wind components enter the aerodynamic velocity through the same channel, the filter cannot distinguish their physical origin from the available measurements. It therefore adjusts the Dryden state estimates to minimize the overall measurement residual. If the process noise covariance associated with the Dryden states is sufficiently large, the resulting Kalman gain allows the estimates to track not only the turbulent fluctuations but also slowly varying or constant offsets. Thus, the constant wind component can effectively be absorbed into the Dryden state estimates, despite not being explicitly represented by a separate state.
+
+This completes the nonlinear state-space description of the airship, which is now given in the structure:
 
 \begin{align}
 	\dot{\tilde{\bm{x}}} 
