@@ -12,7 +12,8 @@
 \nomenclatureentry{AMMSE@[{MMSE}]\begingroup Minimum Mean Square Error\nomeqref {2.49}|nompageref}{16}
 \nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.72}|nompageref}{21}
 \nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.86}|nompageref}{23}
-\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{26}
-\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{26}
-\nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{25}
+\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{25}
+\nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{25}
 \nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{45}
+\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.3}|nompageref}{58}

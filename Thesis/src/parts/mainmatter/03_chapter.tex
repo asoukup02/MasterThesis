@@ -48,7 +48,7 @@ Although Eq.~\eqref{eq:EOM_SS} describes the motion of the airship, it does not 
 First, the generalized forces acting on the airship do not depend on $\bm{\nu}$ alone. For example, $\bm{\mathcal{F}}_\mathrm{grav}$ and $\bm{\mathcal{F}}_\mathrm{buoy}$ must be transformed into the body-fixed coordinate system and thus depend on the attitude $\bm{\Theta}$ of the airship. To obtain a state-space model whose state evolution depends only on the current state and inputs, the attitude must be included in the state vector.
 
 Furthermore, the state-space model requires an output equation relating the state to the available onboard sensor measurements. As described in 
-\ref{sec:1.4.1Hardware}, the airship is equipped with a GPS and an IMU, among other sensors, providing measurements of its position, attitude, translational velocity, and angular velocity \todo{revise}.
+\ref{sec:1.4.1Hardware}, the airship is equipped with several onboard measurement systems, providing measurements of its position, attitude, translational velocity, and angular velocity.
 Therefore, to express the measurements as a function of the state, both position $\bm{p}$ and attitude $\bm{\Theta}$ must be included in the state.
 
 Consequently, the state vector is defined as
@@ -173,7 +173,7 @@ To reflect the assumption that modeling errors increase with the magnitude of th
 	\right|,
 \end{equation}
 
-where $\left|\cdot\right|$ denotes the element wise absolute value and $\alpha_{\mathrm{aero}}$ and $\alpha_{\mathrm{prop}}$ are tuning parameters that determine the relative uncertainty associated with the aerodynamic and propulsion models. In this work, both parameters are chosen as $\alpha_{\mathrm{aero}} = \alpha_{\mathrm{prop}} = 0.1$ corresponding to a standard deviation of each uncertain force and moment component equal to $10\%$ of its magnitude.
+where $\left|\cdot\right|$ denotes the element wise absolute value and $\alpha_{\mathrm{aero}}$ and $\alpha_{\mathrm{prop}}$ are tuning parameters that determine the relative uncertainty associated with the aerodynamic and propulsion models. In this work, both parameters are chosen as $\alpha_{\mathrm{aero}} = \alpha_{\mathrm{prop}} = 0.1$ corresponding to a standard deviation of each uncertain force and moment component equal to \SI{10}{\percent} of its magnitude.
 
 The covariance matrix used for the process noise is then obtained as
 
@@ -293,7 +293,7 @@ The lateral and vertical shaping filters share the same state-space structure. A
 	\bm{x}_i .
 \end{align}
 
-As defined in Section~\ref{sec:2.3.1Dryden}, the scale lengths $L_i$ depend on the flight altitude $h=-z$. Since the reference wind speed $W_{20}$ cannot be measured directly during operation, a constant value of $W_{20}=10\,\mathrm{m/s}$ is assumed, allowing the turbulence intensities $\sigma_i$ to be precomputed. This assumption is justified in Section~\ref{sec:5.1.1W20}.
+As defined in Section~\ref{sec:2.3.1Dryden}, the scale lengths $L_i$ depend on the flight altitude $h=-z$. Since the reference wind speed $W_{20}$ cannot be measured directly during operation, a constant value of $W_{20}=$ \SI{10}{m/s} is assumed, allowing the turbulence intensities $\sigma_i$ to be precomputed. This assumption is justified in Section~\ref{sec:5.1.1W20}.
 Furthermore, since $V=\|{}_B\bm{v}_B\|_2$, the system matrices $\bm{A}_i$ and $\bm{B}_i$ depend on the airship state.
 
 Combining the state-space realization for longitudinal, lateral and vertical wind direction yields the probabilistic state-space description:
@@ -412,17 +412,17 @@ airship and the second term accounts for the $x_B$ component of the body-fixed w
 onto the body-fixed $x_B$-axis using the first row
 of the rotation matrix $\bm{R}_{BE}$. The resulting measurement is added to the measurement vector $\bm{y}$.
 
-A limitation of the installed pitot tube sensor is that reliable measurements are only available for body-fixed longitudinal airspeeds above $v_{A,x_B} > 2\,\mathrm{m/s}$. Below this threshold, the measurement is considered unreliable and should not influence the state estimate. This behavior is implemented by introducing a time-varying measurement noise variance,
+A limitation of the installed pitot tube sensor is that reliable measurements are only available for body-fixed longitudinal airspeeds above $v_{A,x_B} >$ \SI{2}{m/s}. Below this threshold, the measurement is considered unreliable and should not influence the state estimate. This behavior is implemented by introducing a time-varying measurement noise variance,
 
 \begin{equation}
 	R_{k,\mathrm{pitot}}
 	=
 	\begin{cases}
 		R_{\mathrm{pitot}}, &
-		v_{A,x_B} > 2\,\mathrm{m/s}, 
+		v_{A,x_B} > \SI{2}{m/s}, 
 		\\[4pt]
 		\infty, &
-		v_{A,x_B} \leq 2\,\mathrm{m/s},
+		v_{A,x_B} \leq \SI{2}{m/s},
 	\end{cases}
 	\label{eq:pitot_noise}
 \end{equation}
@@ -508,7 +508,7 @@ An exact analytical discretization of the nonlinear airship dynamics is generall
 	\bm{x}_k = \bm{x}_{k-1} + T_s \bm{f}(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1}) + \bm{q}_{k-1, \mathrm{model}},
 \end{equation}
 
-where $T_s = 0.01\,\mathrm{s}$ denotes the sampling time. The forward Euler method exhibits a global error of order $\mathcal{O}(T_s)$. Although higher-order integration methods, such as the classical fourth-order Runge-Kutta method, provide greater numerical accuracy, they require multiple evaluations of the nonlinear dynamics per sampling step. Given the small sampling time and the presence of model uncertainties represented by the process noise, the additional computational effort is not justified for the present application.
+where $T_s = $ \SI{0.01}{m/s} denotes the sampling time. The forward Euler method exhibits a global error of order $\mathcal{O}(T_s)$. Although higher-order integration methods, such as the classical fourth-order Runge-Kutta method, provide greater numerical accuracy, they require multiple evaluations of the nonlinear dynamics per sampling step. Given the small sampling time and the presence of model uncertainties represented by the process noise, the additional computational effort is not justified for the present application.
 
 The continuous-time force and moment uncertainty introduced in Section~\ref{sec:3.1.1StateSpace} is transformed into an equivalent discrete-time covariance. Following \cite{BarShalom2001Discretization} and approximating $e^{\bm{A}T_s}\approx\bm{I}$, the discrete covariance is obtained as
 
