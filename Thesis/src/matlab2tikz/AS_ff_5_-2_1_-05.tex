@@ -1,0 +1,118 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.85000,0.33000,0.10000}%
+\definecolor{mycolor2}{rgb}{0.47000,0.67000,0.19000}%
+\definecolor{mycolor3}{rgb}{0.12941,0.12941,0.12941}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=5.191in,
+height=1.274in,
+at={(0.871in,4.189in)},
+scale only axis,
+every outer x axis line/.append style={black},
+every x tick label/.append style={font=\color{black}},
+every x tick/.append style={black},
+xmin=0,
+xmax=100,
+tick align=outside,
+every outer y axis line/.append style={black},
+every y tick label/.append style={font=\color{black}},
+every y tick/.append style={black},
+ymin=-4,
+ymax=0.4513,
+axis background/.style={fill=white},
+axis x line*=bottom,
+axis y line*=left,
+xmajorgrids,
+ymajorgrids,
+grid style={black, opacity=0.15},
+legend style={at={(0.5,0.97)}, anchor=north, legend columns=3, legend cell align=left, align=left, draw=mycolor3, fill=white}
+]
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-1.tsv};
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-2.tsv};
+\addplot [color=mycolor1, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-3.tsv};
+\addplot [color=mycolor2, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-4.tsv};
+\end{axis}
+
+\begin{axis}[%
+width=5.191in,
+height=1.274in,
+at={(0.871in,2.419in)},
+scale only axis,
+every outer x axis line/.append style={black},
+every x tick label/.append style={font=\color{black}},
+every x tick/.append style={black},
+xmin=0,
+xmax=100,
+tick align=outside,
+every outer y axis line/.append style={black},
+every y tick label/.append style={font=\color{black}},
+every y tick/.append style={black},
+ymin=-2,
+ymax=2.454,
+ylabel={Wind Velocity [m/s]},
+axis background/.style={fill=white},
+axis x line*=bottom,
+axis y line*=left,
+xmajorgrids,
+ymajorgrids,
+grid style={black, opacity=0.15}
+]
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-5.tsv};
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-6.tsv};
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-7.tsv};
+\addplot [color=mycolor1, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-8.tsv};
+\addplot [color=mycolor2, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-9.tsv};
+\end{axis}
+
+\begin{axis}[%
+width=5.191in,
+height=1.274in,
+at={(0.871in,0.65in)},
+scale only axis,
+every outer x axis line/.append style={black},
+every x tick label/.append style={font=\color{black}},
+every x tick/.append style={black},
+xmin=0,
+xmax=100,
+tick align=outside,
+xlabel={Time [s]},
+every outer y axis line/.append style={black},
+every y tick label/.append style={font=\color{black}},
+every y tick/.append style={black},
+ymin=-2,
+ymax=1,
+axis background/.style={fill=white},
+axis x line*=bottom,
+axis y line*=left,
+xmajorgrids,
+ymajorgrids,
+grid style={black, opacity=0.15}
+]
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-10.tsv};
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-11.tsv};
+\addplot [color=white!30!black, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-12.tsv};
+\addplot [color=mycolor1, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-13.tsv};
+\addplot [color=mycolor2, line width=1.0pt, forget plot]
+  table[]{AS_ff_5_-14.tsv};
+\end{axis}
+\end{tikzpicture}%

@@ -1,0 +1,99 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.86600,0.32900,0.00000}%
+\definecolor{mycolor2}{rgb}{0.92900,0.69400,0.12500}%
+\definecolor{mycolor3}{rgb}{0.52100,0.08600,0.81900}%
+\definecolor{mycolor4}{rgb}{0.23100,0.66600,0.19600}%
+\definecolor{mycolor5}{rgb}{0.18400,0.74500,0.93700}%
+\definecolor{mycolor6}{rgb}{0.12941,0.12941,0.12941}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=5.191in,
+height=3.026in,
+at={(0.871in,0.934in)},
+scale only axis,
+plot box ratio=9.168 13.97 1,
+every outer x axis line/.append style={black},
+every x tick label/.append style={font=\color{black}},
+every x tick/.append style={black},
+xmin=-3.553e-15,
+xmax=20.89,
+tick align=outside,
+xlabel={X [m]},
+every outer y axis line/.append style={black},
+every y tick label/.append style={font=\color{black}},
+every y tick/.append style={black},
+ymin=0,
+ymax=31.83,
+ylabel={Y [m]},
+every outer z axis line/.append style={mycolor6},
+every z tick label/.append style={font=\color{mycolor6}},
+every z tick/.append style={mycolor6},
+zmin=8.079,
+zmax=10.36,
+zlabel={Altitude [m]},
+view={-37.5}{30},
+axis background/.style={fill=white},
+axis x line*=bottom,
+axis y line*=left,
+axis z line*=left,
+xmajorgrids,
+ymajorgrids,
+zmajorgrids,
+grid style={black, opacity=0.15},
+legend style={legend cell align=left, align=left, draw=mycolor6, fill=white}
+]
+\addplot3 [color=red, dashed, line width=1.0pt]
+ table[] {Comp_3D_trajectory-1.tsv};
+ \addlegendentry{Setpoint}
+
+\addplot3 [color=mycolor1, line width=1.0pt]
+ table[] {Comp_3D_trajectory-2.tsv};
+ \addlegendentry{NDI+Robust}
+
+\addplot3 [color=mycolor2, line width=1.0pt]
+ table[] {Comp_3D_trajectory-3.tsv};
+ \addlegendentry{NDI+Aggressive}
+
+\addplot3 [color=mycolor3, line width=1.0pt]
+ table[] {Comp_3D_trajectory-4.tsv};
+ \addlegendentry{PID}
+
+\addplot3 [color=mycolor4, line width=1.0pt]
+ table[] {Comp_3D_trajectory-5.tsv};
+ \addlegendentry{DFF+Robust}
+
+\addplot3 [color=mycolor5, line width=1.0pt]
+ table[] {Comp_3D_trajectory-6.tsv};
+ \addlegendentry{DFF+Aggressive}
+
+\end{axis}
+
+\begin{axis}[%
+width=6.698in,
+height=4.729in,
+at={(0in,0in)},
+scale only axis,
+every outer x axis line/.append style={mycolor6},
+every x tick label/.append style={font=\color{mycolor6}},
+every x tick/.append style={mycolor6},
+xmin=0,
+xmax=1,
+every outer y axis line/.append style={mycolor6},
+every y tick label/.append style={font=\color{mycolor6}},
+every y tick/.append style={mycolor6},
+ymin=0,
+ymax=1,
+axis line style={draw=none},
+ticks=none,
+axis x line*=bottom,
+axis y line*=left
+]
+\end{axis}
+\end{tikzpicture}%

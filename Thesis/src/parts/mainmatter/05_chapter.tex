@@ -1750,7 +1750,7 @@ Thus, in the absence of translational or rotational motion, perturbations of the
 	\begin{tikzpicture}
 		\begin{axis}[%
 			width=\linewidth,
-			height=0.4\linewidth,
+			height=0.35\linewidth,
 			every outer x axis line/.append style={black},
 			every x tick label/.append style={font=\color{black}},
 			every x tick/.append style={black},
@@ -1806,7 +1806,7 @@ Thus, in the absence of translational or rotational motion, perturbations of the
 		
 		\begin{axis}[%
 			width=\linewidth,
-			height=0.4\linewidth,
+			height=0.35\linewidth,
 			every outer x axis line/.append style={black},
 			every x tick label/.append style={font=\color{black}},
 			every x tick/.append style={black},
@@ -2029,25 +2029,147 @@ Consequently, the UKF requires more evaluations of the nonlinear models and addi
 
 \subsection{Effect of Airspeed Sensor}
 
-The 1D airspeed measurement provides an additional source of information for the wind-state estimation. It is therefore of interest to assess to what extent its availability affects the estimation performance. For this purpose, the wind estimation is compared with and without the airspeed measurement. The comparison first considers a representative time history to illustrate the effect on the estimation behavior.
+The 1D airspeed measurement provides an additional source of information for the wind-state estimation. It is therefore of interest to assess to what extent its availability affects the estimation performance. For this purpose, the wind estimation is compared with and without the airspeed measurement. 
+Figure~\ref{fig:AS_Comparision} compares the estimation performance for a representative test scenario to illustrate the effect of the airspeed sensor on the estimation behavior.
 
 \begin{figure}[htbp]
 	\centering
-	% figure
-	\caption{Comparison of wind-state estimation with and without the 1D airspeed measurement for a representative test case.}
-	\label{fig:WindEst_Airspeed_Time}
+	\definecolor{matRed}{rgb}{0.85000,0.33000,0.10000}%
+	\definecolor{matGreen}{rgb}{0.47000,0.67000,0.19000}%
+	%
+	\begin{tikzpicture}
+		
+		\begin{axis}[%
+			width=\linewidth,
+			height=0.3\linewidth,
+			at={(0.871in,4.189in)},
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			xmin=0,
+			xmax=100,
+			tick align=outside,
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			ymin=-4,
+			ymax=0.4513,
+			axis background/.style={fill=white},
+			axis x line*=bottom,
+			axis y line*=left,
+			title={Actual and Estimated Wind in $_Ex$ / $_Ey$ / $_Ez$ -Direction},
+			xmajorgrids,
+			ymajorgrids,
+			grid style={black!15},
+			legend style={at={(0.5,0.05)},
+				anchor=south, legend columns=3, legend cell align=left, align=left, draw=black, fill=white}
+			]
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-1.tsv};
+			\addplot [color=white!35!black, line width=1.0pt, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-2.tsv};
+			\addlegendentry{Actual Wind}
+			\addplot [color=matRed, line width=1.0pt]
+			table[]{src/matlab2tikz/AS_ff_5_-3.tsv};
+			\addlegendentry{with Airspeed Sensor}
+			\addplot [color=matGreen, line width=1.0pt]
+			table[]{src/matlab2tikz/AS_ff_5_-4.tsv};
+			\addlegendentry{without Airspeed Sensor}
+		\end{axis}
+		
+		\begin{axis}[%
+			width=\linewidth,
+			height=0.3\linewidth,
+			at={(0.871in,2.419in)},
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			xmin=0,
+			xmax=100,
+			tick align=outside,
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			ymin=-2,
+			ymax=2.454,
+			ylabel={Wind Velocity [m/s]},
+			axis background/.style={fill=white},
+			axis x line*=bottom,
+			axis y line*=left,
+			xmajorgrids,
+			ymajorgrids,
+			grid style={black!15}
+			]
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-5.tsv};
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-6.tsv};
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-7.tsv};
+			\addplot [color=matRed, line width=1.0pt, forget plot]
+			table[]{src/matlab2tikz/AS_ff_5_-8.tsv};
+			\addplot [color=matGreen, line width=1.0pt, forget plot]
+			table[]{src/matlab2tikz/AS_ff_5_-9.tsv};
+		\end{axis}
+		
+		\begin{axis}[%
+			width=\linewidth,
+			height=0.3\linewidth,
+			at={(0.871in,0.65in)},
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			xmin=0,
+			xmax=100,
+			tick align=outside,
+			xlabel={Time [s]},
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			ymin=-2,
+			ymax=1,
+			axis background/.style={fill=white},
+			axis x line*=bottom,
+			axis y line*=left,
+			xmajorgrids,
+			ymajorgrids,
+			grid style={black!15}
+			]
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-10.tsv};
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-11.tsv};
+			\addplot [color=white!35!black, line width=1.0pt, forget plot, line cap=round, line join=round]
+			table[]{src/matlab2tikz/AS_ff_5_-12.tsv};
+			\addplot [color=matRed, line width=1.0pt, forget plot]
+			table[]{src/matlab2tikz/AS_ff_5_-13.tsv};
+			\addplot [color=matGreen, line width=1.0pt, forget plot]
+			table[]{src/matlab2tikz/AS_ff_5_-14.tsv};
+		\end{axis}
+	\end{tikzpicture}%
+	\caption{Comparison of EKF wind estimation with and without the 1D airspeed measurement for the Forward fast scenario with $\bm{v}_{W,\mathrm{const}} = [-2\ 1\ -0.5]$ \SI{}{m/s} and $W_{20, \mathrm{true}} = $ \SI{5}{m/s}.}
+	\label{fig:AS_Comparision}
 \end{figure}
 
-The comparison shows that the wind can still be estimated successfully when the airspeed measurement is omitted. To assess whether this observation holds across the investigated flight conditions, the complete EKF and UKF test suite described in Section~\ref{sec:5.1.2EKFvsUKF} is repeated without the 1D airspeed measurement. The resulting RMSE values are then compared with those obtained using the complete measurement set.
+The comparison indicates that including the 1D airspeed measurement yields only a marginal improvement in wind-estimation performance. 
+This effect is primarily visible in the wind estimate along the $x$-axis, as this is the direction in which the airspeed sensor provides additional information in this case. Notably, the representative test case shown here (forward-fast flight) is among the scenarios that benefit the most from the airspeed measurement, since the airspeed in the $x$-direction is typically above \SI{2}{m/s} in this flight mode, allowing the sensor to provide valid measurements throughout most of the maneuver. 
+To investigate the effect of the airspeed sensor measurement across all test scenarios, the complete EKF and UKF test suite described in Section~\ref{sec:5.1.2EKFvsUKF} is repeated without the airspeed measurement, and the resulting RMSE values are compared against those obtained with the complete measurement set. The results are given in Table~\ref{tab:AS_RMSE}.
 
-\begin{figure}[htbp]
+\begin{table}[htbp]
 	\centering
-	% figure
-	\caption{Comparison of wind-estimation RMSE with and without the 1D airspeed measurement for the complete EKF and UKF test suite.}
-	\label{fig:WindEst_Airspeed_RMSE}
-\end{figure}
+	\caption{Comparison of mean wind-estimation RMSE, averaged over all scenarios and wind conditions, with and without the 1D airspeed measurement, considering only converged test cases from the complete EKF and UKF test suite.}
+	\label{tab:AS_RMSE}
+	\begin{tabular}{l cc}
+		\toprule
+		& With Airspeed Sensor & Without Airspeed Sensor \\
+		\midrule
+		UKF & 0.3473 & 0.3510 \\
+		EKF & 0.3180 & 0.3573 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
 
-The results show that the wind-estimation performance remains good even without the airspeed measurement, indicating that the remaining measurements provide sufficient information for the estimation of the wind states. The 1D airspeed measurement therefore provides additional information, but is not essential for achieving good wind-estimation performance under the investigated conditions.
+The results show that the wind estimation performance remains good even without the airspeed measurement, indicating that the remaining measurements provide sufficient information for the estimation of the wind states. The 1D airspeed measurement therefore provides additional information, but is not essential for achieving good wind estimation performance under the investigated conditions. This limited impact can be attributed to the restricted functionality of the airspeed sensor: it only provides a measurement when the airspeed in the $x$-direction exceeds \SI{2}{m/s}, and even then, it captures only a single axis of the wind vector. Given these constraints, the airspeed measurement contributes comparatively little information to the overall estimation problem, which is consistent with the small performance difference observed between the two scenarios.
 
 
 
@@ -2205,9 +2327,84 @@ The Comp gain set is tuned in the absence of such disturbances and therefore pro
 
 Figure~\ref{fig:Compensation_curve_trajectory} provides a visual impression of the tracking behavior of the PID baseline and the Robust and Aggressive gain sets for DFF and NDI. The figure shows the resulting trajectories a representative test run for the Curve scenario, illustrating the differences in trajectory tracking between the considered controller configurations. 
 
-\begin{figure}[htb]
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=\linewidth]{src/pics/Compensation_Trajectory_5_25_0_0_noCompGains.pdf}
+%	\caption{Comparison of the trajectories for the PID baseline and the DFF and NDI compensation approaches with Robust and Aggressive gain settings for a representative Curve scenario test run.}
+%	\label{fig:Compensation_curve_trajectory}
+%\end{figure}
+\begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{src/pics/Compensation_Trajectory_5_25_0_0_noCompGains.pdf}
+	\definecolor{matBlue}{rgb}{0.00000,0.45000,0.74000}%
+	\definecolor{matRed}{rgb}{0.85000,0.33000,0.10000}%
+	\definecolor{matYellow}{rgb}{0.93000,0.69000,0.13000}%
+	\definecolor{matPurple}{rgb}{0.60000,0.35000,0.75000}%
+	\definecolor{matGreen}{rgb}{0.47000,0.67000,0.19000}%
+	\definecolor{matLightblue}{rgb}{0.18400,0.74500,0.93700}%
+	%
+	\begin{tikzpicture}
+		
+		\begin{axis}[%
+			width=\linewidth,
+			height=0.6\linewidth,
+			plot box ratio=9.168 13.97 1,
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			xmin=0,
+			xmax=20.89,
+			tick align=outside,
+			xlabel={X [m]},
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			ymin=0,
+			ymax=31.83,
+			ylabel={Y [m]},
+			every outer z axis line/.append style={black},
+			every z tick label/.append style={font=\color{black}},
+			every z tick/.append style={black},
+			zmin=8.079,
+			zmax=10.36,
+			zlabel={Altitude [m]},
+			view={-37.5}{30},
+			axis background/.style={fill=white},
+			axis x line*=bottom,
+			axis y line*=left,
+			axis z line*=left,
+			xmajorgrids,
+			ymajorgrids,
+			zmajorgrids,
+			grid style={black!15},
+			legend style={legend cell align=left, align=left, draw=black, fill=white}
+			]
+			\addplot3 [color=red,dash pattern=on 6pt off 3pt , line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-1.tsv};
+			\addlegendentry{Setpoint}
+			
+			\addplot3 [color=matBlue, line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-4.tsv};
+			\addlegendentry{PID}
+			
+			\addplot3 [color=matRed, line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-2.tsv};
+			\addlegendentry{NDI+Robust}
+			
+			\addplot3 [color=matYellow, line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-3.tsv};
+			\addlegendentry{NDI+Aggressive}
+			
+			\addplot3 [color=matPurple, line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-5.tsv};
+			\addlegendentry{DFF+Robust}
+			
+			\addplot3 [color=matGreen, line width=1.0pt]
+			table[] {src/matlab2tikz/Comp_3D_trajectory-6.tsv};
+			\addlegendentry{DFF+Aggressive}
+			
+		\end{axis}
+
+	\end{tikzpicture}%
 	\caption{Comparison of the trajectories for the PID baseline and the DFF and NDI compensation approaches with Robust and Aggressive gain settings for a representative Curve scenario test run.}
 	\label{fig:Compensation_curve_trajectory}
 \end{figure}
