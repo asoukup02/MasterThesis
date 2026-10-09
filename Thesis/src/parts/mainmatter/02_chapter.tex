@@ -1,7 +1,7 @@
 \chapter{Fundamentals}
 \label{chap:2.Fundamentals}
 This chapter introduces the theoretical foundations and key concepts required for the remainder of this thesis. It presents the coordinate systems used throughout this work, the mathematical models of the airship and the wind, the fundamentals of Kalman filtering, and the control concepts underlying the proposed wind compensation approach.
-
+Finally, the data-driven methods considered in this work are introduced.
 
 
 
@@ -502,7 +502,7 @@ where $q_0$ describes the dynamic pressure associated by the local aerodynamic v
 	\operatorname{atan2}\! \left( \sqrt{v_{A, 0}^2 + w_{A, 0}^2} / u_{A, 0} \right).
 \end{equation}
 
-Here $\bm{v}_{A, 0} = \left[u_{A, 0}, \, v_{A, 0}, \, w_{A, 0}\right]^T$ denotes the aerodynamic velocity at $\varepsilon_0$, which marks the point along the hull, measured from the nose, beyond which correction for real flow behavior is necessary.
+Here $\bm{v}_{A, 0} = \left[u_{A, 0}, \, v_{A, 0}, \, w_{A, 0}\right]$ denotes the aerodynamic velocity at $\varepsilon_0$, which marks the point along the hull, measured from the nose, beyond which correction for real flow behavior is necessary.
 The coefficient $C_\mathrm{\cdot, hif}$ accounts for the additional drag caused by the pressure difference between the front and rear of the hull after flow separation, whereas $C_\mathrm{\cdot, hvf}$ represents the crossflow drag caused by the separated flow, modeled using a cylinder-drag analogy.
 
 The viscous force and moment are then decomposed into their body-axis components. Since both act normal to the hull centerline $F_{\mathrm{visc}, x}^\mathrm{\, COV} = M_{\mathrm{visc}, x}^\mathrm{\, COV} = 0$ and
@@ -679,7 +679,7 @@ with
 		\bm{d}_9
 		\\[4pt]
 		\bm{r}_1 \times \bm{d}_1 &
-		\cdots &
+		\cdots &b
 		\bm{r}_9 \times \bm{d}_9
 	\end{bmatrix},
 \end{equation}
@@ -1719,6 +1719,10 @@ The general structure of a compensation-based control approach is depicted in Fi
 	
 \end{figure}
 
+
+
+
+
 \subsection{Disturbance Feedforward}
 
 Disturbance feedforward (DFF) is an explicit model-based disturbance compensation strategy that utilizes measurements or estimates of external disturbances to generate a compensating control input before the disturbance affects the controlled output.
@@ -1857,3 +1861,204 @@ Substituting the compensation term into the system dynamics \eqref{eq:stateSpace
 \end{equation}
 
 Thus, the nonlinearities and known disturbance effects included in $\bm{f}(\bm{x},\bm{d})$ are removed from the system description, leaving the feedback controller to determine the remaining closed-loop behavior.
+
+
+
+
+
+\section{Artificial Neural Networks}
+\label{sec:2.6ArtificialNN}
+\nomenclature[A]{ANN}{Artificial Neural Network}
+
+Artificial neural networks (ANNs) are a class of nonlinear function approximators. Formally, an ANN realizes a parameterized mapping
+
+\begin{equation}
+	f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}, \quad \hat{\bm{y}} = f(\bm{x}; \bm{\theta}),
+	\label{eq:nn_mapping}
+\end{equation}
+
+from an input $\bm{x} \in \mathbb{R}^{n}$ to an approximated output $\hat{\bm{y}} \in \mathbb{R}^{m}$, where $\bm{\theta}$ denotes the set of trainable parameters. Rather than encoding an explicit analytical relationship, ANNs learn this mapping directly from data, making them attractive for capturing complex relationships at the cost of interpretability and formal guarantees on generalization. These properties have earned such models the label black box.
+
+ANNs with a sufficiently wide hidden layer can, in principle, approximate any continuous function on a compact subset of $\mathbb{R}^n$ to arbitrary accuracy, as formalized by the universal approximation theorem \cite{Hornik1989ApprThm}. 
+While this result establishes the theoretical expressive power of neural networks, it gives no guarantee on the number of neurons required, nor on whether a network of practical size can be trained to realize such an approximation.
+
+The basic computational unit of an ANN is the neuron. Given an input vector $\bm{x} \in \mathbb{R}^{n}$, a single neuron computes a weighted sum of its inputs, adds a bias term, and applies a nonlinear activation function to compute the so-called activation $a \in \mathbb{R}$:
+
+\begin{equation}
+	a = \varphi\left(\bm{w}^T \bm{x} + b\right),
+	\label{eq:neuron}
+\end{equation}
+
+where $\bm{w} \in \mathbb{R}^{n}$ denotes the weight vector and $b \in \mathbb{R}$ the bias, together constituting the neuron's trainable parameters $\theta$. Common choices for the activation function $\varphi(\cdot)$ include the sigmoid function, the hyperbolic tangent, and the rectified linear unit (ReLU) \cite{Goodfellow2016DeepLearning}. The nonlinearity introduced by the activation function is essential: without it, any composition of layers reduces to a single affine transformation, and the network could not represent nonlinear input–output relationships.
+
+Neurons are organized into layers, with each layer's outputs serving as the next layer's inputs. A network typically consists of an input layer, one or more hidden layers, and an output layer. The number of layers is referred to as the network's depth, and the number of neurons per layer as its width.
+
+The ANN is fully determined by its architecture (depth and width) and
+its parameters, collectively the weights and biases of all neurons. The parameters of the network are adapted through a training process starting from initial values, typically drawn at random. Given a dataset of input-output pairs $\{(\bm{x}_i, \bm{y}_i)\}_{i=1}^{N}$, training aims at minimizing a loss function $\mathcal{L}(\bm{\theta})$ that quantifies the discrepancy between the network's predictions $\hat{\bm{y}}_i = f(\bm{x}_i; \bm{\theta})$ and the target outputs $\bm{y}_i$.
+For regression tasks -- as considered in this work -- a common choice is the mean squared error (MSE):
+
+\begin{equation}
+	\mathcal{L}(\bm{\theta}) = \frac{1}{N} \sum_{i=1}^{N} \left\lVert f(\bm{x}_i; \bm{\theta}) - \bm{y}_i \right\rVert_2^2.
+	\label{eq:mse_loss}
+\end{equation}
+
+To minimize the loss function $\mathcal{L}(\bm{\theta})$, the network parameters $\bm{\theta}$ are updated via gradient-based optimization: the gradient $\nabla_{\bm{\theta}} \mathcal{L}$ is computed efficiently for all layers using backpropagation, which applies the chain rule to propagate the error signal from the output layer backward through the network \cite{Rumelhart1986Backprop}. The parameters are then updated in the direction of steepest descent,
+
+\begin{equation}
+	\bm{\theta}_{k+1} = \bm{\theta}_k - \eta \, \nabla_{\bm{\theta}} \mathcal{L}(\bm{\theta}_k),
+	\label{eq:gd_update}
+\end{equation}
+
+where $\eta$ is the learning rate, a hyperparameter governing the step size of each update.
+In practice, plain gradient descent as in \eqref{eq:gd_update} converges slowly and is sensitive to the choice of $\eta$. Optimizers, such as Adam \cite{Kingma2014Adam}, extend this basic update rule with momentum and adaptive per-parameter learning rates to improve convergence speed and stability.
+
+The available dataset is typically partitioned into a training set, used to compute $\mathcal{L}(\bm{\theta})$ and update the parameters, and a validation set, held out from training and used to monitor the network's performance on unseen data. Since a sufficiently large network can fit the training data arbitrarily well without generalizing -- a phenomenon known as overfitting -- validation performance provides a more meaningful indicator of the model's predictive capability.
+
+One full pass through the training dataset is referred to as an epoch. Training typically requires many epochs for the loss to converge. Rather than computing the loss and gradient over the entire dataset at once, the training data is commonly divided into smaller mini-batches, with a parameter update performed after each.
+
+The following sections introduce two network architectures relevant to this thesis: the multi-layer perceptron and the long short-term memory network.
+
+
+
+
+
+\subsection{Multi-Layer Perceptron}
+\label{sec:mlp}
+\nomenclature[A]{MLP}{Multi-Layer Perceptron}
+
+The multi-layer perceptron (MLP) is the most basic feedforward neural network architecture \cite{Goodfellow2016DeepLearning}, in which information flows strictly in one direction, from the input layer through one or more hidden layers to the output layer, with no feedback connections. Every neuron in a given layer is connected to every neuron in the subsequent layer. Such layers are referred to as fully connected, or dense, layers.
+Figure~\ref{fig:mlp_architecture} illustrates the structure of the MLP.
+
+\begin{figure}[htb]
+	\centering
+	\begin{tikzpicture}[
+		x=1.8cm, y=1.1cm,
+		neuron/.style={circle, draw, minimum size=0.85cm, inner sep=0pt, thick},
+		input neuron/.style={neuron, fill=blue!25},
+		hidden neuron a/.style={neuron, fill=gray!25},
+		hidden neuron b/.style={neuron, fill=gray!25},
+		hidden neuron c/.style={neuron, fill=gray!25},
+		output neuron/.style={neuron, fill=orange!35},
+		conn/.style={-, draw, black, thin},
+		layer label/.style={font=\bfseries, align=center}
+		]
+		
+		% Input layer
+		\node[input neuron] (I-1) at (0, 1.2) {};
+		\node[input neuron] (I-2) at (0, -1.2) {};
+		\node at (0, 0) {$\vdots$};
+		
+		% Hidden layer 1
+		\node[hidden neuron a] (H1-1) at (1.4, 1.6) {};
+		\node[hidden neuron a] (H1-2) at (1.4, 0.5) {};
+		\node[hidden neuron a] (H1-3) at (1.4, -1.6) {};
+		\node at (1.4, -0.5) {$\vdots$};
+		
+		% Hidden layer 2
+		\node[hidden neuron b] (H2-1) at (2.8, 1.6) {};
+		\node[hidden neuron b] (H2-2) at (2.8, 0.5) {};
+		\node[hidden neuron b] (H2-3) at (2.8, -1.6) {};
+		\node at (2.8, -0.5) {$\vdots$};
+		
+		% Hidden layer 3
+		\node[hidden neuron c] (H3-1) at (4.2, 1.6) {};
+		\node[hidden neuron c] (H3-2) at (4.2, 0.5) {};
+		\node[hidden neuron c] (H3-3) at (4.2, -1.6) {};
+		\node at (4.2, -0.5) {$\vdots$};
+		
+		% Output layer
+		\node[output neuron] (O-1) at (5.6, 1.2) {};
+		\node[output neuron] (O-2) at (5.6, -1.2) {};
+		\node at (5.6, 0) {$\vdots$};
+		
+		% Connections: input -> hidden 1
+		\foreach \i in {1,2}
+		\foreach \j in {1,2,3}
+		\draw[conn] (I-\i) -- (H1-\j);
+		
+		% Connections: hidden 1 -> hidden 2
+		\foreach \i in {1,2,3}
+		\foreach \j in {1,2,3}
+		\draw[conn] (H1-\i) -- (H2-\j);
+		
+		% Connections: hidden 2 -> hidden 3
+		\foreach \i in {1,2,3}
+		\foreach \j in {1,2,3}
+		\draw[conn] (H2-\i) -- (H3-\j);
+		
+		% Connections: hidden 3 -> output
+		\foreach \i in {1,2,3}
+		\foreach \j in {1,2}
+		\draw[conn] (H3-\i) -- (O-\j);
+		
+		% Input arrows and labels
+		\draw[-latex] (-0.8, 1.2) -- (I-1);
+		\node[left] at (-0.8, 1.2) {$x_1$};
+		\draw[-latex] (-0.8, -1.2) -- (I-2);
+		\node[left] at (-0.8, -1.2) {$x_n$};
+		
+		% Output arrows and labels
+		\draw[-latex] (O-1) -- (6.4, 1.2);
+		\node[right] at (6.4, 1.2) {$y_1$};
+		\draw[-latex] (O-2) -- (6.4, -1.2);
+		\node[right] at (6.4, -1.2) {$y_m$};
+		
+		% Hidden layer bounding box
+		\draw[gray, dotted, thick, rounded corners=8pt] (0.75, -2.1) rectangle (4.85, 2.1);
+		
+		% Layer labels
+		\node[layer label] at (0, 2.6) {Input\\layer};
+		\node[layer label] at (2.8, 2.6) {Hidden\\layers};
+		\node[layer label] at (5.6, 2.6) {Output\\layer};
+		
+	\end{tikzpicture}
+	\caption{Schematic illustration of a multi-layer perceptron with $n$ inputs, three fully connected hidden layers, and $m$ outputs. Each circle represents a single neuron, computing a weighted sum of its inputs followed by a nonlinear activation, as in \eqref{eq:neuron}.}
+	\label{fig:mlp_architecture}
+\end{figure}
+
+For a network with $L$ layers, the output of layer $l$ is computed from the output of the preceding layer as
+
+\begin{equation}
+	\bm{a}^{[l]} = \varphi^{[l]}\left(\bm{W}^{[l]} \bm{a}^{[l-1]} + \bm{b}^{[l]}\right), \qquad l = 1, \dots, L,
+	\label{eq:mlp_forward}
+\end{equation}
+
+where $\bm{a}^{[0]} = \bm{x}$ denotes the network input, $\bm{W}^{[l]}$ and $\bm{b}^{[l]}$ the weight matrix and bias vector of layer $l$, $\varphi^{[l]}(\cdot)$ the (possibly layer-dependent) activation function, and $\hat{\bm{y}} = \bm{a}^{[L]}$ the network output. Each row of $\bm{W}^{[l]}$ contains the weight vector of a single neuron in layer $l$, so that \eqref{eq:mlp_forward} applies \eqref{eq:neuron} to every neuron in the layer simultaneously. Evaluating \eqref{eq:mlp_forward} successively for $l = 1, \dots, L$ constitutes the forward pass of the network, mapping an input $\bm{x}$ to a prediction $\hat{\bm{y}}$.
+
+Hidden layers typically employ a nonlinear activation function $\varphi^{[l]}(\cdot)$, enabling the network to represent nonlinear input-output relationships. The output layer's activation function is chosen depending on the task: for regression problems, as considered in this work, it is common to use a linear activation, i.e., $\varphi^{[L]}(\bm{z}) = \bm{z}$, allowing the network output to take any real value.
+
+Owing to its purely feedforward structure, the MLP has no internal notion of time or sequence order: each input $\bm{x}$ is mapped to an output independently of any previous inputs. This makes the MLP well suited to static, memoryless input-output mappings, but limits its applicability to problems involving temporal dependencies. This motivates the recurrent architecture introduced in the following section.
+
+
+
+
+
+\subsection{Long Short-Term Memory Networks}
+\label{sec:lstm}
+\nomenclature[A]{LSTM}{Long Short-Term Memory}
+\nomenclature[A]{RNN}{Recurrent Neural Network}
+
+Unlike the MLP, recurrent neural networks (RNNs) are designed to process sequential data by introducing feedback connections. The network's output at a given time step depends not only on the current input, but also on information from previous time steps. This is achieved through a hidden state $\bm{h}_t$, which is updated at every time step $t$ and passed forward to influence the processing of subsequent inputs.
+
+A well-known limitation of simple RNNs is their difficulty in learning long-range dependencies. As the temporal distance between a relevant input and the point at which it affects the output grows, simple RNNs become increasingly unable to retain and exploit that information \cite{Bengio1994DownsideRNN}. The underlying reason is the vanishing/exploding gradient problem: during training, gradients propagated backward through many time steps are repeatedly scaled by the same recurrent weight matrix and activation derivatives, causing them to shrink toward zero or grow unboundedly as the sequence length increases \cite{Hochreiter1991ExplGradients}. The long short-term memory (LSTM) network was proposed to address this limitation by introducing a more elaborate recurrent unit, capable of retaining and modeling long-range dependencies \cite{Hochreiter1997LSTM}.
+
+The core idea of the LSTM is the cell state $\bm{c}_t$, which acts as an internal memory that is propagated from one time step to the next with only minor, additive modifications, allowing information to persist over many time steps without being repeatedly transformed. Access to and modification of the cell state are regulated by three gates, the forget gate \cite{Gers2000forget}, input gate, and output gate, each implemented as a small feedforward layer with a sigmoid activation, producing values between 0 and 1 that determine the extent to which information is retained, added, or exposed.
+
+The LSTM processes a sequence of inputs $\bm{x}_1, \dots, \bm{x}_T$, where $T$ denotes the sequence length, or time horizon, over which the network operates. Unlike the network depth or width, $T$ is not a property of the LSTM architecture itself, but a choice made when constructing the training data, determining how much past information is made available to the network at each prediction.
+
+At each time step $t$, given the current input $\bm{x}_t$, the previous hidden state $\bm{h}_{t-1}$, and the previous cell state $\bm{c}_{t-1}$, the LSTM computes
+
+\begin{align}
+	\bm{f}_t &= \sigma\left(\bm{W}_f \bm{x}_t + \bm{U}_f \bm{h}_{t-1} + \bm{b}_f\right), \label{eq:lstm_forget} \\
+	\bm{i}_t &= \sigma\left(\bm{W}_i \bm{x}_t + \bm{U}_i \bm{h}_{t-1} + \bm{b}_i\right), \label{eq:lstm_input} \\
+	\bm{o}_t &= \sigma\left(\bm{W}_o \bm{x}_t + \bm{U}_o \bm{h}_{t-1} + \bm{b}_o\right), \label{eq:lstm_output} \\
+	\tilde{\bm{c}}_t &= \tanh\left(\bm{W}_c \bm{x}_t + \bm{U}_c \bm{h}_{t-1} + \bm{b}_c\right), \label{eq:lstm_candidate} \\
+	\bm{c}_t &= \bm{f}_t \odot \bm{c}_{t-1} + \bm{i}_t \odot \tilde{\bm{c}}_t, \label{eq:lstm_cell} \\
+	\bm{h}_t &= \bm{o}_t \odot \tanh(\bm{c}_t), \label{eq:lstm_hidden}
+\end{align}
+
+where $\bm{f}_t$, $\bm{i}_t$, and $\bm{o}_t$ denote the forget, input, and output gate activations, $\tilde{\bm{c}}_t$ a candidate cell state, $\sigma(\cdot)$ the sigmoid function, and $\odot$ the element-wise (Hadamard) product. The matrices $\bm{W}_{(\cdot)}$ and $\bm{U}_{(\cdot)}$ and the vectors $\bm{b}_{(\cdot)}$ are the trainable weights and biases associated with each gate and the candidate cell state, collectively constituting the LSTM's parameters $\bm{\theta}$.
+
+The forget gate \eqref{eq:lstm_forget} determines which parts of the previous cell state $\bm{c}_{t-1}$ are retained, the input gate \eqref{eq:lstm_input} determines which parts of the candidate cell state $\tilde{\bm{c}}_t$ are added, and the output gate \eqref{eq:lstm_output} determines which parts of the cell state are exposed as the new hidden state $\bm{h}_t$. Because the cell state update in \eqref{eq:lstm_cell} is additive rather than a repeated nonlinear transformation, gradients can propagate through many time steps largely unimpeded, mitigating the vanishing gradient problem observed in simple RNNs.
+
+As with the MLP, the LSTM's parameters are trained by minimizing a loss function via backpropagation and gradient-based optimization, as described in Section~\ref{sec:2.6ArtificialNN}. In the recurrent setting, this is commonly referred to as backpropagation through time, since gradients are propagated backward not only through the network's layers but also through the sequence of time steps \cite{Werbos1990BPTT}. Owing to their ability to retain and selectively update information over extended sequences, LSTMs are well suited to modeling temporal dependencies in sequential data, such as the wind and motion signals considered in this thesis.

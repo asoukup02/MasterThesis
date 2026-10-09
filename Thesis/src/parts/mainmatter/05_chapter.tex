@@ -1,5 +1,5 @@
 \chapter{Evaluation and results}
-\label{sec:5.0Evaluation}
+\label{chap:5.0Evaluation}
 \nomenclature[A]{RMSE}{Root Mean Square Error}
 
 To evaluate the performance of the proposed wind estimation algorithm and the wind compensation strategies, a simulation-based test framework is established. 
@@ -46,7 +46,7 @@ The remainder of this chapter is structured as follows. In Section~\ref{sec:5.1W
 
 
 
-\section{Wind Estimation}
+\section{Model based Wind Estimation}
 \label{sec:5.1WindEstimation}
 
 Since the wind estimate directly influences the compensation strategy, the performance of the wind estimation algorithm is evaluated first. As described in Section~\ref{sec:2.3.2DrydenParams}, the turbulence intensities $\sigma_i$ of the Dryden model are determined by the reference wind speed $W_{20}$. Consequently, a suitable value for $W_{20}$ must first be selected to fully define the wind model used by the Kalman filter. Section~\ref{sec:5.1.1W20} investigates the influence of $W_{20}$ and determines an appropriate value, which is subsequently used in Section~\ref{sec:5.1.2EKFvsUKF} to compare the wind estimation performance of the EKF and UKF.
@@ -2016,7 +2016,8 @@ To compare the computational cost of both approaches, the EKF and UKF are evalua
 	\end{tabular}
 \end{table}
 
-The UKF requires approximately \SI{93}{\percent} more computational time per simulation step than the EKF.
+The UKF requires approximately \SI{93}{\percent} more computational time per simulation step than the EKF. However, the absolute runtimes measured in this test are not representative of the actual computational time on the airship's flight-control hardware. Therefore, the results should be interpreted as a relative comparison of the computational cost of the EKF and UKF, rather than as an indication of their real-time computational requirements on the deployed system.
+
 The difference in computational cost primarily results from the different treatment of the nonlinear system and measurement models. In the EKF, the state-transition Jacobian $\bm{F}$ is approximated numerically using forward differences. For the 17-dimensional state vector, this requires $n=17$ additional evaluations of the nonlinear state-transition function per step. The measurement Jacobian $\bm{H}$ is obtained analytically and only needs to be evaluated once per simulation step.
 
 In the UKF, in contrast, the nonlinearities are propagated through $2n+1=35$ sigma points. Generating these sigma points requires a matrix square-root operation, after which all $2n+1$ sigma points are propagated through the nonlinear state-transition function $\bm{f}$. For the measurement update, a new set of sigma points is generated from the predicted state and propagated through the nonlinear measurement function $\bm{h}$. 
@@ -2256,6 +2257,39 @@ Figure~\ref{fig:MeanWindComputation} compares the long-term estimation results f
 	\caption{Comparison of the true constant wind component with estimates obtained by applying low-pass filtering and a moving average to the wind estimate from the Kalman filter, over a \SI{500}{s} flight.}
 	\label{fig:MeanWindComputation}
 \end{figure}
+
+
+
+
+
+\section{Data Driven Wind Estimation}
+
+In general the results are better compared to the Kalman Filter:
+This has several reasons:
+- Uncertainties considered in kalman filter design
+- potential overfitting of NN as the training data comes from the same test campaign
+- way faster convergence rates of the NN compared to the KF. Smaller errors are usually due to the considered time frame. The NN converges to a value close to the real one fast but almost never hits it as the KF does.
+
+The quality of the performance is in general heavily coupled to the available data. The risk of overfitting is high. To really get an meaningful indication of the performance, we use real flight data in chapter 5 to compare the performance for a real flight scenario.
+Also this is where we compare the performance to the Kalman filter performance.
+
+
+
+\begin{table}[htb]
+	\centering
+	\caption{Mean computational runtime per simulation step for the EKF, UKF, MLP and LSTM. The results are obtained from 100 simulations with a simulated duration of $1000\,\mathrm{s}$ and a simulation step size of \SI{0.01}{s}. The normalized runtime is given relative to the EKF.}
+	\label{tab:}
+	\begin{tabular}{lcc}
+		\toprule
+		Filter & Mean runtime per step [ms] & Normalized runtime [-] \\
+		\midrule
+		EKF & 0.153 & 1.00 \\
+		UKF & 0.296 & 1.93 \\
+		MLP & 0.022 & 0.14 \\
+		LSTM & 0.686 & 4.50 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
 
 
 

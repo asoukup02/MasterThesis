@@ -508,7 +508,7 @@ An exact analytical discretization of the nonlinear airship dynamics is generall
 	\bm{x}_k = \bm{x}_{k-1} + T_s \bm{f}(\tilde{\bm{x}}_{k-1}, \bm{u}_{k-1}) + \bm{q}_{k-1, \mathrm{model}},
 \end{equation}
 
-where $T_s = $ \SI{0.01}{m/s} denotes the sampling time. The forward Euler method exhibits a global error of order $\mathcal{O}(T_s)$. Although higher-order integration methods, such as the classical fourth-order Runge-Kutta method, provide greater numerical accuracy, they require multiple evaluations of the nonlinear dynamics per sampling step. Given the small sampling time and the presence of model uncertainties represented by the process noise, the additional computational effort is not justified for the present application.
+where $T_s = $ \SI{0.01}{s} denotes the sampling time. The forward Euler method exhibits a global error of order $\mathcal{O}(T_s)$. Although higher-order integration methods, such as the classical fourth-order Runge-Kutta method, provide greater numerical accuracy, they require multiple evaluations of the nonlinear dynamics per sampling step. Given the small sampling time and the presence of model uncertainties represented by the process noise, the additional computational effort is not justified for the present application.
 
 The continuous-time force and moment uncertainty introduced in Section~\ref{sec:3.1.1StateSpace} is transformed into an equivalent discrete-time covariance. Following \cite{BarShalom2001Discretization} and approximating $e^{\bm{A}T_s}\approx\bm{I}$, the discrete covariance is obtained as
 

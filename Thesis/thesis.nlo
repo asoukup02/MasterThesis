@@ -15,5 +15,9 @@
 \nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{25}
 \nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{25}
 \nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{25}
-\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{45}
-\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.3}|nompageref}{58}
+\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial Neural Network\nomeqref {2.113}|nompageref}{28}
+\nomenclatureentry{AMLP@[{MLP}]\begingroup Multi-Layer Perceptron\nomeqref {2.117}|nompageref}{29}
+\nomenclatureentry{ALSTM@[{LSTM}]\begingroup Long Short-Term Memory\nomeqref {2.118}|nompageref}{30}
+\nomenclatureentry{ARNN@[{RNN}]\begingroup Recurrent Neural Network\nomeqref {2.118}|nompageref}{30}
+\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{53}
+\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.3}|nompageref}{68}
