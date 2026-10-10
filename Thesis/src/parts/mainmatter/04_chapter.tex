@@ -1,7 +1,9 @@
 \chapter{data-driven wind estimation and compensation}
+\label{chap:4.DataDriven}
 
-This chapter describes how the multi-layer perceptron (MLP) and the long short-term memory (LSTM) network introduced in Section~\ref{sec:2.6ArtificialNN} are implemented and trained for the wind estimation task considered in this thesis. 
-Section~\ref{sec:problem_formulation} defines the learning task, Sections~\ref{sec:data_basis} and~\ref{sec:data_preprocessing} describe the data and its preparation, Sections~\ref{sec:architectures} to~\ref{sec:hyperparameter_opt} cover the model architectures, the training procedure and the hyperparameter search, and Section~\ref{sec:evaluation_metrics} introduces the metrics used for the comparison in Chapter~\ref{chap:results}.
+This chapter describes how the multi-layer perceptron (MLP) and the long short-term memory (LSTM) network introduced in Section~\ref{sec:2.6ArtificialNN} are implemented and trained for the wind estimation task considered in this thesis. It first defines the learning task, then describes the simulated data and its preparation, and finally presents the model architectures and the training procedure.
+
+
 
 
 
@@ -22,7 +24,7 @@ The velocity, angular rate, and accelerations are expressed in body-fixed coordi
 
 The airspeed measurement of the pitot tube is not included in the input vector for simplicity. The sensor only delivers valid readings above a cutoff airspeed and outputs zero below it, so the measurement is not continuously available. Feeding such an intermittent signal to the networks would require additional handling, e.g., an availability flag, which is beyond the scope of this work. 
 
-The network output is the wind velocity vector, $\hat{\bm{y}}_t = {}_E \hat{\bm{v}}_{W, t} \in \mathbb{R}^{3}$. In contrast to the KF, which estimates the wind in Earth-fixed coordinates, the networks estimate the wind in body-fixed coordinates. This choice simplifies the learning task for two reasons. First, the wind affects the airship dynamics through the aerodynamic velocity, which is defined in the body frame. Hence, $\bm{v}^{B}_{w}$ is the quantity that directly enters the aerodynamic forces and moments. Second, the networks do not have to learn the coordinate transformation between the body and the Earth frame.
+The network output is the wind velocity vector, $\hat{\bm{y}}_t = {}_B \hat{\bm{v}}_{W, t} \in \mathbb{R}^{3}$. In contrast to the KF, which estimates the wind in earth-fixed coordinates, the networks estimate the wind in body-fixed coordinates. This choice simplifies the learning task, as the wind affects the airship dynamics through the aerodynamic velocity, which is defined in the body frame. Hence, ${}_B \bm{v}_{W}$ is the quantity that directly enters the aerodynamic forces and moments. Therefore, by estimating the wind velocity in body-fixed coordinates the networks do not have to learn the coordinate transformation between the body and the earth frame.
 
 With these definitions, both networks realize the mapping \eqref{eq:nn_mapping} with $n = 24$ and $m = 3$. The MLP maps the input $\bm{x}_t$ of a single time step to $\hat{\bm{y}}_t$, whereas the LSTM additionally processes a sequence of preceding inputs, as described in Section~\ref{sec:4.2.3InputGeneration}.
 
@@ -116,7 +118,7 @@ For the LSTM, the input consists of a sequence of the most recent $T = 40$ input
 	\label{eq:lstm_sequence}
 \end{equation}
 
-which corresponds to a time window of \SI{2}{\second} at a sampling frequency of \SI{20}{\hertz}. The sequences are generated using a sliding window with a stride of one time step. Both networks predict the wind $\hat{\bm{y}}_t$ at the current time step $t$. Each simulation run is treated as an independent time series, so the windows never cross run boundaries, and as the split is performed on the level of entire runs, no window overlaps two sets. For the LSTM, the first $T-1$ time steps of each run, for which no complete history is available, are not used as prediction targets. A run with $N$ time steps after downsampling therefore yields $N - T + 1$ sequences, whereas the MLP uses all $N$ time steps of each run.
+which corresponds to a time window of \SI{2}{\second} at a sampling frequency of \SI{20}{\hertz}. The sequences are generated using a sliding window with a stride of one time step. Both networks predict the standardized wind $\hat{\bm{y}}_t$ at the current time step $t$. Each simulation run is treated as an independent time series, so the windows never cross run boundaries, and as the split is performed on the level of entire runs, no window overlaps two sets. For the LSTM, the first $T-1$ time steps of each run, for which no complete history is available, are not used as prediction targets. A run with $N$ time steps after downsampling therefore yields $N - T + 1$ sequences, whereas the MLP uses all $N$ time steps of each run.
 
 
 
@@ -128,7 +130,7 @@ which corresponds to a time window of \SI{2}{\second} at a sampling frequency of
 
 This section describes the architectures of the two networks. Both map the input vectors defined in Section~\ref{sec:4.2.3InputGeneration} to an estimate of the body-fixed wind velocity and use a linear output layer, as is common for regression tasks. They differ in how the input is processed: the MLP evaluates the input of a single time step, whereas the LSTM processes a sequence of $T = 40$ input vectors. 
 
-The architectures were selected manually rather than through a hyperparameter search. Since the networks are intended for real-time execution on onboard flight hardware, where computational resources and memory are limited, both are designed as moderately sized baseline models. Both achieve a low loss on the validation data (see Chapter~\ref{chap:5.0Evaluation}). However, since the validation data contain flight scenarios also represented in the training data, hyperparameter tuning based on the validation loss would primarily optimize performance on familiar scenarios. Its effect on generalization to unseen scenarios, as investigated in Experiment B, is uncertain. The results should therefore be interpreted as the performance of manually selected baseline architectures rather than as the best performance achievable with these network types.
+The architectures were selected manually rather than through a hyperparameter search. Since the networks are intended for real-time execution on onboard flight hardware, where computational resources and memory are limited, both are designed as moderately sized baseline models. Both achieve a low loss on the validation data (see Chapter~\ref{sec:4.4TrainingProcedure}). However, since the validation data contain flight scenarios also represented in the training data, hyperparameter tuning based on the validation loss would primarily optimize performance on familiar scenarios. Its effect on generalization to unseen scenarios, as investigated in Experiment B, is uncertain. The results should therefore be interpreted as the performance of manually selected baseline architectures rather than as the best performance achievable with these network types.
 
 
 
@@ -190,14 +192,79 @@ The LSTM has considerably more trainable parameters than the MLP. Additionally, 
 \section{Training Procedure}
 \label{sec:4.4TrainingProcedure}
 
-Both networks are implemented and trained using the Deep Learning Toolbox of MATLAB 2025b. They are trained as regression models on the standardized input and target vectors from Section~\ref{sec:4.2.2Preprocessing}, using the training set of the respective data split. Training is performed separately for each of the seven splits and both network types, which results in 14 trained models.
+Both networks are implemented and trained using the Deep Learning Toolbox of MATLAB~\cite{MathworksDeepLearning}. They are trained as regression models on the standardized input and target vectors from Section~\ref{sec:4.2.2Preprocessing}, using the training set of the respective data split. Training is performed separately for each of the seven splits and both network types, which results in 14 trained models.
 
 The networks are trained by minimizing the regression loss between the predicted and true standardized wind vectors. MATLAB uses a half-mean-squared-error loss for the MLP. For the LSTM's sequence-to-one regression task, the loss is one-half of the sum of squared errors across the three output components, without normalization by the number of responses. Both loss definitions are proportional to the conventional mean squared error in Eq.~\eqref{eq:mse_loss} and therefore have the same minimizer. The gradients are computed by backpropagation and, for the LSTM, backpropagation through time over the $T=40$ time steps of each sequence.
 
 The parameters are updated with the Adam optimizer \cite{Kingma2014Adam} using the default decay rates of the implementation. The learning rate starts at $\eta_0 = 10^{-3}$ and is halved every 20 epochs. The training data is divided into mini-batches and shuffled before every epoch. The mini-batch size is 1024 for the MLP and 128 for the LSTM to account for the greater computational and memory requirements of processing sequences of 40 time steps.
 Besides the L2 regularization of the implementation with its default factor of $10^{-4}$, no further regularization such as dropout is used. The weights are initialized with the default initializers of the implementation, i.e., the Glorot initialization for the input weights, orthogonal initialization for the recurrent weights of the LSTM, and zeros for the biases, except for the forget gate bias, which is initialized with one.
 
-The loss on the validation set is evaluated every 50 iterations. Training stops after a maximum of 100 epochs, or earlier if the validation loss has not fallen below its smallest value so far in 30 consecutive evaluations. The network of the final iteration is used for the evaluation. Table~\ref{tab:training_settings} summarizes the settings.
+The loss on the validation set is evaluated every 50 iterations. Training stops after a maximum of 100 epochs, or earlier if the validation loss has not fallen below its smallest value so far in 30 consecutive evaluations. The network of the final iteration is used for the evaluation. Table~\ref{tab:training_settings} summarizes the settings. Figure~\ref{fig:MLP_ExpA_Loss} shows the training and validation loss for the MLP as an example.
+
+\begin{figure}[htbp]
+	\definecolor{LightBlue}{rgb}{0.70000,0.85000,1.00000}%
+	\definecolor{mycolor2}{rgb}{0.12941,0.12941,0.12941}%
+	%
+	\begin{tikzpicture}
+		
+		\begin{axis}[%
+			width=\linewidth,
+			height=0.6\linewidth,
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			xmin=1,
+			xmax=2.285e+04,
+			tick align=outside,
+			xlabel={Iteration},
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			ymode=log,
+			ymin=0.01,
+			ymax=1.56,
+			ylabel={Loss},
+			axis background/.style={fill=white},
+			title={Training and validation loss of the MLP},
+			xmajorgrids,
+			ymajorgrids,
+			yminorgrids,
+			grid style={black!15},
+			legend style={legend cell align=left, align=left, draw=black, fill=white}
+			]
+			\addplot [color=LightBlue, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-1.tsv};
+			\addplot [color=LightBlue, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-2.tsv};
+			\addplot [color=LightBlue, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-3.tsv};
+			\addplot [color=LightBlue, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-4.tsv};
+			\addplot [color=LightBlue, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-5.tsv};
+			\addplot [color=LightBlue, line width=1.0pt, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-6.tsv};
+			\addlegendentry{Training loss}
+			
+			\addplot [color=blue, line width=1.5pt, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-7.tsv};
+			\addplot [color=blue, line width=1.5pt, line width=1.0pt, forget plot, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-8.tsv};
+			\addplot [color=blue, line width=1.0pt, line join=round, line cap=round]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-9.tsv};
+			\addlegendentry{Training loss (moving avg)}
+			
+			\addplot [color=red, width=1.0pt, mark size=1.0pt, mark=*, mark options={solid, fill=red, red}]
+			table[]{src/matlab2tikz/MLP_ExpA_Loss-10.tsv};
+			\addlegendentry{Validation loss}
+			
+		\end{axis}
+		
+	\end{tikzpicture}%
+		\caption{Training and validation loss of the MLP on the Experiment A training set. The moving average training loss is computed over the last 50 samples for improved readability.}
+		\label{fig:MLP_ExpA_Loss}
+\end{figure}
+
 
 \begin{table}[htb]
 	\centering
@@ -220,5 +287,4 @@ The loss on the validation set is evaluated every 50 iterations. Training stops 
 	\end{tabular}
 \end{table}
 
-The performance of the trained networks is evaluated in Chapter~\ref{chap:5.0Evaluation}. As the networks are trained on standardized targets, their outputs are transformed back to physical units by inverting \eqref{eq:standardization} to obtain the wind estimates. 
-
+The networks are trained using standardized inputs and targets. Consequently, their outputs are also standardized and must be transformed back into physical units by inverting the standardization defined in \eqref{eq:standardization} to obtain the wind estimates. The performance of the trained networks is evaluated in Chapter~\ref{chap:5.0Evaluation}.

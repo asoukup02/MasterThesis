@@ -10,14 +10,14 @@
 \nomenclatureentry{D$(\cdot)_B$@[{$(\cdot)_B$}]\begingroup Quantity describing the body\nomeqref {2.2}|nompageref}{6}
 \nomenclatureentry{AKF@[{KF}]\begingroup Kalman Filter\nomeqref {2.49}|nompageref}{16}
 \nomenclatureentry{AMMSE@[{MMSE}]\begingroup Minimum Mean Square Error\nomeqref {2.49}|nompageref}{16}
-\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.72}|nompageref}{21}
-\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.86}|nompageref}{23}
+\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.72}|nompageref}{20}
+\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.86}|nompageref}{22}
 \nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{25}
 \nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{25}
 \nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{25}
-\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial Neural Network\nomeqref {2.113}|nompageref}{28}
+\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial Neural Network\nomeqref {2.113}|nompageref}{27}
 \nomenclatureentry{AMLP@[{MLP}]\begingroup Multi-Layer Perceptron\nomeqref {2.117}|nompageref}{29}
 \nomenclatureentry{ALSTM@[{LSTM}]\begingroup Long Short-Term Memory\nomeqref {2.118}|nompageref}{30}
 \nomenclatureentry{ARNN@[{RNN}]\begingroup Recurrent Neural Network\nomeqref {2.118}|nompageref}{30}
 \nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{53}
-\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.3}|nompageref}{68}
+\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.3}|nompageref}{69}

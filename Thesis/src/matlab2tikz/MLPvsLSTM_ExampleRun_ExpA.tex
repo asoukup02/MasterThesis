@@ -1,0 +1,139 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.06600,0.44300,0.74500}%
+\definecolor{mycolor2}{rgb}{0.86600,0.32900,0.00000}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+\definecolor{mycolor4}{rgb}{0.12941,0.12941,0.12941}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=18.333in,
+height=2.541in,
+at={(0.833in,6.221in)},
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={mycolor4},
+every x tick label/.append style={font=\color{mycolor4}},
+every x tick/.append style={mycolor4},
+xmin=1.95,
+xmax=100,
+every outer y axis line/.append style={mycolor4},
+every y tick label/.append style={font=\color{mycolor4}},
+every y tick/.append style={mycolor4},
+ymin=-3,
+ymax=3,
+ylabel style={font=\color{mycolor4}},
+ylabel={$w_{x,B}$ [m/s]},
+axis background/.style={fill=white},
+title style={font=\bfseries\color{mycolor4}},
+title={WInd estimation performance NN},
+xmajorgrids,
+ymajorgrids,
+grid style={mycolor4, opacity=0.15},
+legend style={legend cell align=left, align=left, draw=mycolor4, fill=white}
+]
+\addplot [color=mycolor1, line width=1.5pt]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-1.tsv};
+\addlegendentry{True}
+
+\addplot [color=mycolor2, dashed, line width=1.2pt]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-2.tsv};
+\addlegendentry{MLP}
+
+\addplot [color=mycolor3, dashed, line width=1.2pt]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-3.tsv};
+\addlegendentry{LSTM}
+
+\end{axis}
+
+\begin{axis}[%
+width=18.333in,
+height=2.541in,
+at={(0.833in,3.335in)},
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={mycolor4},
+every x tick label/.append style={font=\color{mycolor4}},
+every x tick/.append style={mycolor4},
+xmin=1.95,
+xmax=100,
+every outer y axis line/.append style={mycolor4},
+every y tick label/.append style={font=\color{mycolor4}},
+every y tick/.append style={mycolor4},
+ymin=-3,
+ymax=4,
+ylabel style={font=\color{mycolor4}},
+ylabel={$w_{y,B}$ [m/s]},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+grid style={mycolor4, opacity=0.15}
+]
+\addplot [color=mycolor1, line width=1.5pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-4.tsv};
+\addplot [color=mycolor2, dashed, line width=1.2pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-5.tsv};
+\addplot [color=mycolor3, dashed, line width=1.2pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-6.tsv};
+\end{axis}
+
+\begin{axis}[%
+width=18.333in,
+height=2.541in,
+at={(0.833in,0.448in)},
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={mycolor4},
+every x tick label/.append style={font=\color{mycolor4}},
+every x tick/.append style={mycolor4},
+xmin=1.95,
+xmax=100,
+xlabel style={font=\color{mycolor4}},
+xlabel={Time [s]},
+every outer y axis line/.append style={mycolor4},
+every y tick label/.append style={font=\color{mycolor4}},
+every y tick/.append style={mycolor4},
+ymin=-2,
+ymax=2,
+ylabel style={font=\color{mycolor4}},
+ylabel={$w_{z,B}$ [m/s]},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+grid style={mycolor4, opacity=0.15}
+]
+\addplot [color=mycolor1, line width=1.5pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-7.tsv};
+\addplot [color=mycolor2, dashed, line width=1.2pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-8.tsv};
+\addplot [color=mycolor3, dashed, line width=1.2pt, forget plot]
+  table[]{MLPvsLSTM_ExampleRun_ExpA-9.tsv};
+\end{axis}
+
+\begin{axis}[%
+width=20in,
+height=9.104in,
+at={(0in,0in)},
+scale only axis,
+every outer x axis line/.append style={mycolor4},
+every x tick label/.append style={font=\color{mycolor4}},
+every x tick/.append style={mycolor4},
+xmin=0,
+xmax=1,
+every outer y axis line/.append style={mycolor4},
+every y tick label/.append style={font=\color{mycolor4}},
+every y tick/.append style={mycolor4},
+ymin=0,
+ymax=1,
+axis line style={draw=none},
+ticks=none,
+axis x line*=bottom,
+axis y line*=left
+]
+\end{axis}
+\end{tikzpicture}%

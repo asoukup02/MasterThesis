@@ -1,0 +1,93 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.70000,0.85000,1.00000}%
+\definecolor{mycolor2}{rgb}{0.12941,0.12941,0.12941}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=15.5in,
+height=7.42in,
+at={(2.6in,1.001in)},
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={mycolor2},
+every x tick label/.append style={font=\color{mycolor2}},
+every x tick/.append style={mycolor2},
+xmin=1,
+xmax=2.285e+04,
+xlabel style={font=\color{mycolor2}},
+xlabel={Iteration},
+every outer y axis line/.append style={mycolor2},
+every y tick label/.append style={font=\color{mycolor2}},
+every y tick/.append style={mycolor2},
+ymode=log,
+ymin=0.01,
+ymax=1.56,
+yminorticks=true,
+ylabel style={font=\color{mycolor2}},
+ylabel={Loss},
+axis background/.style={fill=white},
+title style={font=\bfseries\color{mycolor2}},
+title={Training and validation loss},
+xmajorgrids,
+ymajorgrids,
+yminorgrids,
+grid style={mycolor2, opacity=0.15},
+minor grid style={mycolor2, opacity=0.15},
+legend style={legend cell align=left, align=left, draw=mycolor2, fill=white}
+]
+\addplot [color=mycolor1, forget plot]
+  table[]{MLP_ExpA_Loss-1.tsv};
+\addplot [color=mycolor1, forget plot]
+  table[]{MLP_ExpA_Loss-2.tsv};
+\addplot [color=mycolor1, forget plot]
+  table[]{MLP_ExpA_Loss-3.tsv};
+\addplot [color=mycolor1, forget plot]
+  table[]{MLP_ExpA_Loss-4.tsv};
+\addplot [color=mycolor1, forget plot]
+  table[]{MLP_ExpA_Loss-5.tsv};
+\addplot [color=mycolor1]
+  table[]{MLP_ExpA_Loss-6.tsv};
+\addlegendentry{Training loss (raw)}
+
+\addplot [color=blue, line width=1.5pt, forget plot]
+  table[]{MLP_ExpA_Loss-7.tsv};
+\addplot [color=blue, line width=1.5pt, forget plot]
+  table[]{MLP_ExpA_Loss-8.tsv};
+\addplot [color=blue, line width=1.5pt]
+  table[]{MLP_ExpA_Loss-9.tsv};
+\addlegendentry{Training loss (moving avg, 50)}
+
+\addplot [color=red, line width=1.5pt, mark size=2.0pt, mark=*, mark options={solid, fill=red, red}]
+  table[]{MLP_ExpA_Loss-10.tsv};
+\addlegendentry{Validation loss}
+
+\end{axis}
+
+\begin{axis}[%
+width=20in,
+height=9.104in,
+at={(0in,0in)},
+scale only axis,
+every outer x axis line/.append style={mycolor2},
+every x tick label/.append style={font=\color{mycolor2}},
+every x tick/.append style={mycolor2},
+xmin=0,
+xmax=1,
+every outer y axis line/.append style={mycolor2},
+every y tick label/.append style={font=\color{mycolor2}},
+every y tick/.append style={mycolor2},
+ymin=0,
+ymax=1,
+axis line style={draw=none},
+ticks=none,
+axis x line*=bottom,
+axis y line*=left
+]
+\end{axis}
+\end{tikzpicture}%
