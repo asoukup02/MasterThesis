@@ -1,0 +1,58 @@
+\chapter{Evaluation with Real Flight Data}
+\label{chap:6.0FlightTest}
+
+The simulation results show the potential of the data-driven estimators, but a conclusion on their practical use requires data from a real flight. This chapter therefore evaluates the EKF and the trained networks on data of a real test flight and validates their wind estimates with a dedicated wind sensor.
+
+
+\section{Test Flight Setup}
+\label{sec:6.1FlightSetup}
+
+\subsection{Test Flight and Logged Data}
+\label{sec:6.1.1FlightData}
+
+The test flight consisted of two flights of about 15 minutes each. The weather conditions were favorable, with no to light wind, mainly from easterly directions, and light gusts. During the flights, different maneuvers were carried out, which correspond to the flight scenarios of the simulation: rotation about the airship's own axis, hovering motions, circuits combining curved and straight flight, and sideways flight \todo{state whether forward flight speeds are comparable to the simulated ones}.
+
+The airship is equipped with the sensor suite described in Section~\ref{sec:1.4.1Hardware}. The signals of the flight controller were logged during the flights with the rates given in Table~\ref{tab:flight_signals}.
+
+\begin{table}[htb]
+	\centering
+	\caption{Logged signals of the test flights.}
+	\label{tab:flight_signals}
+	\begin{tabular}{llr}
+		\toprule
+		Signal & Frame & Rate [Hz] \\
+		\midrule
+		Position, velocity, acceleration & Earth-fixed & 125 \\
+		Attitude, angular rate           & Body & 250 \\
+		Angular acceleration             & Body& 100 \\
+		Motor inputs                     & --           & 10 \\
+		Wind sensor                      & Body-fixed   & 10 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Wind Reference Measurement}
+\label{sec:6.1.2WindSensor}
+
+To validate the wind estimates, the airship is equipped with an FT602-D-SM wind sensor \todo{measurement principle, range, accuracy, cite}. The sensor is mounted on a rod about \SI{1.25}{\meter} below the center of gravity and measures the aerodynamic velocity in the horizontal plane at \SI{10}{\hertz}, given as magnitude and direction, with the direction ranging from $0$ to $2\pi$. As the sensor is two-dimensional, only the horizontal wind components can be validated.
+
+
+\section{Offline Evaluation Procedure}
+\label{sec:6.2OfflineProcedure}
+
+The wind estimation algorithms could not yet be implemented on the flight hardware, so they were not executed during the test flights. Consequently, the compensation methods of Chapter~\ref{chap:5.0Evaluation}, which rely on the wind estimate, could not be tested in flight either. However, as all signals required by the estimators were logged, the estimates can be reconstructed offline by replaying the logged data and compared with the measurements of the wind sensor. This allows the estimation accuracy to be assessed on real data, but not the behavior in closed loop or the real-time capability on the flight hardware.
+
+All logged signals are first aligned to a common time grid and then resampled to the rate of the respective estimator, \SI{100}{\hertz} for the EKF and \SI{20}{\hertz} for the networks. The accelerations and angular accelerations are low-pass filtered \todo{cutoff}, as is done on the PX4 hardware, so that the estimators receive the signals as they would be available onboard. The input vector of the networks is assembled as in simulation, i.e., without position and pitot tube measurement, and standardized with the training statistics of the networks from Experiment A. For this purpose, the velocity and the accelerations are transformed from the Earth-fixed to the body-fixed frame using the logged attitude. The motor inputs are available at \SI{10}{\hertz} and are held constant between samples to obtain the rate of \SI{20}{\hertz}.
+
+The wind sensor measures the aerodynamic velocity at the sensor location. The measured magnitude and direction are converted to the components $\bm{v}_{a,s}^{B}$ in the body-fixed frame. The aerodynamic velocity at the center of gravity follows from the angular rate $\bm{\omega}^{B}$ and the sensor position $\bm{r}_s^{B}$, and the reference wind is obtained by subtracting it from the airship's velocity,
+
+\begin{equation}
+	\bm{v}_{a}^{B} = \bm{v}_{a,s}^{B} - \bm{\omega}^{B} \times \bm{r}_s^{B}, \qquad
+	\bm{w}_{\mathrm{ref}}^{B} = \bm{v}^{B} - \bm{v}_{a}^{B},
+	\label{eq:reference_wind}
+\end{equation}
+
+where only the horizontal components are used. \todo{Check signs and the conversion of the sensor direction, which is given counterclockwise as seen from above.}
+
+\paragraph{Comparison.}
+The networks estimate the wind in the body-fixed frame and can be compared directly with $\bm{w}_{\mathrm{ref}}^{B}$. The EKF estimate, given in the Earth-fixed frame, is transformed into the body-fixed frame using the logged attitude. The estimates are evaluated at the time stamps of the wind sensor \todo{interpolation, time synchronization}. The error is quantified by the RMSE of the two horizontal axes, averaged as in the previous chapters, and the initial convergence phase of the estimators is excluded \todo{window}.

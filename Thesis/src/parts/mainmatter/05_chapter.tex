@@ -2024,7 +2024,7 @@ In the UKF, in contrast, the nonlinearities are propagated through $2n+1=35$ sig
 
 Consequently, the UKF requires more evaluations of the nonlinear models and additional matrix operations compared with the EKF. This additional computational effort is reflected in the measured runtime and explains the higher computational cost of the UKF in the present implementation.
 
-
+\todo{this makes the EKF the better choice to be implemented, ... for the real flight application}
 
 
 
@@ -2266,11 +2266,11 @@ Figure~\ref{fig:MeanWindComputation} compares the long-term estimation results f
 
 In this section, the wind estimation performance of the trained networks from Chapter~\ref{chap:4.DataDriven} is evaluated. The evaluation is based on the simulated data set introduced in Section~\ref{sec:4.2DataSet}, which corresponds to the test suite of the EKF and UKF described above. It comprises $N = 486$ simulation runs, obtained by combining six flight scenarios with 27 constant wind vectors and three turbulence levels $W_{20,\mathrm{true}} \in \{0,5,10\}$\SI{}{m/s} of the Dryden turbulence model. 
 
-As described in Chapter~\ref{chap:4.DataDriven}, seven networks of each type (MLP and LSTM) were trained on different data splits to assess the generalization performance. In Experiment A, the networks are tested on 72 simulation runs that were not used during training, drawn at random from each combination of flight scenario and turbulence level. All six flight scenarios are therefore part of the training data, and the experiment assesses how well the networks generalize to unseen wind conditions within known flight scenarios. In Experiment B, one flight scenario is held out completely in each of the six splits B1--B6, and all 81 runs of this scenario form the test set. This experiment assesses how well the networks generalize to flight scenarios that were not part of the training data, and is the more demanding of the two. In the following, the performance of the respective networks is evaluated.
+As described in Chapter~\ref{chap:4.DataDriven}, seven networks of each type (MLP and LSTM) were trained on different data splits to assess the generalization performance. In Experiment A, the networks are tested on 72 simulation runs that were not used during training, drawn at random from each combination of flight scenario and turbulence level. All six flight scenarios are therefore part of the training data, and the experiment assesses how well the networks generalize to unseen combinations of flight scenarios and wind conditions. In Experiment B, one flight scenario is held out completely in each of the six splits B1--B6, and all 81 runs of this scenario form the test set. This experiment assesses how well the networks generalize to flight scenarios that were not part of the training data, and is the more demanding of the two. In the following, the performance of the respective networks is evaluated.
 
 As the networks estimate the wind velocity in body-fixed coordinates, the estimates are compared with the true body-fixed wind of the simulation. Similar to the evaluation of the Kalman filter, the RMSE is calculated separately for each axis and then averaged over the three axes, which yields a single performance metric. The network outputs are transformed back to physical units before the evaluation, so that all errors are given in \SI{}{m/s}.
 
-Figure~\ref{fig:MLPvsLSTM_Ex} shows the wind estimates of the MLP and the LSTM trained on the Experiment A split for one exemplary test run, together with the true wind in body-fixed coordinates.
+Figure~\ref{fig:MLPvsLSTM_Ex} shows the wind estimates of the MLP and the LSTM trained on the Experiment A split for one representative test run, together with the true wind in body-fixed coordinates.
 
 \begin{figure}[htb]
 	\centering
@@ -2382,11 +2382,7 @@ Figure~\ref{fig:MLPvsLSTM_Ex} shows the wind estimates of the MLP and the LSTM t
 	\caption{Comparison of wind estimation of MLP and LSTM for one exemplary test run with the scenario rotate, W20 = 10, wind = -2.5 0 0}
 \end{figure}
 
-
-The results indicate that the trained networks are able to produce a good wind estimation on an unseen test run. The RMSE values for this specific example confirm this: MLP: 0.1082, LSTM: 0.1024, EKF: 0.3591, UKF: 0.3576
-
-To quantify the performance and see how well the trained sets from experiment B performed we consider the following statistic \ref{MLPvsLSTM_all_Ex}
-
+The results indicate that both networks produce a good wind estimate for an unseen test run. For this run, the estimation performance of the MLP and the LSTM is similar, with average RMSE values of \SI{0.1082}{m/s} for the MLP and \SI{0.1024}{m/s} for the LSTM. The LSTM estimate is slightly less oscillatory, which is likely due to the temporal context of its input sequence: the LSTM processes the last \SI{2}{s} of data, whereas the MLP only sees the current time step. As this result is based on a single run, it is not sufficient to draw general conclusions. Therefore, the evaluation is extended to all test runs of the seven data splits, in order to assess whether the networks generalize to unseen test runs of known flight scenarios (Experiment A) and to completely unseen flight scenarios (Experiment B). Figure~\ref{fig:MLPvsLSTM_all_Ex} shows the resulting average RMSE of the MLP and the LSTM over all test runs for each of the seven data splits.
 
 \begin{figure}
 	\centering
@@ -2398,7 +2394,7 @@ To quantify the performance and see how well the trained sets from experiment B 
 			ybar,
 			bar width=8pt,
 			width=\linewidth,
-			height=5cm,
+			height=0.5\linewidth,
 			enlarge x limits=0.12,
 			ymin=0,
 			ymajorgrids=true,
@@ -2459,53 +2455,144 @@ To quantify the performance and see how well the trained sets from experiment B 
 	\caption{Comparison of RMSE for all seven Experiments. The x-axis specifies which scenarios where contained in the test set and thus not used for training.}
 \end{figure}
 
-The results should not be over-interpreted. Although some flight scenarios may have been left out, the training data and test data still are obtained by the same "perfect" simulation. 
+The average RMSE of the MLP stays below \SI{0.6}{m/s} and that of the LSTM below \SI{0.4}{m/s} in all seven data splits. Both networks therefore estimate the wind well, not only for unseen runs of known flight scenarios (Experiment A), but also for flight scenarios that were not part of the training data (Experiment B). 
 
-These results have been expected: Although unseen data, the source is still the same. 
--> Introduce Noise
+The LSTM achieves a lower RMSE than the MLP in every split. The difference is largest for the held-out scenarios rotate, forward slow, and forward fast, in which the temporal information of the input sequence seems to be particularly helpful. 
 
+The lowest error of both networks is obtained for the split in which the hover scenario is held out. This should not be interpreted as a better generalization of the networks when trained without hover, but rather reflects a property of the test data. In the Dryden turbulence model, the turbulence depends on the absolute velocity of the airship and vanishes for $V \approx 0$, so that the wind in hover is almost constant and thus easier to estimate. 
 
+Experiment A achieves the second lowest errors, with both networks far below \SI{0.2}{m/s}. In this experiment, all flight scenarios are covered by the training data, and the networks only have to generalize to unseen combinations of wind conditions and flight scenarios. In contrast, the error is considerably higher in all splits of Experiment B except hover, in which one flight scenario is missing in the training data. This highlights the importance of training data that covers the relevant flight scenarios, and confirms that the generalization to unseen flight scenarios is the more demanding task.
 
-To consider performance for noisy datasets a following test is performed.
+The ability to generalize to unseen wind conditions and flight scenarios is an important property for real flight applications, as it cannot be ensured that the training data covers every situation the airship will encounter during operation. The low errors in Experiment B indicate that the networks do not merely memorize the flight scenarios of the training data, but learn a relation between the vehicle's motion and the acting wind that transfers to new maneuvers. At the same time, the higher errors compared to Experiment A show that this transfer is not perfect, and that a training data set covering the relevant operating conditions remains beneficial. It should be noted that these results are obtained on simulated data, and that the generalization to real flight data, which is subject to additional effects such as sensor noise and unmodeled dynamics, has yet to be demonstrated.
 
-%% PLOT
-
-The results indicate that the NN are able to generalize well.
-
+The following section examines the robustness of the trained networks to noisy inputs and compares their performance with that of the EKF. This comparison focuses on noisy data, as the EKF is designed to estimate the system state from uncertain measurements by accounting for measurement noise and process uncertainty. Evaluating the EKF on noise-free data would therefore not reflect the conditions for which it is designed.
 
 
 
+
+
+\subsection{Robustness to Noisy Inputs}
+\label{sec:5.4Robustness}
+
+So far, the networks have been evaluated using noise-free simulation data. In real flight, however, sensor measurements are affected by noise, while unmodeled dynamics and other effects can introduce further discrepancies between the simulation and the real system. The robustness of the estimators to noisy inputs is therefore important for determining their potential for real-flight application. To investigate this, noise is added to the test data to perturb the simulated measurements, while the trained networks remain unchanged. This experiment examines how well the networks generalize from clean training data to noisy inputs.
+
+Every component $x_{j,t}$ of the input vector $\bm{x}_t$ is perturbed by zero-mean Gaussian noise at different noise levels according to:
+
+\begin{equation}
+	x^{\mathrm{noisy}}_{j,t} = x_{j,t} + \varepsilon_{j,t}, \qquad \varepsilon_{j,t} \sim \mathcal{N}\!\left(0, (\nu \, \sigma_{x,j})^2\right), \qquad j = 1, \dots, 24.
+	\label{eq:noise_model}
+\end{equation}
+
+Here, $\sigma_{x,j}$ denotes the standard deviation of the respective input component in the training set, as defined in \eqref{eq:standardization}, and $\nu \in \{0, 0.01, 0.05, 0.10, 0.20\}$ specifies the noise level. The case $\nu = 0$ corresponds to noise-free inputs and reproduces the results from the previous section. The remaining values correspond to noise levels of 1\%, 5\%, 10\%, and 20\% of the standard deviation, respectively.
+
+For each noise level, the average RMSE across all test runs is computed as before, with the network predictions transformed back to physical units. The robustness analysis focuses on the networks from Experiment A, as they are trained on all flight scenarios and achieve the lowest errors on noise-free data, making them the most relevant candidates for practical use.
+
+Figure~\ref{fig:noise_robustness} compares the resulting RMSEs of the MLP, LSTM, and EKF across the different noise levels. The EKF is evaluated using the same noisy test inputs as the neural networks, but also incorporates position measurements. An important difference between the neural networks and the Kalman filter is their sampling frequency. The neural networks operate at a fixed rate of 20 Hz, while the EKF in this comparison operates at 100 Hz. Nevertheless, the RMSE provides a common basis for comparing their estimation accuracy.
+
+\begin{figure}[htb]
+	\centering
+	\definecolor{barblue}{RGB}{55,138,221}
+	\definecolor{barorange}{RGB}{239,159,39}
+	\definecolor{bargreen}{RGB}{29,158,117}
+	
+	\pgfplotsset{
+		noise bar/.style={
+			ybar,
+			bar width=7pt,
+			width=\linewidth,
+			height=0.5\linewidth,
+			enlarge x limits=0.15,
+			ymin=0,
+			ymajorgrids=true,
+			grid style={black!15},
+			symbolic x coords={0,0.01,0.05,0.1,0.2},
+			xtick=data,
+			every outer x axis line/.append style={black},
+			every x tick label/.append style={font=\color{black}},
+			every x tick/.append style={black},
+			every outer y axis line/.append style={black},
+			every y tick label/.append style={font=\color{black}},
+			every y tick/.append style={black},
+			axis x line*=bottom,
+			axis y line*=left,
+			axis background/.style={fill=white},
+			tick align=outside,
+			legend style={
+				at={(0.02,0.98)},
+				anchor=north west,
+				draw=black!30,
+				fill=white,
+				font=\small,
+			},
+			legend cell align=left,
+		}
+	}
+	
+	\begin{tikzpicture}
+		\begin{axis}[
+			noise bar,
+			xlabel={Noise level},
+			ylabel={RMSE},
+			]
+			% MLP
+			\addplot[fill=barblue, draw=barblue!70!black] coordinates {
+				(0,0.1874)(0.01,0.1929)(0.05,0.2917)(0.1,0.4699)(0.2,0.8042)
+			};
+			% LSTM
+			\addplot[fill=barorange, draw=barorange!70!black] coordinates {
+				(0,0.1585)(0.01,0.1593)(0.05,0.1758)(0.1,0.2181)(0.2,0.3337)
+			};
+			% EKF
+			\addplot[fill=bargreen, draw=bargreen!70!black] coordinates {
+				(0,0.4649)(0.01,0.4561)(0.05,0.4492)(0.1,0.3499)(0.2,0.4476)
+			};
+			\legend{MLP, LSTM, EKF}
+		\end{axis}
+	\end{tikzpicture}
+	\caption{EKF data shows converged data}
+	\label{fig:noise_robustness}
+\end{figure}
+
+At low noise levels, both neural networks substantially outperform the EKF. This is consistent with the networks being trained on noise-free simulation data, allowing them to learn the relationship between the inputs and the wind components under these conditions. The EKF, in contrast, explicitly accounts for measurement and process uncertainty in its estimation.
+
+As the noise level increases, the EKF's RMSE remains nearly constant, indicating that its estimation accuracy is largely unaffected by the added measurement noise over the tested range. In comparison, the performance of both neural networks degrades notably at higher noise levels. This is expected, as the networks were trained on noise-free data and were not explicitly trained to handle noisy inputs.
+
+The LSTM, however, is considerably more robust than the MLP at noise levels of $\nu \geq 0.05$. By exploiting temporal information across consecutive input samples, the LSTM can use patterns over time rather than relying solely on individual measurements. This temporal context may help mitigate the effect of noise, explaining its better performance compared with the MLP.
+
+
+
+
+
+\subsection{Computational Cost}
+\label{sec:5.5ComputationalCost}
+
+Besides the estimation accuracy, the computational cost of the estimators is relevant for the application on the airship's flight-control hardware, where computation time and memory are limited. This subsection therefore compares the cost of the MLP and the LSTM with that of the EKF and, as a reference, the UKF.
+
+The runtime is measured in the same way as in the comparison of the two filters: each estimator is evaluated separately as an isolated implementation with identical input data, an initial simulation is performed to reduce the influence of initialization effects, and the subsequent 100 simulations are used to determine the mean runtime per step. For the networks, one step corresponds to one prediction, i.e., a single forward pass of the MLP or the evaluation of one input sequence of $T = 40$ time steps for the LSTM. The results are given in Table~\ref{tab:runtime_all}.
 
 \begin{table}[htb]
 	\centering
-	\caption{Mean computational runtime per simulation step for the EKF, UKF, MLP and LSTM. The results are obtained from 100 simulations with a simulated duration of $1000\,\mathrm{s}$ and a simulation step size of \SI{0.01}{s}. The normalized runtime is given relative to the EKF.}
-	\label{tab:}
+	\caption{Mean computational runtime per step of the EKF, UKF, MLP, and LSTM. The results are obtained from 100 simulation runs with a simulated duration of \SI{1000}{s}. One step equals \SI{0.01}{s}. The normalized runtime is given relative to the EKF.}
+	\label{tab:runtime_all}
 	\begin{tabular}{lcc}
 		\toprule
-		Filter & Mean runtime per step [ms] & Normalized runtime [-] \\
+		Estimator & Mean runtime per step [ms] & Normalized runtime [-] \\
 		\midrule
-		EKF & 0.153 & 1.00 \\
-		UKF & 0.296 & 1.93 \\
-		MLP & 0.022 & 0.14 \\
-		LSTM & 0.686 & 4.50 \\
+		EKF  & 0.153 & 1.00 \\
+		UKF  & 0.296 & 1.93 \\
+		MLP  & 0.022 & 0.14 \\
+		LSTM & 0.686 & 4.48 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
 
-This section should not serve as a comparison between NNs and KF as this would be flawed in a few ways. Rather both networks are compared for a real flight scenario in Chapter 6.
+The MLP is the cheapest estimator and requires only about one seventh of the runtime of the EKF per step, whereas the LSTM requires about 4.5 times as much as the EKF and about 30 times as much as the MLP. As before, the absolute values are not representative of the flight-control hardware, so the results should be interpreted as a relative comparison.
 
-The quality of the performance is in general heavily coupled to the available data. The risk of overfitting is high. To really get an meaningful indication of the performance, we use real flight data in chapter 5 to compare the performance for a real flight scenario.
-Also this is where we compare the performance to the Kalman filter performance.
+The differences can be explained by the number of operations per step. A prediction of the MLP consists of a single forward pass with four matrix-vector products, which amounts to a number of multiply-accumulate operations of the order of $10^4$. The LSTM, in contrast, evaluates the four gate computations of both layers for each of the $T = 40$ time steps of the input sequence, which results in about $2 \cdot 10^6$ operations per prediction, i.e., roughly 280 times as many as for the MLP. For the EKF, the cost per step is determined by $n + 1 = 18$ evaluations of the nonlinear state-transition function, $n = 17$ of which are used for the numerical Jacobian, and by matrix operations on the $17 \times 17$ covariance matrix. As the cost of the model evaluations depends on the complexity of the airship model, an operation count cannot be compared directly with that of the networks.
 
-In general the results are better compared to the Kalman Filter:
-This has several reasons:
-- Uncertainties considered in kalman filter design
-- potential overfitting of NN as the training data comes from the same test campaign
-- way faster convergence rates of the NN compared to the KF. Smaller errors are usually due to the considered time frame. The NN converges to a value close to the real one fast but almost never hits it as the KF does.
+Regarding the memory requirements, the MLP has 7\,939 and the LSTM 56\,003 trainable parameters. Stored in single precision (\SI{4}{\byte} per value), the weights occupy about \SI{32}{\kilo\byte} for the MLP and about \SI{224}{\kilo\byte} for the LSTM, which is about seven times as much. The LSTM additionally requires a buffer holding the last $T = 40$ input vectors and memory for its hidden and cell states, whereas the EKF only stores its 17-dimensional state vector, the $17 \times 17$ covariance matrix, and the model parameters. The flight controller considered here, a Cube Orange, provides \SI{2}{\mega\byte} of flash memory and \SI{1}{\mega\byte} of RAM. While the MLP is clearly small enough, it is questionable whether the LSTM, which would take up about a fifth of the available RAM if its weights are held there, is acceptable considering the memory already occupied by the other flight-control software.
 
-
-
-
+Overall, both networks generalize to unseen flight scenarios and remain functional on noisy inputs, although the LSTM is clearly more robust than the MLP, which is likely due to the temporal context of its input sequence. In the investigated simulation setting, both networks are competitive with the EKF: they reach lower errors on noise-free data, and the LSTM stays below the EKF error at all tested noise levels, while the MLP falls behind at higher noise levels. The EKF, in turn, offers the advantages of interpretability and a lower memory demand, as it is based on a physical model and only stores its state and covariance. Its computational cost per step lies between that of the MLP and the LSTM. The performance of the networks, however, depends strongly on the quality and volume of the training data, and since the networks are trained and tested on data from the same simulator, they benefit from similar conditions during training, while the EKF is designed to account for uncertainties it has not seen before. The comparison with the EKF therefore has to be interpreted with care. A conclusion on the practical potential of the data-driven estimators requires a test on real flight data, which is carried out in Chapter~\ref{chap:6.0RealTime}.
 
 
 
@@ -2521,6 +2608,8 @@ Since the compensation approaches explicitly account for a portion of the wind-i
 
 To compare the control performance across the different compensation approaches and gain settings, all configurations are evaluated using the same test suite. The six flight scenarios described at the beginning of this section are considered. For each flight scenario, the same set of nine constant wind contributions is applied, while the true turbulence intensity is varied through $W_{20,\mathrm{true}} \in \{0,5,10\}$ \SI{}{m/s}.
 This results in 27 unique wind conditions per flight scenario. Across all seven configurations, this results in a total of $N = 1134$ simulation runs. Using identical flight scenarios and wind conditions for all configurations ensures that differences in control performance can be attributed to the compensation approach and PID gains.
+
+The wind estimate required by the compensation is provided by the UKF in all tests, as these tests were carried out before the comparison of the EKF and UKF was completed. Since all compensation approaches use the identical estimate, the choice of the estimator does not influence their relative comparison.
 
 For the evaluation of the tracking performance, all 12 airship states, consisting of position, velocity, attitude, and angular rate, are considered. In contrast to the wind-estimation evaluation, where the wind components share the same physical unit, these state variables differ both in their units and magnitudes. Their RMSE values can therefore not be directly averaged to obtain a meaningful overall measure of control performance, as states with larger numerical magnitudes would dominate the resulting metric.
 To obtain a single overall performance metric for each controller/gain combination, the RMSE values are processed in four steps.
@@ -3030,4 +3119,3 @@ The comparatively lower Scenario Performance Metric of NDI with Robust gains in 
 Overall, the results show that the choice of compensation method and PID tuning has a significant influence on the tracking performance. Among the investigated configurations, NDI with the Robust gain set provides the most consistent performance across the different flight scenarios, achieving the best or second-best result in all scenarios except Hover. The comparatively weaker performance in Hover is mainly attributed to the increased influence of wind-estimation errors on the NDI compensation and the favorable behavior of higher gains in this flight condition. Overall, NDI with the Robust gain set is therefore identified as the most suitable configuration for achieving consistent tracking performance across the investigated flight conditions.
 
 
-\section{Flight Test}
