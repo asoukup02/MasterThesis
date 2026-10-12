@@ -12,14 +12,14 @@ This chapter describes how the multi-layer perceptron (MLP) and the long short-t
 
 The task of the networks is to estimate the wind acting on the airship at a given time step $t$ from the vehicle's state and sensor information at or up to this time step.
 
-To achieve this, the networks are provided with the same information available to the Kalman Filter from the onboard sensor suite described in Section~\ref{sec:1.4.1Hardware}, with one intentional exception. The position is left out, as the wind does not depend on the location of the airship. The position measurement therefore carries no information about the wind and could only serve to distinguish individual training runs, which promotes overfitting. The input vector is given by
+To achieve this, the networks are provided with the same information available to the Kalman filter from the onboard sensor suite described in Section~\ref{sec:1.4.1Hardware}, with one intentional exception. The position is left out, as the wind does not depend on the location of the airship. The position measurement therefore carries no information about the wind and could only serve to distinguish individual training runs, which promotes overfitting. The input vector is given by
 
 \begin{equation}
-	\bm{x}_t = \begin{bmatrix} \bm{v}_t^T & \bm{\Phi}_t^T & \bm{\omega}_t^T & \bm{a}_t^T & \bm{\dot{\omega}}_t^T & \bm{u}_t^T \end{bmatrix}^T \in \mathbb{R}^{24},
+	\bm{x}_t = \begin{bmatrix} \bm{v}_t^T & \bm{\Theta}_t^T & \bm{\omega}_t^T & \bm{a}_t^T & \bm{\dot{\omega}}_t^T & \bm{u}_t^T \end{bmatrix}^T \in \mathbb{R}^{24},
 	\label{eq:nn_input}
 \end{equation}
 
-comprising velocity $\bm{v}$, attitude $\bm{\Phi}$, and angular rate $\bm{\omega}$, the measured linear accelerations $\bm{a}$ and angular accelerations $\bm{\dot{\omega}}$, and the motor inputs $\bm{u} \in \mathbb{R}^{9}$.
+comprising velocity $\bm{v}$, attitude $\bm{\Theta}$, and angular rate $\bm{\omega}$, the measured linear accelerations $\bm{a}$ and angular accelerations $\bm{\dot{\omega}}$, and the motor inputs $\bm{u} \in \mathbb{R}^{9}$.
 The velocity, angular rate, and accelerations are expressed in body-fixed coordinates. This yields an input vector dimension of $n = 24$.
 
 The airspeed measurement of the pitot tube is not included in the input vector for simplicity. The sensor only delivers valid readings above a cutoff airspeed and outputs zero below it, so the measurement is not continuously available. Feeding such an intermittent signal to the networks would require additional handling, e.g., an availability flag, which is beyond the scope of this work. 
@@ -109,7 +109,7 @@ For readability, the tilde is omitted in the following, and $\bm{x}_t$ and $\bm{
 \subsection{Input Generation}
 \label{sec:4.2.3InputGeneration}
 
-Based on the standardized and downsampled signals, the input-output pairs for the networks are assembled separately for each run. For the MLP, the input is the input vector $\bm{x}_t$ at the current time step, so no temporal information is provided.
+Based on the standardized and downsampled signals, the input-output pairs for the networks are assembled separately for each run. For the MLP, each input consists solely of the input vector $\bm{x}_t$ at the current time step, without incorporating information from previous time steps.
 
 For the LSTM, the input consists of a sequence of the most recent $T = 40$ input vectors,
 
@@ -194,10 +194,10 @@ The LSTM has considerably more trainable parameters than the MLP. Additionally, 
 
 Both networks are implemented and trained using the Deep Learning Toolbox of MATLAB~\cite{MathworksDeepLearning}. They are trained as regression models on the standardized input and target vectors from Section~\ref{sec:4.2.2Preprocessing}, using the training set of the respective data split. Training is performed separately for each of the seven splits and both network types, which results in 14 trained models.
 
-The networks are trained by minimizing the regression loss between the predicted and true standardized wind vectors. MATLAB uses a half-mean-squared-error loss for the MLP. For the LSTM's sequence-to-one regression task, the loss is one-half of the sum of squared errors across the three output components, without normalization by the number of responses. Both loss definitions are proportional to the conventional mean squared error in Eq.~\eqref{eq:mse_loss} and therefore have the same minimizer. The gradients are computed by backpropagation and, for the LSTM, backpropagation through time over the $T=40$ time steps of each sequence.
+The networks are trained by minimizing the regression loss between the predicted and true standardized wind vectors. MATLAB uses a half-mean-squared-error loss for the MLP. For the LSTM's sequence-to-one regression task, the loss is one-half of the sum of squared errors across the three output components, without normalization by the number of components. Both loss definitions are proportional to the conventional mean squared error in Eq.~\eqref{eq:mse_loss} and therefore have the same minimizer. The gradients are computed by backpropagation and, for the LSTM, backpropagation through time over the $T=40$ time steps of each sequence.
 
 The parameters are updated with the Adam optimizer \cite{Kingma2014Adam} using the default decay rates of the implementation. The learning rate starts at $\eta_0 = 10^{-3}$ and is halved every 20 epochs. The training data is divided into mini-batches and shuffled before every epoch. The mini-batch size is 1024 for the MLP and 128 for the LSTM to account for the greater computational and memory requirements of processing sequences of 40 time steps.
-Besides the L2 regularization of the implementation with its default factor of $10^{-4}$, no further regularization such as dropout is used. The weights are initialized with the default initializers of the implementation, i.e., the Glorot initialization for the input weights, orthogonal initialization for the recurrent weights of the LSTM, and zeros for the biases, except for the forget gate bias, which is initialized with one.
+Besides the L2 regularization of the implementation with its default factor of $10^{-4}$, no further regularization is used. The weights are initialized with the default initializers of the implementation, i.e., the Glorot initialization for the input weights, orthogonal initialization for the recurrent weights of the LSTM, and zeros for the biases, except for the forget gate bias, which is initialized with one.
 
 The loss on the validation set is evaluated every 50 iterations. Training stops after a maximum of 100 epochs, or earlier if the validation loss has not fallen below its smallest value so far in 30 consecutive evaluations. The network of the final iteration is used for the evaluation. Table~\ref{tab:training_settings} summarizes the settings. Figure~\ref{fig:MLP_ExpA_Loss} shows the training and validation loss for the MLP as an example.
 

@@ -1,23 +1,27 @@
+\nomenclatureentry{ALTA@[{LTA}]\begingroup Lighter-than-air\nomeqref {1.0}|nompageref}{1}
+\nomenclatureentry{AUAV@[{UAV}]\begingroup Unmanned aerial vehicle\nomeqref {1.0}|nompageref}{1}
+\nomenclatureentry{APID@[{PID}]\begingroup Proportional-integral-derivative\nomeqref {1.0}|nompageref}{4}
 \nomenclatureentry{D$_B(\cdot)$@[{$_B(\cdot)$}]\begingroup Quantity in body-fixed coordinate system\nomeqref {2.0}|nompageref}{5}
-\nomenclatureentry{D$_E(\cdot)$@[{$_E(\cdot)$}]\begingroup Quantity in Earth coordinate system\nomeqref {2.0}|nompageref}{5}
-\nomenclatureentry{ACS@[{CS}]\begingroup Coordinate System\nomeqref {2.0}|nompageref}{5}
-\nomenclatureentry{ANED@[{NED}]\begingroup North-East-Down convention\nomeqref {2.0}|nompageref}{5}
-\nomenclatureentry{ACOG@[{COG}]\begingroup Center of Gravity\nomeqref {2.0}|nompageref}{5}
+\nomenclatureentry{D$_E(\cdot)$@[{$_E(\cdot)$}]\begingroup Quantity in earth-fixed coordinate system\nomeqref {2.0}|nompageref}{5}
+\nomenclatureentry{ACS@[{CS}]\begingroup Coordinate system\nomeqref {2.0}|nompageref}{5}
+\nomenclatureentry{ACOG@[{COG}]\begingroup Center of gravity\nomeqref {2.0}|nompageref}{5}
 \nomenclatureentry{ANED@[{NED}]\begingroup North-East-Down\nomeqref {2.0}|nompageref}{5}
-\nomenclatureentry{ACOV@[{COV}]\begingroup Center of Volume\nomeqref {2.2}|nompageref}{6}
-\nomenclatureentry{B$\bm{I}$@[{$\bm{I}$}]\begingroup Inertia Matrix with respect to the COG\nomeqref {2.2}|nompageref}{6}
+\nomenclatureentry{ACOV@[{COV}]\begingroup Center of volume\nomeqref {2.2}|nompageref}{6}
+\nomenclatureentry{B$\bm{I}$@[{$\bm{I}$}]\begingroup Inertia matrix with respect to the COG\nomeqref {2.2}|nompageref}{6}
 \nomenclatureentry{C$\omega$@[{$\omega$}]\begingroup Angular velocity (\si{\radian\per\second})\nomeqref {2.2}|nompageref}{6}
 \nomenclatureentry{D$(\cdot)_B$@[{$(\cdot)_B$}]\begingroup Quantity describing the body\nomeqref {2.2}|nompageref}{6}
-\nomenclatureentry{AKF@[{KF}]\begingroup Kalman Filter\nomeqref {2.49}|nompageref}{16}
-\nomenclatureentry{AMMSE@[{MMSE}]\begingroup Minimum Mean Square Error\nomeqref {2.49}|nompageref}{16}
-\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman Filter\nomeqref {2.72}|nompageref}{20}
-\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman Filter\nomeqref {2.86}|nompageref}{22}
-\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance Feedforward\nomeqref {2.102}|nompageref}{25}
-\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear Dynamic Inversion\nomeqref {2.102}|nompageref}{25}
-\nomenclatureentry{ALTI@[{LTI}]\begingroup linear time-invariant\nomeqref {2.102}|nompageref}{25}
-\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial Neural Network\nomeqref {2.113}|nompageref}{27}
-\nomenclatureentry{AMLP@[{MLP}]\begingroup Multi-Layer Perceptron\nomeqref {2.117}|nompageref}{29}
-\nomenclatureentry{ALSTM@[{LSTM}]\begingroup Long Short-Term Memory\nomeqref {2.118}|nompageref}{30}
-\nomenclatureentry{ARNN@[{RNN}]\begingroup Recurrent Neural Network\nomeqref {2.118}|nompageref}{30}
-\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root Mean Square Error\nomeqref {5.0}|nompageref}{53}
-\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario Performance Metric\nomeqref {5.4}|nompageref}{71}
+\nomenclatureentry{AKF@[{KF}]\begingroup Kalman filter\nomeqref {2.49}|nompageref}{16}
+\nomenclatureentry{AMMSE@[{MMSE}]\begingroup Minimum mean square error\nomeqref {2.49}|nompageref}{16}
+\nomenclatureentry{APSD@[{PSD}]\begingroup Positive semidefinite\nomeqref {2.49}|nompageref}{16}
+\nomenclatureentry{AEKF@[{EKF}]\begingroup Extended Kalman filter\nomeqref {2.72}|nompageref}{21}
+\nomenclatureentry{AUKF@[{UKF}]\begingroup Unscented Kalman filter\nomeqref {2.86}|nompageref}{23}
+\nomenclatureentry{ADFF@[{DFF}]\begingroup Disturbance feedforward\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ANDI@[{NDI}]\begingroup Nonlinear dynamic inversion\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{ALTI@[{LTI}]\begingroup Linear time-invariant\nomeqref {2.102}|nompageref}{26}
+\nomenclatureentry{AANN@[{ANN}]\begingroup Artificial neural network\nomeqref {2.113}|nompageref}{28}
+\nomenclatureentry{AReLU@[{ReLU}]\begingroup Rectified linear unit\nomeqref {2.113}|nompageref}{28}
+\nomenclatureentry{AMLP@[{MLP}]\begingroup Multi-layer perceptron\nomeqref {2.117}|nompageref}{29}
+\nomenclatureentry{ALSTM@[{LSTM}]\begingroup Long short-term memory\nomeqref {2.118}|nompageref}{30}
+\nomenclatureentry{ARNN@[{RNN}]\begingroup Recurrent neural network\nomeqref {2.118}|nompageref}{30}
+\nomenclatureentry{ARMSE@[{RMSE}]\begingroup Root mean square error\nomeqref {5.0}|nompageref}{53}
+\nomenclatureentry{ASPM@[{SPM}]\begingroup Scenario performance metric\nomeqref {5.5}|nompageref}{72}

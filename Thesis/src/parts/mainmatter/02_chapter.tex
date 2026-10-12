@@ -11,15 +11,14 @@ Finally, the data-driven methods considered in this work are introduced.
 
 % Nomenclature
 \nomenclature[D]{$_B(\cdot)$}{Quantity in body-fixed coordinate system}
-\nomenclature[D]{$_E(\cdot)$}{Quantity in Earth coordinate system}
-\nomenclature[A]{CS}{Coordinate System}
-\nomenclature[A]{NED}{North-East-Down convention}
-\nomenclature[A]{COG}{Center of Gravity}
+\nomenclature[D]{$_E(\cdot)$}{Quantity in earth-fixed coordinate system}
+\nomenclature[A]{CS}{Coordinate system}
+\nomenclature[A]{COG}{Center of gravity}
 \nomenclature[A]{NED}{North-East-Down}
 
 %
 
-To describe the motion and dynamics of the airship, as well as the wind velocity acting on the vehicle, two coordinate systems (CS) are considered throughout this work: the body-fixed coordinate system and the earth-fixed coordinate system. Their definitions and the corresponding coordinate transformations are introduced in the following \cite{Fichter2009Flugmechanik}.
+To describe the motion and dynamics of the airship, as well as the wind velocity acting on the vehicle, two coordinate systems (CS) are considered throughout this work: the body-fixed coordinate system and the earth-fixed coordinate system. Their definitions and the associated coordinate transformations follow \cite{Fichter2009Flugmechanik} and are briefly reviewed in the following.
 
 
 
@@ -41,7 +40,28 @@ The body-fixed coordinate system is used to describe quantities directly related
 The earth-fixed coordinate system $E$ is introduced as an inertial reference frame for describing the position of the airship and the wind velocity, and serves as the reference frame relative to which the airship's orientation is defined.
 For simplicity, a flat-earth assumption is made, which neglects the curvature and rotation of the Earth. This assumption is justified by the relatively short flight distances considered in this work.
 
-The origin of the earth-fixed coordinate system is chosen as an arbitrary point on the Earth's surface. The axes are aligned according to the North-East-Down (NED) convention, where the north and east axes span the horizontal plane and the down axis points vertically downward. Since the earth-fixed coordinate system is assumed to be inertial, it is considered non-accelerating and non-rotating. A quantity expressed in the earth-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_E(\cdot)$.
+The origin of the earth-fixed coordinate system is chosen as an arbitrary point on the Earth's surface. The axes are aligned according to the North-East-Down (NED) convention, where the north and east axes span the horizontal plane and the down axis points vertically downward. Under the flat-Earth assumption, the earth-fixed coordinate system is considered an inertial reference frame, neglecting translational acceleration and rotation. A quantity expressed in the earth-fixed coordinate system is indicated by a preceding frame identifier, denoted as ${}_E(\cdot)$.
+
+Figure~\ref{fig:airship_body_frame} illustrates the body-fixed and earth-fixed coordinate systems and their orientations relative to the airship.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{overpic}[width=\linewidth]{airship_exp.png}
+		\put(16, 41){$g$}
+		\put(35,20){$B$}
+		\put(27,21){$x_B$}
+		\put(31,26){$y_B$}
+		\put(34,15.5){$z_B$}
+		\put(89,9){$E$}
+		\put(80,10){$x_E$}
+		\put(97.5,17){$y_E$}
+		\put(88,2){$z_E$}
+		\put(40, 27){$\bm{r}_\mathrm{COV}$}
+		\put(60, 15.5){$\bm{r}$}
+	\end{overpic}
+	\caption{Airship with body-fixed coordinate system $B$ and earth-fixed coordinate system $E$. The orange dot marks the Center of Gravity and the blue dot marks the Center of Volume (COV), connected by the position vector $\bm{r}_{COV}$.}
+	\label{fig:airship_body_frame}
+\end{figure}
 
 The transformation from the earth-fixed coordinate system to the body-fixed coordinate system is described by the rotation matrix \cite{Fossen2021Handbook}
 
@@ -80,26 +100,7 @@ The inverse transformation is given by the transpose of the rotation matrix
 	\left( \bm{R}_{BE} \right)^T,
 \end{equation}
 
-and describes the transformation from body-fixed CS to earth-fixed CS.
-
-\begin{figure}[htbp]
-	\centering
-	\begin{overpic}[width=\linewidth]{airship_exp.png}
-		\put(16, 41){$g$}
-		\put(35,20){$B$}
-		\put(27,21){$x_B$}
-		\put(31,26){$y_B$}
-		\put(34,15.5){$z_B$}
-		\put(89,9){$E$}
-		\put(80,10){$x_E$}
-		\put(97.5,17){$y_E$}
-		\put(88,2){$z_E$}
-		\put(40, 27){$\bm{r}_\mathrm{COV}$}
-		\put(60, 15.5){$\bm{r}$}
-	\end{overpic}
-	\caption{Airship with body-fixed coordinate system $B$ and earth-fixed coordinate system $E$. The orange dot marks the Center of Gravity and the blue dot marks the Center of Volume (COV), connected by the position vector $\bm{r}_{COV}$.}
-	\label{fig:airship_body_frame}
-\end{figure}
+and describes the transformation from body-fixed CS to earth-fixed CS. 
 
 
 
@@ -108,8 +109,8 @@ and describes the transformation from body-fixed CS to earth-fixed CS.
 \section{Airship Model}
 \label{sec:2.2AirshipModel}
 % Nomenclature
-\nomenclature[A]{COV}{Center of Volume}
-\nomenclature[B]{$\bm{I}$}{Inertia Matrix with respect to the COG}
+\nomenclature[A]{COV}{Center of volume}
+\nomenclature[B]{$\bm{I}$}{Inertia matrix with respect to the COG}
 \nomenclature[C]{$\omega$}{Angular velocity (\si{\radian\per\second})}
 \nomenclature[D]{$(\cdot)_B$}{Quantity describing the body}
 %
@@ -143,7 +144,7 @@ To relate the body acceleration $\bm{a}_B$ to the body velocity $\bm{v}_B \in \m
 	\label{eq:TransportTheorem}
 \end{equation} 
 
-where $\bm{a}_{\mathrm{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the Earth CS. As the Earth CS is inertial (non-rotating) this is equal to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
+where $\bm{a}_{\mathrm{cor}} \in \mathbb{R}^3$ denotes the Coriolis acceleration as a result of the rotating body-fixed CS and $\bm{\omega}_{EB} \in \mathbb{R}^3$ describes the rotational velocity of the body-fixed CS against the earth-fixed CS. As the earth-fixed CS is inertial (non-rotating) this is equal to the angular velocity of the airship along its three axes, $\bm{\omega}_{B} \in \mathbb{R}^3$.
 
 Inserting Eq.~\eqref{eq:TransportTheorem} in Eq.~\eqref{eq:Impulssatz} and defining the Coriolis force as
 
@@ -197,7 +198,7 @@ Defining the gyroscopic moment as
 	\label{eq:GyroscopicMoment}
 \end{equation}
 
-and rearranging Eq.~\eqref{eq:Drallsatz} yields the rotational dynamics of the airship in body-fixed coordinates:
+and rearranging Eq.~\eqref{eq:AngularTransportTheorem} yields the rotational dynamics of the airship in body-fixed coordinates:
 
 \begin{equation}
 	\bm{I}_B \, \dot{\bm{\omega}}_B
@@ -205,7 +206,6 @@ and rearranging Eq.~\eqref{eq:Drallsatz} yields the rotational dynamics of the a
 	\bm{M}_\mathrm{ext} - \bm{M}_\mathrm{gyro}.
 	\label{eq:RotationalDynamics}
 \end{equation}
-
 
 The translational dynamics~\eqref{eq:TranslationalDynamics} and the rotational dynamics~\eqref{eq:RotationalDynamics} can be combined into one equation obtaining the Newton Euler Equations for the airship:
 
@@ -301,7 +301,7 @@ The gravitational force computes to
 	\end{bmatrix},
 \end{equation}
 
-where ${}_E\bm{g}$ represents the constant gravity vector in the inertial earth reference frame following the NED convention and $\bm{R}_{BE}$ denotes the transformation matrix from earth CS to body CS.
+where ${}_E\bm{g}$ represents the constant gravity vector in the inertial earth reference frame following the NED convention and $\bm{R}_{BE}$ denotes the transformation matrix from earth-fixed CS to body-fixed CS.
 
 As the gravitational force acts at the center of gravity, no gravitational moment about the COG is induced, thus
 
@@ -319,7 +319,7 @@ The buoyancy depends on the density of the surrounding air $\rho_{\mathrm{air}}$
 	\bm{F}_\mathrm{buoy}^\mathrm{\, COV} = -V \bm{g} (\rho_{\mathrm{air}} - \rho_{\mathrm{gas}}).
 \end{equation}
 
-In case of the airship \emph{Squid}, the volume is chosen such that $\bm{F}_\mathrm{grav} + \bm{F}_\mathrm{buoy} > \bm{0}$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
+In case of the airship Squid, the volume is chosen such that $m > V(\rho_{\mathrm{air}} - \rho_{\mathrm{gas}})$, resulting in a downward-directed net force that prevents the airship from ascending without external input.
 To express the buoyancy contribution with respect to the center of gravity, the moment induced by the offset between the COV and COG is considered:
 
 \begin{equation}
@@ -368,7 +368,7 @@ As described in \cite{Li2007AirshipDynamics}, the aerodynamic forces and moments
 	\bm{\mathcal{F}}_\mathrm{drag} + \bm{\mathcal{F}}_\mathrm{am} + \bm{\mathcal{F}}_\mathrm{visc} + \bm{\mathcal{F}}_\mathrm{fins}.
 \end{equation}
 
-A detailed derivation of the individual contributions is omitted here; instead, the resulting expressions are presented for completeness. An extensive derivation of the aerodynamic forces and moments can be found in \cite{Li2007AirshipDynamics}.
+Rather than reproducing the full derivation, this section presents the mathematical expressions for the individual aerodynamic force and moment contributions in detail. The underlying derivations are provided in \cite{Li2007AirshipDynamics}.
 The aerodynamic forces act at the center of volume. Therefore, the offset between the COV and the COG results in an induced moment, which is considered in the aerodynamic moment contribution.
 
 
@@ -442,8 +442,8 @@ The associated added-mass forces and moments arise from the inertia of this acce
 		\\
 		\bm{v}_A \times \left( \bm{M}_{11} \bm{v}_A + \bm{M}_{12} \bm{\omega}_B \right) 
 		+ 
-		\bm{\omega}_B \times \left( \bm{M}_{21} \bm{v}_A + \bm{M}_{22} \bm{\omega}_B \right).
-	\end{bmatrix}
+		\bm{\omega}_B \times \left( \bm{M}_{21} \bm{v}_A + \bm{M}_{22} \bm{\omega}_B \right)
+	\end{bmatrix}.
 \end{equation}
 
 For steady translation $\left( \bm{\omega}_B = \bm{0} \right)$, the coupling term reduces to the classical \emph{Munk moment}, $-\bm{v}_A~\times~\left( \bm{M}_{11} \bm{v}_A \right)$, which is a destabilizing moment characteristic of elongated bodies first described in \cite{Munk1924Aerodynamic}.
@@ -477,13 +477,13 @@ In contrast to the added-mass forces, which are associated with the acceleration
 The magnitude of the viscous force and moment acting normal to the hull centerline are given by
 
 \begin{equation}
-	F_\mathrm{N, visc}^\mathrm{\, COV}
+	F_\mathrm{visc, N}^\mathrm{\, COV}
 	=
 	q_0 \left( -C_\mathrm{F, hif} \sin2\gamma + C_\mathrm{F, hvf} \sin^2\gamma \right),
 \end{equation} 
 
 \begin{equation}
-	M_\mathrm{N, visc}^\mathrm{\, COV}
+	M_\mathrm{visc, N}^\mathrm{\, COV}
 	=
 	q_0 \left( -C_\mathrm{M, hif} \sin2\gamma + C_\mathrm{M, hvf} \sin^2\gamma \right),
 \end{equation} 
@@ -510,11 +510,11 @@ The viscous force and moment are then decomposed into their body-axis components
 \begin{equation}
 	F_{\mathrm{visc}, y}^\mathrm{\, COV}
 	=
-	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
+	-F_\mathrm{visc, N}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
 	\qquad
 	F_{\mathrm{visc}, z} ^\mathrm{\, COV}
 	= 
-	-F_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}},
+	-F_\mathrm{visc, N}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}},
 \end{equation}
 
 and the corresponding body-axis moment components are
@@ -522,11 +522,11 @@ and the corresponding body-axis moment components are
 \begin{equation}
 	M_{\mathrm{visc}, y}^\mathrm{\, COV}
 	=
-	M_\mathrm{N, visc}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
+	M_\mathrm{visc, N}^\mathrm{\, COV} \frac{v_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}, 
 	\qquad
 	M_{\mathrm{visc}, z} ^\mathrm{\, COV}
 	= 
-	-M_\mathrm{N, visc}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}.
+	-M_\mathrm{visc, N}^\mathrm{\, COV} \frac{w_{A, 0}}{\sqrt{v_{A, 0}^2 + w_{A, 0}^2}}.
 \end{equation}
 
 Again, we have to transform the force and moment to the COG:
@@ -584,7 +584,7 @@ and is saturated at the stall angle $\alpha_\text{stall}$.
 The resulting normal force on each fin computes to
 
 \begin{equation}
-	F_{N, \mathrm{fin}, i} 
+	F_{\mathrm{fin}, N, i} 
 	= 
 	-q_{0, \mathrm{fin}, i} \, C_\mathrm{F, fnf}\, \alpha_{\mathrm{fin}, i},
 \end{equation}
@@ -603,7 +603,7 @@ The total fin force and moment about the COV are obtained by summing the individ
 	\sum_{i=1}^{4} \bm{r}_{\mathrm{fin}, i} \times \bm{F}_{\mathrm{fin}, i},
 \end{equation}
 
-where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{N, \mathrm{fin}, i}$ into its body-fixed components according to the orientation of the respective fin.
+where $\bm{F}_{\mathrm{fin}, i}$ denotes the fin force vector obtained by resolving the fin normal force $F_{\mathrm{fin}, N, i}$ into its body-fixed components according to the orientation of the respective fin.
 
 As with the previous contributions, the resulting force and moment are transformed to the COG to obtain the generalized fin forces:
 
@@ -652,6 +652,7 @@ The resulting motor thrust is therefore given by
 	\end{cases}
 \end{equation}
 
+The stern propeller exhibits different thrust characteristics in forward and reverse operation. To account for this asymmetry, separate parameter sets $(\alpha_{\mathrm{stern}}, k_{\mathrm{stern}})$ are used for positive and negative commands $u_9$.
 The individual motor thrusts are then combined into the resulting
 generalized force vector by considering the orientation and position of each
 motor. This transformation is described by the motor effectiveness matrix
@@ -700,8 +701,8 @@ To ensure that the simulation results are representative of real flight conditio
 \end{equation}
 
 Stochastic turbulence models are widely used in aerospace applications because they reproduce the statistical properties of atmospheric turbulence without requiring an explicit description of the underlying turbulent wind field. A simple stochastic model is the random walk, in which white noise is integrated to generate a randomly varying signal.
-Among the most commonly used models are the Dryden and the von Kármán turbulence models. Although the von Kármán model generally provides a more accurate representation of the atmospheric turbulence spectrum, it describes turbulence using non-rational functions and therefore cannot be represented exactly by a finite-dimensional state-space model. In contrast, the Dryden turbulence model approximates atmospheric turbulence by passing white noise through linear shaping filters, resulting in rational transfer functions that are realizable in state-space form \cite{Hoblit1988Gust, MILHDBK1797}. 
-
+However, to reproduce the characteristic properties of atmospheric turbulence, more sophisticated models are required.
+Two commonly used models in aerospace applications are the Dryden and von Kármán turbulence models. While the von Kármán model generally provides a more accurate representation of the atmospheric turbulence spectrum, it describes turbulence using non-rational functions and therefore cannot be represented exactly by a finite-dimensional state-space model. In contrast, the Dryden turbulence model approximates atmospheric turbulence by passing white noise through linear shaping filters, resulting in rational transfer functions that are realizable in state-space form \cite{Hoblit1988Gust, MILHDBK1797}. 
 
 Since an exact finite-dimensional state-space representation is required for integration into the Kalman filter framework, and the Dryden model still describes atmospheric turbulence sufficiently well for this purpose, it is adopted throughout this work.
 Figure~\ref{fig:DrydenvsKarmanvsRW} compares wind turbulences generated by a random walk model, the Dryden turbulence model and the von Kármán turbulence model. While the random walk exhibits an unrealistic long-term drift, the Dryden model produces bounded, correlated wind disturbances similar to the von Kármán model.
@@ -935,7 +936,7 @@ The corresponding turbulence intensities are computed as
 	\frac{\sigma_w}{\left(0.177 + 0.0027\,h\right)^{0.4}},
 \end{align}
 
-where $W_{20}$ denotes the wind speed at an altitude of \SI{6}{m} (\SI{20}{ft}). Consequently, the characteristics of the generated turbulence are determined by only two parameters: the flight altitude $h$ and the reference wind speed $W_{20}$. 
+where $W_{20}$ denotes the reference wind speed at an altitude of \SI{6}{m} (\SI{20}{ft}). Consequently, the characteristics of the generated turbulence are determined by only two parameters: the flight altitude $h$ and the reference wind speed $W_{20}$. 
 
 Since the turbulence intensities $\sigma$ scale linearly with $W_{20}$, this parameter directly determines the magnitude of the generated turbulence. Therefore, an increase of $W_{20}$ results in a proportional increase in the generated turbulence intensity. Conversely, for $W_{20}=0$, the turbulence intensities become zero, and the Dryden model produces no turbulence contribution.
 
@@ -945,8 +946,9 @@ Since the turbulence intensities $\sigma$ scale linearly with $W_{20}$, this par
 
 \section{Kalman Filter}
 \label{sec:2.4KalmanFilter}
-\nomenclature[A]{KF}{Kalman Filter}
-\nomenclature[A]{MMSE}{Minimum Mean Square Error}
+\nomenclature[A]{KF}{Kalman filter}
+\nomenclature[A]{MMSE}{Minimum mean square error}
+\nomenclature[A]{PSD}{Positive semidefinite}
 
 The Kalman filter (KF), introduced by Kalman in 1960 \cite{Kalman1960KF}, is one of the most widely used algorithms for state estimation in dynamic systems \cite{Maybeck1979KF, Särkkä2013KF}. Its objective is to estimate the state of a system from noisy or incomplete sensor measurements by recursively combining an uncertain mathematical model of the system with incoming measurements. At each time step, the filter first predicts the current state based on the system dynamics and then refines this prediction using the latest measurement. The prediction and measurement are weighted according to their respective uncertainties, allowing the filter to balance the information provided by the system model and the sensor measurements.
 
@@ -1053,7 +1055,7 @@ Because the initial state $\bm{x}_0$ is Gaussian, the process and measurement no
 Here the superscript $(\cdot)^-$ denotes \emph{a priori} quantities, computed before incorporating the measurement at time step $k$, while quantities without superscript denote \emph{a posteriori} quantities, computed after incorporating the measurement. In both cases, the state estimate is given by the conditional mean of the state, whereas the associated covariance quantifies the remaining uncertainty of that estimate.
 For notational simplicity, the explicit conditioning on the available measurements is omitted in the remainder of this section.
 
-Starting from the initial estimate $\hat{\bm{x}}_0$, the Kalman filter recursively computes the state estimate at each time step $k$ by alternating between two steps: a prediction step and an update step. In the prediction step, the previous \emph{a posteriori} state estimate $\hat{\bm{x}}_{k-1}$ and the system model are used to propagate the estimate and its associated uncertainty forward in time, yielding the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^-$.  Additionally, the predicted measurement corresponding to $\hat{\bm{x}}_k^-$ is calculated.
+Starting from the initial estimate $\hat{\bm{x}}_0$, the Kalman filter recursively computes the state estimate at each time step $k$ by alternating between two steps: a prediction step and an update step. In the prediction step, the previous \emph{a posteriori} state estimate $\hat{\bm{x}}_{k-1}$ and the system model are used to propagate the estimate and its associated uncertainty forward in time, yielding the \emph{a priori} estimate $\hat{\bm{x}}_k^-$ and covariance $\bm{P}_k^-$.  Additionally, the predicted measurement, $\hat{\bm{y}}_k^-$, corresponding to $\hat{\bm{x}}_k^-$ is calculated.
 
 In the subsequent update step, the latest measurement is incorporated to correct the \emph{a priori} estimate $\hat{\bm{x}}_k^-$. The correction is based on the so-called innovation, i.e., the difference between the actual and predicted measurement, and is weighted according to the relative uncertainties of the prediction and the measurement. The resulting \emph{a posteriori} estimate $\hat{\bm{x}}_k$ incorporates all available information up to time step $k$.
 The corresponding equations are introduced in the following \cite{Särkkä2013KF}.
@@ -1133,7 +1135,7 @@ Substituting Eq.~\eqref{eq:error_prop} into the covariance definition \eqref{eq:
 	\label{eq:cov_prop_exp}
 \end{align}
 
-The cross term vanishes because the process noise $\bm{q}_{k-1}$ is assumed to be uncorrelated with the state estimation error $\bm{x}_{k-1} - \hat{\bm{x}}_{k-1}$. 
+The cross term vanishes because the process noise $\bm{q}_{k-1}$ is assumed to be uncorrelated with the state estimation error ($\bm{x}_{k-1} - \hat{\bm{x}}_{k-1}$). 
 Note that $\bm{P}_k^-$ in Eq.~\eqref{eq:cov_prop_exp} is guaranteed to be positive semidefinite: $\bm{A}_{k-1}\bm{P}_{k-1}\bm{A}_{k-1}^T$ is PSD as a congruence transformation of the PSD matrix $\bm{P}_{k-1}$, and $\bm{Q}_{k-1}$ is PSD by definition, so their sum is PSD.
 Equations~\eqref{eq:mean_prop} and \eqref{eq:cov_prop_exp} together describe how the \emph{a priori} mean and covariance of the state evolve under the linear system model.
 Accordingly, the predicted output computes to
@@ -1177,7 +1179,7 @@ The Kalman gain $\bm{K}_k \in \mathbb{R}^{n \times m}$ is chosen such that the \
 	\label{eq:kalman_gain}
 \end{equation}
 
-where $\bm{S}_k \in \mathbb{R}^{m \times m}$ denotes the innovation covariance, which quantifies the uncertainty associated with the innovation. Assuming that the measurement noise $\bm{r}_k$ is uncorrelated with the \emph{a priori} estimation error $\bm{x}_k - \hat{\bm{x}}_k^-$, the innovation covariance can be computed using Eqs.~\eqref{eq:discrete_system_output} and \eqref{eq:predicted_output} as
+where $\bm{S}_k \in \mathbb{R}^{m \times m}$ denotes the innovation covariance, which quantifies the uncertainty associated with the innovation. Assuming that the measurement noise $\bm{r}_k$ is uncorrelated with the \emph{a priori} estimation error ($\bm{x}_k - \hat{\bm{x}}_k^-$), the innovation covariance can be computed using Eqs.~\eqref{eq:discrete_system_output} and \eqref{eq:predicted_output} as
 
 \begin{equation}
 	\bm{S}_k 
@@ -1254,9 +1256,9 @@ This predictor-corrector structure is common to many state estimation methods, i
 %For no model uncertainty Q = 0 -> the next step predicted state equals the step before
 %For no measurement uncertainty R = 0 -> the next estimated state is equal to the measurement.
 
-The presented equations describe the Kalman filter formulation for linear systems. In many real-world applications, however, the system dynamics and measurement models are inherently nonlinear. This is also the case for the airship model considered in this work, whose nonlinear equations of motion require a nonlinear state estimation approach.
+The presented equations describe the Kalman filter formulation for linear systems. In many real-world applications, however, the system dynamics and measurement models are inherently nonlinear. This also applies to the airship model considered in this work, whose nonlinear equations of motion require a nonlinear state estimation approach.
 
-Several methods have been proposed to extend the Kalman filter framework to nonlinear systems, including the Extended Kalman Filter (EKF) and the Unscented Kalman Filter (UKF) \cite{Maybeck1979KF,Simon2006KF,Julier1997UKF}. 
+Several methods have been proposed to extend the Kalman filter framework to nonlinear systems, including the extended Kalman filter (EKF) and the unscented Kalman filter (UKF) \cite{Maybeck1979KF,Simon2006KF,Julier1997UKF}. 
 Both methods retain the recursive prediction-update structure of the classical Kalman filter while employing different strategies to handle nonlinearities. These two approaches are introduced in the following.
 
 
@@ -1265,7 +1267,7 @@ Both methods retain the recursive prediction-update structure of the classical K
 
 \subsection{Extended Kalman Filter}
 \label{sec:2.4.1EKF}
-\nomenclature[A]{EKF}{Extended Kalman Filter}
+\nomenclature[A]{EKF}{Extended Kalman filter}
 
 The nonlinear discrete-time probabilistic state-space model is given by
 
@@ -1283,7 +1285,7 @@ The nonlinear discrete-time probabilistic state-space model is given by
 
 where $\bm{f}$ and $\bm{h}$ denote the, possibly time-varying, nonlinear state transition and measurement functions, respectively, replacing the matrices $\bm{A}_{k-1}$, $\bm{B}_{k-1}$, and $\bm{C}_k$ of the linear model in Eq.~\eqref{eq:discrete_system}. The process noise $\bm{q}_{k-1}$ and measurement noise $\bm{r}_k$ retain the same statistical properties as in the linear case.
 
-The Extended Kalman Filter (EKF) extends the classical Kalman filter to nonlinear systems by linearizing the nonlinear system around the latest available state estimate \cite{Simon2006}. This results in a locally linear system representation, allowing the recursive prediction and update structure of the Kalman filter to be applied.
+The extended Kalman filter (EKF) extends the classical Kalman filter to nonlinear systems by linearizing the nonlinear system around the latest available state estimate \cite{Simon2006}. This results in a locally linear system representation, allowing the recursive prediction and update structure of the Kalman filter to be applied.
 Specifically, the nonlinear state transition function $\bm{f}$ is linearized around the latest \emph{a posteriori} state estimate $\hat{\bm{x}}_{k-1}$ during the prediction step, while the nonlinear measurement function $\bm{h}$ is linearized around the latest \emph{a priori} state estimate $\hat{\bm{x}}_k^-$ during the update step. The resulting first-order approximations are given by \cite{Särkkä2013KF}
 
 \begin{align}
@@ -1416,9 +1418,9 @@ The EKF approximates the nonlinear state transition and measurement functions by
 
 \subsection{Unscented Kalman Filter}
 \label{sec:2.4.2UKF}
-\nomenclature[A]{UKF}{Unscented Kalman Filter}
+\nomenclature[A]{UKF}{Unscented Kalman filter}
 
-The unscented Kalman filter (UKF) avoids the local linearization employed by the EKF by propagating a deterministically chosen set of sample points, referred to as \emph{sigma points}, through the nonlinear process and measurement functions $\bm{f}$ and $\bm{h}$ \cite{Julier2004UKF}. The transformed sigma points are then used to reconstruct the mean and covariance of the propagated probability distribution using the so-called \emph{unscented transform}. Since the nonlinear functions are evaluated directly rather than approximated by a first-order Taylor expansion, the unscented transform captures the mean and covariance of the transformed distribution with at least second-order accuracy for arbitrary nonlinear functions and third-order accuracy for Gaussian distributions, while avoiding the computation of Jacobians \cite{Julier2004UKF}.
+The unscented Kalman filter (UKF) avoids the local linearization employed by the EKF by propagating a deterministically chosen set of sample points, referred to as sigma points, through the nonlinear process and measurement functions $\bm{f}$ and $\bm{h}$ \cite{Julier2004UKF}. The transformed sigma points are then used to reconstruct the mean and covariance of the propagated probability distribution using the so-called unscented transform. Since the nonlinear functions are evaluated directly rather than approximated by a first-order Taylor expansion, the unscented transform captures the mean and covariance of the transformed distribution with at least second-order accuracy for arbitrary nonlinear functions and third-order accuracy for Gaussian distributions, while avoiding the computation of Jacobians \cite{Julier2004UKF}.
 
 
 \subsubsection{Sigma Points and the Unscented Transform}
@@ -1580,9 +1582,9 @@ Although the UKF still relies on a finite set of sample points and therefore doe
 
 \section{Disturbance Compensation}
 \label{sec:2.5DisturbanceCompensation}
-\nomenclature[A]{DFF}{Disturbance Feedforward}
-\nomenclature[A]{NDI}{Nonlinear Dynamic Inversion}
-\nomenclature[A]{LTI}{linear time-invariant}
+\nomenclature[A]{DFF}{Disturbance feedforward}
+\nomenclature[A]{NDI}{Nonlinear dynamic inversion}
+\nomenclature[A]{LTI}{Linear time-invariant}
 
 Compensation methods aim to improve the disturbance rejection and tracking performance of a control system by reducing the influence of known or estimated disturbances and compensating for modeled system dynamics. Rather than relying solely on feedback to correct errors after they occur, compensation methods utilize additional information, such as system models, disturbance estimates, or reference dynamics, to generate corrective control actions proactively. The effectiveness of such approaches depends strongly on the accuracy of the system model and the available disturbance information. Consequently, compensation methods are typically combined with a feedback controller, which compensates for remaining modeling errors and unmeasured disturbances while ensuring closed-loop stability \cite{Astrom2010FeedbackSystems,Lunze2013Regelungstechnik2}.
 
@@ -1714,7 +1716,7 @@ The general structure of a compensation-based control approach is depicted in Fi
 		
 	\end{tikzpicture}
 	
-	\caption{Structure of a compensation-based control approach. Both the controller and the compensation module may additionally utilize available system outputs of the airship. For clarity, the corresponding signal paths are omitted.}
+	\caption{Structure of a compensation-based control approach. Both the controller and the compensation module may additionally use available system outputs of the airship. For clarity, the corresponding signal paths are omitted.}
 	\label{fig:compensation_principle}
 	
 \end{figure}
@@ -1868,12 +1870,13 @@ Thus, the nonlinearities and known disturbance effects included in $\bm{f}(\bm{x
 
 \section{Artificial Neural Networks}
 \label{sec:2.6ArtificialNN}
-\nomenclature[A]{ANN}{Artificial Neural Network}
+\nomenclature[A]{ANN}{Artificial neural network}
+\nomenclature[A]{ReLU}{Rectified linear unit}
 
 Artificial neural networks (ANNs) are a class of nonlinear function approximators. Formally, an ANN realizes a parameterized mapping
 
 \begin{equation}
-	f: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}, \quad \hat{\bm{y}} = f(\bm{x}; \bm{\theta}),
+	\bm{f}: \mathbb{R}^{n} \rightarrow \mathbb{R}^{m}, \quad \hat{\bm{y}} = \bm{f}(\bm{x}; \bm{\theta}),
 	\label{eq:nn_mapping}
 \end{equation}
 
@@ -1889,16 +1892,16 @@ The basic computational unit of an ANN is the neuron. Given an input vector $\bm
 	\label{eq:neuron}
 \end{equation}
 
-where $\bm{w} \in \mathbb{R}^{n}$ denotes the weight vector and $b \in \mathbb{R}$ the bias, together constituting the neuron's trainable parameters $\theta$. Common choices for the activation function $\varphi(\cdot)$ include the sigmoid function, the hyperbolic tangent, and the rectified linear unit (ReLU) \cite{Goodfellow2016DeepLearning}. The nonlinearity introduced by the activation function is essential: without it, any composition of layers reduces to a single affine transformation, and the network could not represent nonlinear input–output relationships.
+where $\bm{w} \in \mathbb{R}^{n}$ denotes the weight vector and $b \in \mathbb{R}$ the bias, together constituting the neuron's trainable parameters $\bm{\theta}$. Common choices for the activation function $\varphi(\cdot)$ include the sigmoid function, the hyperbolic tangent, and the rectified linear unit (ReLU) \cite{Goodfellow2016DeepLearning}. The nonlinearity introduced by the activation function is essential: without it, any composition of layers reduces to a single affine transformation, and the network could not represent nonlinear input–output relationships.
 
 Neurons are organized into layers, with each layer's outputs serving as the next layer's inputs. A network typically consists of an input layer, one or more hidden layers, and an output layer. The number of layers is referred to as the network's depth, and the number of neurons per layer as its width.
 
 The ANN is fully determined by its architecture (depth and width) and
-its parameters, collectively the weights and biases of all neurons. The parameters of the network are adapted through a training process starting from initial values, typically drawn at random. Given a dataset of input-output pairs $\{(\bm{x}_i, \bm{y}_i)\}_{i=1}^{N}$, training aims at minimizing a loss function $\mathcal{L}(\bm{\theta})$ that quantifies the discrepancy between the network's predictions $\hat{\bm{y}}_i = f(\bm{x}_i; \bm{\theta})$ and the target outputs $\bm{y}_i$.
+its parameters, collectively the weights and biases of all neurons. The parameters of the network are adapted through a training process starting from initial values, typically drawn at random. Given a dataset of input-output pairs $\{(\bm{x}_i, \bm{y}_i)\}_{i=1}^{N}$, training aims at minimizing a loss function $\mathcal{L}(\bm{\theta})$ that quantifies the discrepancy between the network's predictions $\hat{\bm{y}}_i = \bm{f}(\bm{x}_i; \bm{\theta})$ and the target outputs $\bm{y}_i$.
 For regression tasks -- as considered in this work -- a common choice is the mean squared error (MSE):
 
 \begin{equation}
-	\mathcal{L}(\bm{\theta}) = \frac{1}{N} \sum_{i=1}^{N} \left\lVert f(\bm{x}_i; \bm{\theta}) - \bm{y}_i \right\rVert_2^2.
+	\mathcal{L}(\bm{\theta}) = \frac{1}{N} \sum_{i=1}^{N} \left\lVert \bm{f}(\bm{x}_i; \bm{\theta}) - \bm{y}_i \right\rVert_2^2.
 	\label{eq:mse_loss}
 \end{equation}
 
@@ -1924,7 +1927,7 @@ The following sections introduce two network architectures relevant to this thes
 
 \subsection{Multi-Layer Perceptron}
 \label{sec:mlp}
-\nomenclature[A]{MLP}{Multi-Layer Perceptron}
+\nomenclature[A]{MLP}{Multi-layer perceptron}
 
 The multi-layer perceptron (MLP) is the most basic feedforward neural network architecture \cite{Goodfellow2016DeepLearning}, in which information flows strictly in one direction, from the input layer through one or more hidden layers to the output layer, with no feedback connections. Every neuron in a given layer is connected to every neuron in the subsequent layer. Such layers are referred to as fully connected, or dense, layers.
 Figure~\ref{fig:mlp_architecture} illustrates the structure of the MLP.
@@ -2012,7 +2015,7 @@ Figure~\ref{fig:mlp_architecture} illustrates the structure of the MLP.
 		\node[layer label] at (5.6, 2.6) {Output\\layer};
 		
 	\end{tikzpicture}
-	\caption{Schematic illustration of a multi-layer perceptron with $n$ inputs, three fully connected hidden layers, and $m$ outputs. Each circle represents a single neuron, computing a weighted sum of its inputs followed by a nonlinear activation, as in \eqref{eq:neuron}.}
+	\caption{Schematic illustration of a multi-layer perceptron with $n$ inputs, three fully connected hidden layers, and $m$ outputs. Each circle represents a single neuron, computing a weighted sum of its inputs followed by a nonlinear activation, as defined in \eqref{eq:neuron}.}
 	\label{fig:mlp_architecture}
 \end{figure}
 
@@ -2035,8 +2038,8 @@ Owing to its purely feedforward structure, the MLP has no internal notion of tim
 
 \subsection{Long Short-Term Memory Networks}
 \label{sec:lstm}
-\nomenclature[A]{LSTM}{Long Short-Term Memory}
-\nomenclature[A]{RNN}{Recurrent Neural Network}
+\nomenclature[A]{LSTM}{Long short-term memory}
+\nomenclature[A]{RNN}{Recurrent neural network}
 
 Unlike the MLP, recurrent neural networks (RNNs) are designed to process sequential data by introducing feedback connections. The network's output at a given time step depends not only on the current input, but also on information from previous time steps. This is achieved through a hidden state $\bm{h}_t$, which is updated at every time step $t$ and passed forward to influence the processing of subsequent inputs.
 

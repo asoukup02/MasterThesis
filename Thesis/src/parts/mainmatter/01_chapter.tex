@@ -2,27 +2,25 @@
 
 
 
-
-\chapter{Introduction}%
+\chapter{Introduction}
 \label{chap:1.Introduction}
-This chapter serves as an overview of existing methods and ...
+\nomenclature[A]{LTA}{Lighter-than-air}
+\nomenclature[A]{UAV}{Unmanned aerial vehicle}
 
-% ---------------------------------------------------------------------------------------------------
+In the last decade, unmanned aerial vehicles (UAVs) have become increasingly common in civil and commercial applications. Improvements in hardware and software have made it possible to build lightweight, energy-efficient and cost-effective vehicles with active stabilization. UAVs are particularly suited for operations beyond human reach or where human deployment poses a serious risk. Besides popular applications in media and aerial photography, tasks such as infrastructure maintenance and surveying in agriculture, wildlife monitoring and security are becoming more and more common \cite{MazurEtAl16, dro18}. Among the different UAV types, fixed-wing and multirotor vehicles are by far the most widespread and well researched. Quadcopters in particular have low entry barriers owing to their simple, transferable and inexpensive design.
 
-\section{Problem setting}
-- Why wind is a challenge for airships
-- Why onboard wind estimation is necessary
-- Why compensation improves control performance
+Lighter-than-air (LTA) vehicles such as airships offer a distinct advantage over these platforms. Because buoyancy carries the weight of the vehicle, an airship does not have to spend energy to stay in the air. This allows considerably longer flight times than multirotors, which must produce thrust continuously, and makes airships well suited for long-duration tasks such as inspection, monitoring and surveying. Also its low speed and soft structure reduce the risk of damage to people and the environment during operation close to infrastructure. These advantages come at a price. Above all, their large volume in relation to their mass makes them highly susceptible to wind, so that controllers capable of handling strong disturbances require substantially more development effort.
 
-Atmospheric wind is a major source of disturbance for lighter-than-air vehicles and therefore plays a central role in the development and evaluation of wind estimation and compensation algorithms.
+Atmospheric wind is one of the dominant sources of disturbance for lighter-than-air vehicles. Airships are characterized by their large volume, low flight speed and high aerodynamic drag, which makes them considerably more susceptible to atmospheric disturbances than conventional fixed-wing aircraft or multirotors. Even moderate wind speeds can be comparable to the airspeed the vehicle is able to achieve, so that the wind may push the airship off its desired trajectory or exceed the available control authority. This sensitivity is one of the main challenges for autonomous airship operation, in particular during low-speed maneuvers such as hovering, station keeping, inspection tasks and precision landing, where the demands on tracking accuracy are highest.
 
-Airships are characterized by their large volume, low flight speed and high aerodynamic drag, making them considerably more susceptible to atmospheric disturbances than conventional fixed-wing aircraft. Even moderate wind speeds may become comparable to the vehicle velocity, causing significant deviations from the desired trajectory and degrading the overall control performance. This sensitivity represents one of the major challenges for autonomous airship operation, particularly during low-speed maneuvers such as hovering, station keeping, inspection tasks and precision landing.
+Knowing the current wind is therefore valuable, but it is not directly available. A dedicated wind sensor, such as a pitot tube or an ultrasonic anemometer, can in principle measure the relative airflow, but it is often not a practical solution, especially for small autonomous airships. Additional sensors increase weight, cost and system complexity, and payload is scarce on a lighter-than-air vehicle. Pitot-based sensors also lose accuracy at the low airspeeds at which airships typically operate. Consequently, it is desirable to estimate the wind onboard from the measurements that are available anyway, such as velocity, attitude and angular rates. Such an estimator provides the wind information without additional hardware and can also be used to complement or validate a sensor if one is installed.
 
-Since the aerodynamic forces and moments acting on an airship depend on the relative velocity between the vehicle and the surrounding air, the ambient wind directly influences the vehicle dynamics. However, wind cannot usually be measured accurately using onboard sensors alone. Installing dedicated wind measurement systems increases the system complexity, weight and cost and is often impractical for small autonomous airships. Consequently, the wind must be estimated from the available onboard measurements together with a mathematical model of the vehicle dynamics.
+A reliable wind estimate enables more than observing the surrounding atmosphere. If it is fed into the flight controller, the aerodynamic disturbance can be compensated actively instead of being left for the feedback loop to reject after it has already caused a tracking error. A purely feedback-based controller reacts only to deviations that have already occurred, and for a slowly responding vehicle like an airship this delay is significant. Wind compensation has the potential to improve trajectory tracking, reduce the control effort and increase the robustness of autonomous flight under varying environmental conditions.
 
-Reliable wind estimation enables more than merely observing the surrounding atmosphere. By incorporating the estimated wind into the flight controller, the aerodynamic disturbances can be compensated before they lead to significant tracking errors. Such a model-based compensation has the potential to improve trajectory tracking, reduce control effort and increase the robustness of autonomous flight under varying environmental conditions.
+Achieving accurate wind estimation and effective compensation is, however, challenging. The airship dynamics are strongly nonlinear and are governed by the interaction of gravitational, buoyancy, propulsion and aerodynamic forces, while the aerodynamic effects depend on the unknown wind itself. Both the estimator and the controller must therefore take the nonlinear dynamics and the coupling between vehicle motion and surrounding airflow into account. Model-based estimators address this by exploiting a physical description of the vehicle, but their accuracy depends on the quality of the model. Data-driven methods, in contrast, learn the relation between the measurements and the wind directly from data and do not require an explicit wind model, although they depend on the available training data and on how well they generalize to conditions not seen during training.
 
-Achieving accurate wind estimation and effective disturbance compensation, however, is challenging. The vehicle dynamics are highly nonlinear and are governed by the interaction of gravitational, buoyancy, propulsion and aerodynamic forces, while the aerodynamic effects themselves depend on the unknown wind. Consequently, both the estimator and the controller must account for the nonlinear system dynamics and the coupling between vehicle motion and the surrounding airflow.
+This motivates the objectives of this work, which are outlined in the following section.
+
 
 \section{Aim of this work}
 \label{sec:Aim}
@@ -30,7 +28,7 @@ Achieving accurate wind estimation and effective disturbance compensation, howev
 - Scope
 - Evaluation scenarios
 
-The aim of this work is to develop and implement a model-based algorithm for wind estimation and wind compensation for an unmanned airship. The proposed approach shall reliably estimate the ambient wind using only the available onboard measurements and the nonlinear dynamic model of the vehicle, without requiring dedicated wind sensors.
+The aim of this work is to develop and implement model-based and data-driven algorithms for wind estimation and wind compensation for an unmanned airship. The proposed approach shall reliably estimate the ambient wind using only the available onboard measurements and the nonlinear dynamic model of the vehicle, without requiring dedicated wind sensors.
 
 The wind estimation algorithm is designed to operate under conditions representative of realistic flight scenarios. These include dynamic wind conditions with gusts of up to 30 km/h, as well as different flight maneuvers such as forward and sideward flight, rotation about the vertical axis, and coordinated turning during forward flight. The estimated wind shall remain accurate and robust despite the nonlinear vehicle dynamics and changing operating conditions.
 
@@ -86,6 +84,7 @@ The flight-control hardware is housed together with the battery and the remainin
 
 
 \subsection{Control Architecture}
+\nomenclature[A]{PID}{Proportional-integral-derivative}
 
 The airship is controlled using a PID-based control structure. The controller receives a desired position and generates the corresponding desired forces and moments acting on the airship. The PID controller is tuned to provide robust behavior across the considered flight envelope and therefore serves as the baseline controller for this work.
 
